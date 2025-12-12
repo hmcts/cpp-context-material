@@ -1,0 +1,147 @@
+#%RAML 0.8
+title: Material - Command API
+version: v1
+protocols: [ HTTP ]
+
+baseUri: http://localhost:8080/material-command-api/command/api/rest/material
+
+/material:
+  description: Creates case material.
+  post:
+    description: |
+      ...
+      (mapping):
+          requestType: application/vnd.material.command.add-material+json
+          name: material.command.add-material
+      (mapping):
+          requestType: application/vnd.material.command.upload-file+json
+          name: material.command.upload-file
+      (mapping):
+          requestType: application/vnd.material.command.upload-file-as-pdf+json
+          name: material.command.upload-file-as-pdf
+      ...
+    body:
+      application/vnd.material.command.add-material+json:
+        example:
+          !include json/material.command.add-material.json
+        schema:
+          !include json/schema/material.command.add-material.json
+      application/vnd.material.command.upload-file+json:
+        example:
+          !include json/material.command.upload-file.json
+        schema:
+          !include json/schema/material.command.upload-file.json
+      application/vnd.material.command.upload-file-as-pdf+json:
+        example:
+          !include json/material.command.upload-file-as-pdf.json
+        schema:
+          !include json/schema/material.command.upload-file-as-pdf.json
+    responses:
+      500:
+        description: Internal Server Error
+      202:
+        description: OK
+
+
+/downloadable-materials:
+  post:
+    description: |
+      ...
+      (mapping):
+          requestType: application/vnd.material.command.publish-is-downloadable-materials+json
+          name: material.command.publish-is-downloadable-materials
+      ...
+    body:
+      application/vnd.material.command.publish-is-downloadable-materials+json:
+        schema: !include json/schema/material.command.publish-is-downloadable-materials.json
+        example: !include json/material.command.publish-is-downloadable-materials.json
+    responses:
+      500:
+        description: Internal Server Error
+      202:
+        description: OK
+      200:
+        body:
+          application/vnd.material.query.is-downloadable-materials+json:
+            schema: !include json/schema/material.query.is-downloadable-materials.json
+            example: !include json/material.query.is-downloadable-materials.json
+
+
+
+/material/{materialId}:
+   post:
+     description: |
+       deletes a case material
+       ...
+       (mapping):
+           requestType: application/vnd.material.command.delete-material+json
+           name: material.command.delete-material
+       ...
+     body:
+         application/vnd.material.command.delete-material+json:
+             schema: !include json/schema/material.command.delete-material.json
+             example: !include json/material.command.delete-material.json
+
+/material-reference:
+  description: Stores the file server reference to case material.
+  post:
+    description: |
+      ...
+      (mapping):
+          requestType: application/vnd.material.add-material+json
+          name: material.add-material
+      ...
+    body:
+      application/vnd.material.add-material+json:
+        example:
+          !include json/material.add-material.json
+        schema:
+          !include json/schema/material.add-material.json
+    responses:
+      500:
+        description: Internal Server Error
+      202:
+        description: OK
+
+/create-material-bundle:
+  description: it creates bundle from provided materials
+  post:
+    description: |
+      ...
+      (mapping):
+          requestType: application/vnd.material.command.create-material-bundle+json
+          name: material.command.create-material-bundle
+      ...
+    body:
+      application/vnd.material.command.create-material-bundle+json:
+        example:
+          !include json/material.command.create-material-bundle.json
+        schema:
+          !include json/schema/material.command.create-material-bundle.json
+    responses:
+      500:
+        description: Internal Server Error
+      202:
+        description: OK
+
+
+/zip-material:
+  description: it zips materials contains a list of material ids associated with a case
+  post:
+    description: |
+      ...
+      (mapping):
+          requestType: application/vnd.material.command.zip-material+json
+          name: material.command.zip-material
+      ...
+    body:
+      application/vnd.material.command.zip-material+json:
+        example:
+          !include json/material.command.zip-material.json
+        schema:
+          !include json/schema/material.command.zip-material.json
+    responses:
+      500:
+        description: Internal Server Error
+      202:
+        description: OK

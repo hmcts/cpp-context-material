@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://cpp.moj.gov.uk/material/json/schemas/event/material.events.failed-to-zip-material.json",
+  "type": "object",
+  "properties": {
+    "caseId": {
+      "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+    },
+    "materialIds": {
+      "type": "array",
+      "items": {
+        "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+      }
+    },
+    "fileIds": {
+      "type": "array",
+      "items": {
+        "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+      }
+    },
+    "errorMessage": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "caseId",
+    "fileIds",
+    "errorMessage"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://justice.gov.uk/cps/material/material.command.handler.delete-material.json",
+  "type": "object",
+  "properties": {
+    "materialId": {
+      "$ref": "http://justice.gov.uk/json/schemas/material/data-types.json#/definitions/uuid"
+    }
+  },
+  "required": [
+    "materialId"
+  ]
+}

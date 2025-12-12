@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet id="2" author="Material" logicalFilePath="liquibase/material-view-store-db-changelog.xml">
+        <modifyDataType columnName="material_id"
+                        newDataType="UUID"
+                        tableName="material" />
+
+        <dropColumn tableName="material"
+                    columnName="id" />
+
+        <addPrimaryKey tableName="material"
+                       columnNames="material_id"
+                       constraintName="pk_material" />
+
+    </changeSet>
+</databaseChangeLog>

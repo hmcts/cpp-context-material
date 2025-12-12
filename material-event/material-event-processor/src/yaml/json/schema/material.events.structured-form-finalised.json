@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://cpp.moj.gov.uk/material/json/schemas/event/structured-form-finalised.json",
+  "type": "object",
+  "properties": {
+    "structuredFormId": {
+      "description": "Structured Form Id",
+      "$ref": "http://justice.gov.uk/json/schemas/material/data-types.json#/definitions/uuid"
+    },
+    "updatedBy": {
+      "$ref": "http://justice.gov.uk/json/schemas/material/updated-by.json"
+    },
+    "materialId": {
+      "description": "Material Id",
+      "$ref": "http://justice.gov.uk/json/schemas/material/data-types.json#/definitions/uuid"
+    },
+    "lastUpdated": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "structuredFormId",
+    "updatedBy",
+    "materialId",
+    "lastUpdated"
+  ],
+  "additionalProperties": false
+}

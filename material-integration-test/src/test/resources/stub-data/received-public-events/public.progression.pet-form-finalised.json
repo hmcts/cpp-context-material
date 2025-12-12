@@ -1,0 +1,10 @@
+{
+  "petId": "PET_ID",
+  "caseId": "CASE_ID",
+  "materialId": "MATERIAL_ID",
+  "updatedBy": {
+    "name" : "ACTOR_NAME"
+  }
+}
+
+

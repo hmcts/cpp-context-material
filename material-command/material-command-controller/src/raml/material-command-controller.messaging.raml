@@ -1,0 +1,30 @@
+#%RAML 0.8
+title: Material - Command Controller
+version: v1
+
+baseUri: message://command/controller/message/material
+
+/material.controller.command:
+  post:
+    body:
+        application/vnd.material.command.add-material+json:
+            schema: !include json/schema/material.command.add-material.json
+            example: !include json/material.command.add-material.json
+        application/vnd.material.add-material+json:
+            schema: !include json/schema/material.add-material.json
+            example: !include json/material.add-material.json
+        application/vnd.material.command.upload-file+json:
+            schema: !include json/schema/material.command.upload-file.json
+            example: !include json/material.command.upload-file.json
+        application/vnd.material.command.upload-file-as-pdf+json:
+            schema: !include json/schema/material.command.upload-file-as-pdf.json
+            example: !include json/material.command.upload-file-as-pdf.json
+        application/vnd.material.command.handler.delete-material+json:
+            schema: !include json/schema/material.command.handler.delete-material.json
+            example: !include json/material.command.handler.delete-material.json
+        application/vnd.material.command.handler.create-material-bundle+json:
+            schema: !include json/schema/material.command.handler.create-material-bundle.json
+            example: !include json/material.command.handler.create-material-bundle.json
+        application/vnd.material.command.handler.zip-material+json:
+            schema: !include json/schema/material.command.handler.zip-material.json
+            example: !include json/material.command.handler.zip-material.json

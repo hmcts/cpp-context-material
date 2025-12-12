@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "materialId": {
+      "description": "Material Id",
+      "type": "string"
+    },
+    "alfrescoAssetId": {
+      "description": "Id returned by Alfresco",
+      "type": "string"
+    },
+    "fileName": {
+      "description": "File name of the material",
+      "type": "string"
+    },
+    "fileSize": {
+      "type": "string"
+    }
+  },
+  "required": [ "materialId", "fileName", "alfrescoAssetId", "fileSize" ]
+}

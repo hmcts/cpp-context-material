@@ -1,0 +1,29 @@
+{
+  "caseId": "a6b6d9e0-5b89-4f7e-a457-894f17217400",
+  "courtFormId": "COURT_FORM_ID",
+  "formType": "BCM",
+  "hearingDateTime": "2025-12-22T10:45:00Z",
+  "updatedBy": {
+    "id" : "USER_ID",
+    "firstName": "formCreatorFirstName",
+    "lastName": "formCreatorLastName"
+  },
+  "caseURN": "ABNM1276HJ",
+  "documentMetaData": [
+    {
+      "isWelsh": true,
+      "materialId": "MATERIAL_ID1",
+      "fileName": "fileName One.pdf"
+    },
+    {
+      "isWelsh": true,
+      "materialId": "MATERIAL_ID2",
+      "fileName": "fileName One.pdf"
+    },
+    {
+      "isWelsh": true,
+      "materialId": "MATERIAL_ID3",
+      "fileName": "fileName One.pdf"
+    }
+  ]
+}

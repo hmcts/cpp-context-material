@@ -1,0 +1,40 @@
+{
+  "defendantUser": [
+    {
+      "id": "16340424-df45-4826-b67e-1c99ae65a7f4",
+      "defenceDynamicFormAnswers": {
+        "adviceOnPleaAndAbsenceGroup": {
+          "creditForGuilty": "",
+          "defendantUnderstand": ""
+        },
+        "PresenceGroup": {
+          "defendantPresent": "Yes",
+          "defendantPresentYesGroup": {
+            "defendantPresentDetail": "Disputeinfo"
+          },
+          "defendantInvolvement": "Yes",
+          "defendantInvolvementYesGroup": {
+            "defendantInvolvementYesGroupDetail": "Involvementinfo"
+          },
+          "anticipatedDefence": [
+            "irrelevant"
+          ],
+          "slaveryOrExploitationGroup": {
+            "slaveryOrExploitationGroupText": ""
+          }
+        },
+        "directionsGroup": {
+          "prosecutionWitnessRequires": "Yes",
+          "prosecutionWitnessRequiresesGroup1": {
+            "prosecutionWitnessRequiresesGroup1Details": ""
+          },
+          "whatAreTheIssues": "",
+          "whatAreTheIssuesGroup": {
+            "explainDispute": "Issuesainfo",
+            "explainLaw": "Issuesbinfo"
+          }
+        }
+      }
+    }
+  ]
+}

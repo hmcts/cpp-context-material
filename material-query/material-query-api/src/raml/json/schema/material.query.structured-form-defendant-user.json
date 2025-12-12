@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "defendantUser": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": [
+    "defendantUser"
+  ],
+  "additionalProperties": false
+}

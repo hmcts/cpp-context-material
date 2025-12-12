@@ -1,0 +1,34 @@
+{
+  "groups": [
+    {
+      "groupId": "1e2f843e-d639-40b3-8611-8015f3a18958",
+      "groupName": "System Users"
+    },
+    {
+      "groupId": "5b6f843e-d639-40b3-8611-8015f3a34758",
+      "groupName": "Charging Lawyers"
+    },
+    {
+      "groupId": "53ddc4b2-761b-4bbf-adcf-5e01500fba95",
+      "groupName": "CMS"
+    },
+    {
+      "groupId": "00f7bb09-0726-451e-8e25-f1f2126ddddc",
+      "groupName": "Second Line Support"
+    }
+  ],
+  "permissions": [
+    {
+      "object": "PetForm",
+      "action": "GrantAccess"
+    },
+    {
+      "object": "BCM",
+      "action": "View"
+    },
+    {
+      "object": "NonCpsDocument",
+      "action": "Upload"
+    }
+  ]
+}

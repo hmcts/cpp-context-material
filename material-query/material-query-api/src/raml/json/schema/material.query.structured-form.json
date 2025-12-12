@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "structuredFormId": {
+      "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+    },
+    "formId": {
+      "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+    },
+    "data": {
+      "type": "string"
+    },
+    "lastUpdated": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "structuredFormId",
+    "formId",
+    "data",
+    "lastUpdated"
+  ],
+  "additionalProperties": false
+}

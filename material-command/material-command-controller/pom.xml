@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>material-command</artifactId>
+        <groupId>uk.gov.moj.cpp.material</groupId>
+        <version>17.0.77-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>material-command-controller</artifactId>
+    <packaging>war</packaging>
+    <properties>
+        <cpp.service-component>COMMAND_CONTROLLER</cpp.service-component>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>uk.gov.justice.framework-generators</groupId>
+                <artifactId>messaging-client-generator-plugin</artifactId>
+                <version>${framework.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>uk.gov.moj.cpp.material</groupId>
+                        <artifactId>material-command-handler</artifactId>
+                        <version>${project.version}</version>
+                        <classifier>raml</classifier>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>*</groupId>
+                                <artifactId>*</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.moj.cpp.common</groupId>
+            <artifactId>command-controller</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.moj.cpp.common</groupId>
+            <artifactId>system-users-library</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>uk.gov.moj.cpp.material</groupId>
+            <artifactId>material-datatypes-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.moj.cpp.access-control</groupId>
+            <artifactId>access-control-test-utils</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

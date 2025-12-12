@@ -1,0 +1,62 @@
+---
+resource_descriptor:
+  spec_version: '1.0.0'
+  version: '${project.version}'
+
+  resources:
+    - name: java:/app/material-service/DS.eventstore
+      type: xa-datasource
+      setup:
+        - type: liquibase
+          maven:
+            groupId: uk.gov.justice.services
+            artifactId: event-repository-liquibase
+            type: jar
+            version: '${cpp.framework.version}'
+        - type: liquibase
+          maven:
+            groupId: uk.gov.justice.services
+            artifactId: aggregate-snapshot-repository-liquibase
+            type: jar
+            version: '${project.version}'
+
+    - name: java:/DS.material
+      type: xa-datasource
+      setup:
+        - type: liquibase
+          maven:
+            groupId: uk.gov.justice.services
+            artifactId: event-buffer-liquibase
+            type: jar
+            version: '${cpp.framework.version}'
+        - type: liquibase
+          maven:
+            groupId: uk.gov.moj.cpp.material
+            artifactId: material-viewstore-liquibase
+            type: jar
+            version: '${project.version}'
+
+    - name: material.controller.command
+      type: queue
+    - name: material.handler.command
+      type: queue
+    - name: material.event
+      type: topic
+    - name: public.event
+      type: topic
+
+  services:
+    # material provides these service mappings
+    - name: 'material-service'
+      id: 'material_service'
+      target: '/material-service'
+      map:
+        - '/material-command-api'
+        - '/material-command-controller'
+        - '/material-command-handler'
+        - '/material-event-listener'
+        - '/material-event-processor'
+        - '/material-query-api'
+        - '/material-query-controller'
+        - '/material-query-view'
+      matcher: '/material-[^/]+'

@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "materialId": {
+      "$ref": "#/definitions/uuid"
+    },
+    "fileServiceId": {
+      "$ref": "#/definitions/uuid"
+    },
+    "failedTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "errorMessage": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "materialId",
+    "fileServiceId",
+    "failedTime",
+    "errorMessage"
+  ],
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+    }
+  }
+}

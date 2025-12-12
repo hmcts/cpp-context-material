@@ -1,0 +1,5 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://justice.gov.uk/cps/material/material.command.delete-material.json",
+  "type": "object"
+}

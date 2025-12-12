@@ -1,0 +1,66 @@
+subscriptions_descriptor:
+  spec_version: 1.0.0
+  service: material
+  service_component: EVENT_PROCESSOR
+  subscriptions:
+    - name: event processor subscription
+      events:
+        - name: material.events.material-added
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/material-added.json
+        - name: material.events.file-uploaded
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/file-uploaded.json
+        - name: material.events.file-uploaded-as-pdf
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/file-uploaded-as-pdf.json
+        - name: material.events.duplicate-material-not-created
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/duplicate-material-not-created.json
+        - name: material.events.material-deleted
+          schema_uri: http://justice.gov.uk/cps/material/events/material.events.material-deleted.json
+        - name: material.events.material-not-found
+          schema_uri: http://justice.gov.uk/cps/material/events/material.events.material-not-found.json
+        - name: material.events.material-bundle-requested
+          schema_uri: http://justice.gov.uk/cps/material/events/material-bundle-requested.json
+        - name: material.events.material-bundle-creation-failed
+          schema_uri: http://justice.gov.uk/cps/material/events/material-bundle-creation-failed.json
+        - name: material.events.material-bundle-details-recorded
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/material-bundle-details-recorded.json
+        - name: material.events.material-bundling-failed
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/material-bundling-failed.json
+        - name: material.events.failed-to-add-material
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/material.events.failed-to-add-material.json
+        - name: material.events.structured-form-created
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/structured-form-created.json
+        - name: material.events.structured-form-updated
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/structured-form-updated.json
+        - name: material.events.structured-form-updated-for-defendant
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/structured-form-updated-for-defendant.json
+        - name: material.events.structured-form-finalised
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/structured-form-finalised.json
+        - name: material.events.structured-form-published
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/structured-form-published.json
+        - name: material.events.failed-to-zip-material
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/material.events.failed-to-zip-material.json
+        - name: material.events.material-zipped
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/material.events.material-zipped.json
+        - name: material.events.cloud-blob-file-uploaded
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/cloud-blob-file-uploaded.json
+      event_source_name: material
+
+    - name: public event subscription
+      events:
+        # Progression
+        - name: public.progression.pet-form-created
+          schema_uri: http://justice.gov.uk/core/courts/pet-form-created.json
+        - name: public.progression.pet-form-updated
+          schema_uri: http://justice.gov.uk/core/courts/pet-form-updated.json
+        - name: public.progression.pet-form-defendant-updated
+          schema_uri: http://justice.gov.uk/core/courts/pet-form-defendant-updated.json
+        - name: public.progression.pet-form-finalised
+          schema_uri: http://justice.gov.uk/core/courts/pet-form-finalised.json
+        - name: public.progression.form-created
+          schema_uri: http://justice.gov.uk/core/courts/form-created.json
+        - name: public.progression.form-updated
+          schema_uri: http://justice.gov.uk/core/courts/form-updated.json
+        - name: public.progression.form-finalised
+          schema_uri: http://justice.gov.uk/core/courts/form-finalised.json
+
+      event_source_name: public.event.source

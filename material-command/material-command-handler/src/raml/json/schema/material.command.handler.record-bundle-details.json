@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://justice.gov.uk/cps/material/material.command.handler.record-bundle-details.json",
+  "type": "object",
+  "properties": {
+    "bundledMaterialId": {
+      "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+    },
+    "fileReference": {
+      "type": "string"
+    },
+    "mimeType": {
+      "type": "string"
+    },
+    "fileName": {
+      "type": "string"
+    },
+    "fileSize": {
+      "type": "string"
+    },
+    "pageCount": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "fileReference",
+    "bundledMaterialId"
+  ]
+}

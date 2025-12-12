@@ -1,0 +1,15 @@
+{
+  "petId": "PET_ID",
+  "caseId": "CASE_ID",
+  "formId": "FORM_ID",
+  "petDefendants": [
+    {
+      "defendantOrSuspectId": "DEFENDANT_ID",
+      "offenceOrProposedChargeIds": [
+        "OFFENCE_ID"
+      ]
+    }
+  ],
+  "petFormData": "{ \"firstNameTxt\": \"John\",  \"middleNameTxt\": \"Fed\", \"lastNameTxt\": \"Smith\"}",
+  "userId": "USER_ID"
+}

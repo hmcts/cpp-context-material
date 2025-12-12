@@ -1,0 +1,252 @@
+{
+  "id": "261c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+  "formId": "361c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+  "caseId": "461c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+  "defendants": [
+    {
+      "defendantId": "261c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+      "offences": [
+        "261c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+        "361c2e22-7b4d-4f04-b4d4-be966c2be4ca"
+      ]
+    },
+    {
+      "defendantId": "DEFENDANT_ID",
+      "offences": [
+        "abc",
+        "xyz"
+      ]
+    }
+  ],
+  "data": {
+    "prosecution": {
+      "witnesses": [
+        {
+          "id": "461c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+          "name": "Bill ROGERS",
+          "age": "01/01/1950",
+          "InterpreterRequired": true,
+          "defenceDynamicFormAnswers": {
+            "witnessGroup": {
+              "crossExam": "Yes"
+            }
+          },
+          "prosecutionDynamicFormAnswers": {
+            "witnessGroup": {
+              "specialMeasures": "Yes",
+              "specialMeasuresYesGroup": {
+                "specialMeasuresDetail": "A chair"
+              }
+            }
+          }
+        },
+        {
+          "id": "261c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+          "caseWitnessId": "hgf",
+          "defenceDynamicFormAnswers": {
+            "witnessGroup": {
+              "crossExam": "Yes"
+            }
+          },
+          "prosecutionDynamicFormAnswers": {
+            "witnessGroup": {
+              "specialMeasures": "Yes",
+              "specialMeasuresYesGroup": {
+                "specialMeasuresDetail": "A chair"
+              }
+            }
+          }
+        },
+        {
+          "id": "361c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+          "caseWitnessId": "tds",
+          "defenceDynamicFormAnswers": {
+            "witnessGroup": {
+              "crossExam": "Yes"
+            }
+          },
+          "prosecutionDynamicFormAnswers": {
+            "witnessGroup": {
+              "specialMeasures": "Yes",
+              "specialMeasuresYesGroup": {
+                "specialMeasuresDetail": "A chair"
+              }
+            }
+          }
+        }
+      ],
+      "defenceDynamicFormAnswers": {
+        "prosecutorGroup": {
+          "prosecutorServeEvidence": "Yes",
+          "prosecutorServeEvidenceYesGroup": {
+            "prosecutorServeEvidenceDetails": "Serve more evidence info"
+          },
+          "prosecutionCompliance": "Yes",
+          "prosecutionComplianceYesGroup": {
+            "prosecutionComplianceDetailsYes": "Undisclosed info"
+          },
+          "prosecutionComplianceNoGroup": {
+            "prosecutionComplianceDetailsNo": ""
+          },
+          "pendingLinesOfEnquiry": "Yes",
+          "pendingLinesOfEnquiryYesGroup": {
+            "pendingLinesOfEnquiryYesGroup": "Pending info"
+          },
+          "slaveryOrExploitation": "Yes",
+          "slaveryOrExploitationYesGroup": {
+            "slaveryOrExploitationDetails": "Victim info"
+          },
+          "relyOn": [
+            "admissions",
+            "cctv"
+          ],
+          "relyOnAdmissionsGroup": {
+            "admissionsDetails": "admission info"
+          },
+          "relyOnFailureGroup": {
+            "failureDetails": ""
+          },
+          "displayEquipment": "Yes",
+          "displayEquipmentYesGroup": {
+            "displayEquipmentDetails": "Display equipment info"
+          },
+          "pointOfLaw": "Yes",
+          "pointOfLawYesGroup": {
+            "pointOfLawDetails": "Complex info"
+          }
+        },
+        "applicationsForDirectionsGroup": {
+          "prosecutorWitnessAssistance": "Yes",
+          "prosecutorWitnessAssistanceYesGroup": {
+            "witnessRequiresDetails": ""
+          },
+          "groundRulesQuestioning": "Yes",
+          "variationStandardDirections": "Yes",
+          "variationStandardDirectionsYesGroup": {
+            "variationStandardDirectionsYesGroupDetails": "Standard trial info"
+          }
+        }
+      }
+    },
+    "defence": {
+      "defendants": [
+        {
+          "id": "261c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+          "defenceDynamicFormAnswers": {
+            "adviceOnPleaAndAbsenceGroup": {
+              "creditForGuilty": "",
+              "defendantUnderstand": ""
+            },
+            "PresenceGroup": {
+              "defendantPresent": "Yes",
+              "defendantPresentYesGroup": {
+                "defendantPresentDetail": "Dispute info"
+              },
+              "defendantInvolvement": "Yes",
+              "defendantInvolvementYesGroup": {
+                "defendantInvolvementYesGroupDetail": "Involvement info"
+              },
+              "anticipatedDefence": [
+                "irrelevant"
+              ],
+              "slaveryOrExploitationGroup": {
+                "slaveryOrExploitationGroupText": ""
+              }
+            },
+            "directionsGroup": {
+              "prosecutionWitnessRequires": "Yes",
+              "prosecutionWitnessRequiresesGroup1": {
+                "prosecutionWitnessRequiresesGroup1Details": ""
+              },
+              "whatAreTheIssues": "",
+              "whatAreTheIssuesGroup": {
+                "explainDispute": "Issues a info",
+                "explainLaw": "Issues b info"
+              }
+            }
+          }
+        },
+        {
+          "id": "DEFENDANT_ID",
+          "defenceDynamicFormAnswers": {
+            "adviceOnPleaAndAbsenceGroup": {
+              "creditForGuilty": "",
+              "defendantUnderstand": ""
+            },
+            "PresenceGroup": {
+              "defendantPresent": "Yes",
+              "defendantPresentYesGroup": {
+                "defendantPresentDetail": "Dispute info"
+              },
+              "defendantInvolvement": "Yes",
+              "defendantInvolvementYesGroup": {
+                "defendantInvolvementYesGroupDetail": "Involvement info"
+              },
+              "anticipatedDefence": [
+                "irrelevant"
+              ],
+              "slaveryOrExploitationGroup": {
+                "slaveryOrExploitationGroupText": ""
+              }
+            },
+            "directionsGroup": {
+              "prosecutionWitnessRequires": "Yes",
+              "prosecutionWitnessRequiresesGroup1": {
+                "prosecutionWitnessRequiresesGroup1Details": ""
+              },
+              "whatAreTheIssues": "",
+              "whatAreTheIssuesGroup": {
+                "explainDispute": "Issues a info",
+                "explainLaw": "Issues b info"
+              }
+            }
+          }
+        }
+      ],
+      "witnesses": [
+        {
+          "caseWitnessId": "UUID",
+          "PetProsecutionWitnessId": "UUID",
+          "isDefendant": true,
+          "name": "John SMITH",
+          "age": "01/01/1980",
+          "InterpreterRequired": true,
+          "prosecutionDynamicFormAnswers": {
+            "witnessGroup": {
+              "crossExam": "Yes"
+            }
+          },
+          "defenceDynamicFormAnswers": {
+            "witnessGroup": {
+              "specialMeasures": "Yes",
+              "specialMeasuresYesGroup": {
+                "specialMeasuresDetail": "A chair"
+              }
+            }
+          }
+        },
+        {
+          "caseWitnessId": null,
+          "PetProsecutionWitnessId": "UUID",
+          "isDefendant": true,
+          "name": "James SAUNDERS",
+          "age": "01/01/1970",
+          "InterpreterRequired": true,
+          "prosecutionDynamicFormAnswers": {
+            "witnessGroup": {
+              "crossExam": "Yes"
+            }
+          },
+          "defenceDynamicFormAnswers": {
+            "witnessGroup": {
+              "specialMeasures": "Yes",
+              "specialMeasuresYesGroup": {
+                "specialMeasuresDetail": "A chair"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

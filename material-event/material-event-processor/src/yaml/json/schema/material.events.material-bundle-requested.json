@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://justice.gov.uk/cps/material/events/material-bundle-requested.json",
+  "type": "object",
+  "properties": {
+    "materialIds": {
+      "type": "array",
+      "items": {
+        "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+      }
+    },
+    "bundledMaterialId": {
+      "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+    },
+    "bundledMaterialName": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "materialIds",
+    "bundledMaterialId",
+    "bundledMaterialName"
+  ]
+}

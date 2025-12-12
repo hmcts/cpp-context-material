@@ -1,0 +1,15 @@
+{
+  "id": "<ID>",
+  "caseId": "<CASE_ID>",
+  "formId": "<FORM_ID>",
+  "formDefendants": [
+    {
+      "defendantOrSuspectId": "<DEFENDANT_ID>",
+      "offenceOrProposedChargeIds": [
+        "<OFFENCE_ID>"
+      ]
+    }
+  ],
+  "formData": "{ \"firstNameTxt\": \"John\",  \"middleNameTxt\": \"Fed\", \"lastNameTxt\": \"Smith\"}",
+  "userId": "<USER_ID>"
+}

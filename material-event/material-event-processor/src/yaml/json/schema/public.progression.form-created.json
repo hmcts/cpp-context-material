@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://justice.gov.uk/core/courts/form-created.json",
+  "type": "object",
+  "properties": {
+    "courtFormId": {
+      "description": "Id",
+      "$ref": "http://justice.gov.uk/json/schemas/material/data-types.json#/definitions/uuid"
+    },
+    "caseId": {
+      "description": "Case Id",
+      "$ref": "http://justice.gov.uk/json/schemas/material/data-types.json#/definitions/uuid"
+    },
+    "formId": {
+      "description": "Form Id",
+      "$ref": "http://justice.gov.uk/json/schemas/material/data-types.json#/definitions/uuid"
+    },
+    "formDefendants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "defendantId": {
+            "$ref": "http://justice.gov.uk/json/schemas/material/data-types.json#/definitions/uuid"
+          }
+        },
+        "required": [
+          "defendantId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "formData": {
+      "description": "Form Data",
+      "type": "string"
+    },
+    "updatedBy": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "id",
+            "firstName",
+            "lastName"
+          ]
+        },
+        {
+          "required": [
+            "name"
+          ]
+        }
+      ]
+    },
+    "formType": {
+      "description": "Form Type",
+      "type": "string",
+      "enum": ["BCM", "PET", "PTPH"]
+    },
+    "submissionId": {
+      "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+    }
+  },
+  "required": [
+    "caseId",
+    "courtFormId",
+    "formId",
+    "formDefendants",
+    "formType",
+    "updatedBy"
+  ],
+  "additionalProperties": false
+}

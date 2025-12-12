@@ -1,0 +1,57 @@
+#%RAML 0.8
+title: Material - Command Handler
+version: v1
+
+baseUri: message://command/handler/message/material
+
+/material.handler.command:
+  post:
+    body:
+        application/vnd.material.command.add-material+json:
+            schema: !include json/schema/material.command.add-material.json
+            example: !include json/material.command.add-material.json
+        application/vnd.material.command.add-external-material+json:
+            schema: !include json/schema/material.command.add-external-material.json
+            example: !include json/material.command.add-external-material.json
+        application/vnd.material.add-material+json:
+            schema: !include json/schema/material.add-material.json
+            example: !include json/material.add-material.json
+        application/vnd.material.command.upload-file+json:
+            schema: !include json/schema/material.command.upload-file.json
+            example: !include json/material.command.upload-file.json
+        application/vnd.material.command.upload-file-as-pdf+json:
+            schema: !include json/schema/material.command.upload-file-as-pdf.json
+            example: !include json/material.command.upload-file-as-pdf.json
+        application/vnd.material.command.handler.delete-material+json:
+            schema: !include json/schema/material.command.handler.delete-material.json
+            example: !include json/material.command.handler.delete-material.json
+        application/vnd.material.command.handler.create-material-bundle+json:
+            schema: !include json/schema/material.command.handler.create-material-bundle.json
+            example: !include json/material.command.handler.create-material-bundle.json
+        application/vnd.material.command.handler.record-bundle-details+json:
+            schema: !include json/schema/material.command.handler.record-bundle-details.json
+            example: !include json/material.command.handler.record-bundle-details.json
+        application/vnd.material.command.handler.zip-material+json:
+             schema: !include json/schema/material.command.handler.zip-material.json
+             example: !include json/material.command.handler.zip-material.json
+        application/vnd.material.command.handler.record-bundle-details-failure+json:
+            schema: !include json/schema/material.command.handler.record-bundle-details-failure.json
+            example: !include json/material.command.handler.record-bundle-details-failure.json
+        application/vnd.material.record-add-material-failed+json:
+            schema: !include json/schema/material.record-add-material-failed.json
+            example: !include json/material.record-add-material-failed.json
+        application/vnd.material.command.handler.create-structured-form+json:
+            schema: !include json/schema/material.command.handler.create-structured-form.json
+            example: !include json/material.command.handler.create-structured-form.json
+        application/vnd.material.command.handler.update-structured-form+json:
+            schema: !include json/schema/material.command.handler.update-structured-form.json
+            example: !include json/material.command.handler.update-structured-form.json
+        application/vnd.material.command.handler.update-structured-form-for-defendant+json:
+            schema: !include json/schema/material.command.handler.update-structured-form-for-defendant.json
+            example: !include json/material.command.handler.update-structured-form-for-defendant.json
+        application/vnd.material.command.handler.publish-structured-form+json:
+            schema: !include json/schema/material.command.handler.publish-structured-form.json
+            example: !include json/material.command.handler.publish-structured-form.json
+        application/vnd.material.command.handler.finalise-structured-form+json:
+            schema: !include json/schema/material.command.handler.finalise-structured-form.json
+            example: !include json/material.command.handler.finalise-structured-form.json

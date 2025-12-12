@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://cpp.moj.gov.uk/material/json/schemas/event/material-bundle-details-recorded.json",
+  "type": "object",
+  "properties": {
+    "materialId": {
+      "type": "string"
+    },
+    "fileDetails": {
+      "type": "object",
+      "properties": {
+        "fileName": {
+          "type": "string"
+        },
+        "alfrescoAssetId": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        }
+      }
+    },
+    "fileSize": {
+      "type": "string"
+    },
+    "pageCount": {
+      "type": "integer"
+    },
+    "materialBundleDetailsRecordedDate": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "materialId",
+    "fileDetails",
+    "materialBundleDetailsRecordedDate"
+  ]
+}

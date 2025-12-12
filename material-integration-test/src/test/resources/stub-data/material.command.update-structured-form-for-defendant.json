@@ -1,0 +1,5 @@
+{
+  "structuredFormId": "STRUCTURED_FORM_ID",
+  "defendantId": "DEFENDANT_ID",
+  "defendantData": "{\"id\": \"DEFENDANT_ID\",\"defenceDynamicFormAnswers\": {\"someField\": true, \"someOtherField\": \"someOtherValue\"}}"
+}

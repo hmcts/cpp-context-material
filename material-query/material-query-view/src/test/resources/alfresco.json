@@ -1,0 +1,149 @@
+{
+  "metadata": {
+    "repositoryId": "8c55df28-d63a-41ac-8f59-21ce88111cb9",
+    "custom": {
+      "aos": {
+        "baseUrl": "http://dummyUrl:8080/alfresco/aos"
+      },
+      "vtiServer": null
+    },
+    "onlineEditing": false,
+    "workingCopyLabel": " (Working Copy)",
+    "shareURL": "http://dummyUrl:8080/share",
+    "serverURL": "http://localhost:9876"
+  },
+  "item": {
+    "node": {
+      "isLink": false,
+      "aspects": [
+        "cm:auditable",
+        "sys:referenceable",
+        "sys:localized"
+      ],
+      "isContainer": false,
+      "type": "cm:content",
+      "encoding": "UTF-8",
+      "contentURL": "/slingshot/node/content/workspace/SpacesStore/14db4ee5-c71c-4bbd-b03d-1dc44bb685e4/Smith%20John%2026GD2877921.pdf",
+      "size": 708784,
+      "nodeRef": "workspace://SpacesStore/14db4ee5-c71c-4bbd-b03d-1dc44bb685e4",
+      "permissions": {
+        "inherited": true,
+        "roles": [
+          "ALLOWED;GROUP_EVERYONE;Consumer;INHERITED"
+        ],
+        "user": {
+          "Delete": true,
+          "Write": true,
+          "CancelCheckOut": false,
+          "ChangePermissions": true,
+          "CreateChildren": true,
+          "Unlock": false
+        }
+      },
+      "isLocked": false,
+      "mimetype": "application/pdf",
+      "properties": {
+        "cm:creator": {
+          "firstName": "System",
+          "lastName": "User",
+          "displayName": "System User",
+          "userName": "System"
+        },
+        "cm:modifier": {
+          "firstName": "System",
+          "lastName": "User",
+          "displayName": "System User",
+          "userName": "System"
+        },
+        "cm:created": {
+          "iso8601": "2021-09-16T13:15:13.827Z",
+          "value": "Thu Sep 16 13:15:13 UTC 2021"
+        },
+        "cm:name": "Smith John 26GD2877921.pdf",
+        "sys:store-protocol": null,
+        "sys:node-dbid": null,
+        "sys:store-identifier": null,
+        "sys:locale": null,
+        "cm:content": null,
+        "cm:modified": {
+          "iso8601": "2021-09-16T13:15:13.872Z",
+          "value": "Thu Sep 16 13:15:13 UTC 2021"
+        },
+        "sys:node-uuid": null
+      },
+      "mimetypeDisplayName": "Adobe PDF Document"
+    },
+    "parent": {
+      "isLink": false,
+      "nodeRef": "workspace://SpacesStore/8275c18c-1cf1-49c5-8d0e-fd39033a30f0",
+      "permissions": {
+        "inherited": true,
+        "roles": [
+          "ALLOWED;GROUP_EVERYONE;Consumer;INHERITED"
+        ],
+        "user": {
+          "Delete": true,
+          "Write": true,
+          "CancelCheckOut": false,
+          "ChangePermissions": true,
+          "CreateChildren": true,
+          "Unlock": false
+        }
+      },
+      "isLocked": false,
+      "aspects": [
+        "cm:titled",
+        "cm:auditable",
+        "sys:referenceable",
+        "sys:localized"
+      ],
+      "isContainer": true,
+      "type": "cm:folder",
+      "properties": {
+        "cm:title": "15",
+        "cm:creator": {
+          "firstName": "System",
+          "lastName": "User",
+          "displayName": "System User",
+          "userName": "System"
+        },
+        "cm:modifier": {
+          "firstName": "System",
+          "lastName": "User",
+          "displayName": "System User",
+          "userName": "System"
+        },
+        "cm:created": {
+          "iso8601": "2021-09-16T13:15:13.815Z",
+          "value": "Thu Sep 16 13:15:13 UTC 2021"
+        },
+        "cm:name": "15",
+        "sys:store-protocol": null,
+        "sys:node-dbid": null,
+        "sys:store-identifier": null,
+        "sys:locale": null,
+        "cm:modified": {
+          "iso8601": "2021-09-16T13:15:13.815Z",
+          "value": "Thu Sep 16 13:15:13 UTC 2021"
+        },
+        "sys:node-uuid": null
+      }
+    },
+    "version": "1.0",
+    "webdavUrl": "/webdav/2021/09/16/13/15/Smith%20John%2026GD2877921.pdf",
+    "isFavourite": false,
+    "likes": {
+      "isLiked": false,
+      "totalLikes": 0
+    },
+    "location": {
+      "repositoryId": "8c55df28-d63a-41ac-8f59-21ce88111cb9",
+      "path": "/2021/09/16/13/15",
+      "repoPath": "/2021/09/16/13/15",
+      "file": "Smith John 26GD2877921.pdf",
+      "parent": {
+
+      }
+    }
+  }
+}
