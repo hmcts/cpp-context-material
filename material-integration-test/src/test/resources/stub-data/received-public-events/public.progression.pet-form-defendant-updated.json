@@ -1,0 +1,11 @@
+{
+  "petId": "PET_ID",
+  "caseId": "CASE_ID",
+  "defendantId": "DEFENDANT_ID",
+  "defendantData": "{\"defendant\":{\"id\": \"DEFENDANT_ID\",\"defenceDynamicFormAnswers\": {\"someField\": true, \"someOtherField\": \"someOtherValue\"}}}",
+  "updatedBy": {
+    "id": "USER_ID",
+    "firstName": "petFormEditorFirstName",
+    "lastName": "petFormEditorLastName"
+  }
+}

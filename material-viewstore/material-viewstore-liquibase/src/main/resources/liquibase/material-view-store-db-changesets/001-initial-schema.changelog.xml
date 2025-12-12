@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet id="1" author="Material" logicalFilePath="liquibase/material-view-store-db-changelog.xml">
+        <createTable tableName="material">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="material_id" type="varchar(100)"/>
+            <column name="date_material_added" type="varchar(100)"/>
+            <column name="alfresco_id" type="varchar(100)"/>
+            <column name="filename" type="varchar(100)"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

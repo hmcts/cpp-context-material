@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "materialId": {
+      "description": "Material Id",
+      "type": "string"
+    },
+    "alfrescoAssetId": {
+      "description": "Id returned by Alfresco",
+      "type": "string"
+    },
+    "fileName": {
+      "description": "File name of the material",
+      "type": "string"
+    },
+    "mimeType": {
+      "type": "string"
+    },
+    "materialAddedDate": {
+      "description": "Material added timestamp in '2016-05-03T10:31:50.026' format",
+      "type": "string"
+    },
+    "externalLink" : {
+      "description": "The external link that serves the file.",
+      "type": "string"
+    }
+  },
+  "required": [ "materialId", "fileName", "mimeType", "materialAddedDate" ]
+}

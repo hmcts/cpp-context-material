@@ -1,0 +1,38 @@
+subscriptions_descriptor:
+  spec_version: 1.0.0
+  service: material
+  service_component: EVENT_PROCESSOR
+  subscriptions:
+    - name: public event processor subscription
+      events:
+        - name: material.material-added
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/public-material-added.json
+
+        - name: material.duplicate-material-not-created
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/public-duplicate-material-not-created.json
+
+        - name: public.material.material-deleted
+          schema_uri: http://justice.gov.uk/cps/material/events/public.material.material-deleted.json
+
+        - name: public.material.material-not-found
+          schema_uri: http://justice.gov.uk/cps/material/events/public.material.material-not-found.json
+
+        - name: public.material.material-bundle-created
+          schema_uri: http://justice.gov.uk/cps/material/events/public.material.material-bundle-created.json
+
+        - name: public.material.material-bundle-creation-failed
+          schema_uri: http://justice.gov.uk/cps/material/events/public.material.material-bundle-creation-failed.json
+
+        - name: public.events.material.failed-to-add-material
+          schema_uri: http://justice.gov.uk/cps/material/events/public.events.material.failed-to-add-material.json
+
+        - name: public.material.structured-form-operation-successful
+          schema_uri: http://justice.gov.uk/cps/material/events/public.material.structured-form-operation-successful.json
+
+        - name: public.material.events.material-zipped
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/material.events.material-zipped.json
+
+        - name: public.material.events.material-zip-failed
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/material.events.failed-to-zip-material.json
+
+      event_source_name: public.event.source

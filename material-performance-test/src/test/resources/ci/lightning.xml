@@ -1,0 +1,23 @@
+<testSet>
+    <passedTransactionsTest>
+        <testName>Read material - failed tests</testName>
+        <transactionName>Read material</transactionName>
+        <allowedNumberOfFailedTransactions>0</allowedNumberOfFailedTransactions>
+    </passedTransactionsTest>
+    <avgRespTimeTest>
+        <testName>Read material - average response time</testName>
+        <transactionName>Read material</transactionName>
+        <maxAvgRespTime>2000</maxAvgRespTime>
+    </avgRespTimeTest>
+
+    <passedTransactionsTest>
+        <testName>Read material metadata - failed tests</testName>
+        <transactionName>Read material metadata</transactionName>
+        <allowedNumberOfFailedTransactions>0</allowedNumberOfFailedTransactions>
+    </passedTransactionsTest>
+    <avgRespTimeTest>
+        <testName>Read material metadata - average response time</testName>
+        <transactionName>Read material metadata</transactionName>
+        <maxAvgRespTime>2000</maxAvgRespTime>
+    </avgRespTimeTest>
+</testSet>

@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://justice.gov.uk/cps/material/events/public.material.structured-form-operation-successful.json",
+  "type": "object",
+  "properties": {
+    "structuredFormId": {
+      "$ref": "http://justice.gov.uk/json/schemas/material/data-types.json#/definitions/uuid"
+    },
+    "command" : {
+      "description": "Command name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "structuredFormId",
+    "command"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://justice.gov.uk/cps/material/events/public.material.material-created.json",
+  "type": "object",
+  "properties": {
+    "materialIds": {
+      "type": "array",
+      "items": {
+        "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+      }
+    },
+    "bundledMaterialId": {
+      "$ref": "http://justice.gov.uk/domain/core/common/definitions.json#/definitions/uuid"
+    },
+    "fileSize": {
+      "type": "string"
+    },
+    "pageCount": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "materialIds",
+    "bundledMaterialId",
+    "fileSize",
+    "pageCount"
+  ]
+}

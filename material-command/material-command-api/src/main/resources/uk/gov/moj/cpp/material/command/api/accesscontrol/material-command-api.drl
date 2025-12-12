@@ -1,0 +1,91 @@
+package uk.gov.moj.cpp.material.command.api.accesscontrol;
+
+import uk.gov.moj.cpp.accesscontrol.drools.Outcome;
+import uk.gov.moj.cpp.accesscontrol.drools.Action;
+
+global uk.gov.moj.cpp.accesscontrol.common.providers.UserAndGroupProvider userAndGroupProvider;
+
+rule "Command - add material - Allowed user groups"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.add-material");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups(
+        $action, "System Users", "CMS", "Charging Lawyers", "SJP Prosecutors", "Court Administrators", "Crown Court Admin", "Listing Officers", "Judiciary","Court Clerks", "Second Line Support"));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - add material reference"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.add-material");
+     eval(userAndGroupProvider.hasPermission($action, RuleConstants.getNonCpsDocumentUploadPermission())) or
+     eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups(
+        $action, "System Users", "CMS", "Charging Lawyers", "SJP Prosecutors", "Court Administrators", "Legal Advisers", "Crown Court Admin", "Listing Officers", "Judiciary", "Court Clerks", "Defence Users", "District Judge", "Court Associate", "Second Line Support", "Magistrates", "Auditors"));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - upload file"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.upload-file");
+     eval(userAndGroupProvider.hasPermission($action, RuleConstants.getNonCpsDocumentUploadPermission())) or
+     eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, "System Users", "SJP Prosecutors", "Court Administrators", "Legal Advisers","Crown Court Admin", "Listing Officers", "Judiciary","Court Clerks", "Defence Lawyers", "District Judge", "Court Associate", "Second Line Support", "Deputies", "DJMC", "Advocates", "Probation Admin", "Youth Offending Service Admin", "Judge", "Recorders", "Magistrates", "Auditors", "Police Admin","Non Police Prosecutors"));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - upload file as pdf"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.upload-file-as-pdf");
+     eval(userAndGroupProvider.hasPermission($action, RuleConstants.getNonCpsDocumentUploadPermission())) or
+     eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, "System Users", "SJP Prosecutors", "Court Administrators", "Legal Advisers","Crown Court Admin", "Listing Officers", "Judiciary","Court Clerks", "Defence Lawyers", "District Judge", "Court Associate", "Second Line Support", "Deputies", "DJMC", "Advocates", "Probation Admin", "Youth Offending Service Admin", "Judge", "Recorders", "Auditors", "Police Admin","Non Police Prosecutors"));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - delete material"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.delete-material");
+     eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, "System Users", "Second Line Support", "Auditors"));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - find downloadable materials  - Allowed user groups"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.publish-is-downloadable-materials");
+    eval(userAndGroupProvider.hasPermission($action, RuleConstants.getNonCpsDocumentReadPermission())) or
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action,
+                "System Users","Court Clerks", "Crown Court Admin", "Listing Officers", "Court Administrators", "Legal Advisers",
+                                                  "Prison Admin", "Court Admin", "Probation Admin", "Police Admin", "Victims & Witness Care Admin", "Youth Offending Service Admin",
+                                                  "Magistrates", "Court Associate", "District Judge", "Probation Admin", "Judiciary", "Court Associate", "Deputies", "DJMC", "Judge",
+                                                  "Second Line Support", "NCES", "Recorders", "Charging Lawyers", "Defence Users", "Defence Lawyers", "Advocates", "Auditors","Non Police Prosecutors", "Non CPS Prosecutors"));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - create material bundle"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.create-material-bundle");
+     eval(userAndGroupProvider.hasPermission($action, RuleConstants.getNonCpsDocumentUploadPermission())) or
+     eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups(
+        $action, "System Users", "CMS", "Charging Lawyers", "SJP Prosecutors", "Court Administrators", "Legal Advisers", "Crown Court Admin", "Listing Officers", "Judiciary", "Court Clerks", "Defence Users", "District Judge", "Court Associate", "Second Line Support"));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - zip material"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.zip-material");
+     eval(userAndGroupProvider.hasPermission($action, RuleConstants.getNonCpsDocumentUploadPermission())) or
+     eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, "System Users"));
+  then
+    $outcome.setSuccess(true);
+end

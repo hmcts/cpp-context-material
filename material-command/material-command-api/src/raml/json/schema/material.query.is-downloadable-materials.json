@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "required" : [ "materials" ],
+  "properties" : {
+    "materials" : { "$ref" : "#/definitions/material_map" }
+  },
+  "definitions" : {
+    "material" : {
+      "additionalProperties": false,
+      "description": "flag that indicates if material can be downloaded",
+      "type": "boolean"
+    },
+    "material_map" : {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/material" },
+      "default": {}
+    }
+  }
+}

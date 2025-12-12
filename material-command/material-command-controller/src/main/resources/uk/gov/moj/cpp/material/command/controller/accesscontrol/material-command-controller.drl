@@ -1,0 +1,85 @@
+package uk.gov.moj.cpp.material.command.controller.accesscontrol;
+
+import uk.gov.moj.cpp.accesscontrol.drools.Outcome;
+import uk.gov.moj.cpp.accesscontrol.drools.Action;
+
+rule "Command - command add material"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.add-material");
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - add material"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.add-material");
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - upload file"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.upload-file");
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - upload file as pdf"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.upload-file-as-pdf");
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - delete material"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.handler.delete-material");
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - create material bundle"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.handler.create-material-bundle");
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - create structured form"
+  when
+      $outcome: Outcome();
+      $action: Action(name == "material.command.handler.create-structured-form");
+
+    then
+      $outcome.setSuccess(true);
+end
+
+rule "Command - update structured form"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.handler.update-structured-form");
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - update structured form for defendant"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.handler.update-structured-form-for-defendant");
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - zip material"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.handler.zip-material");
+  then
+    $outcome.setSuccess(true);
+end

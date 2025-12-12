@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://justice.gov.uk/cps/material/events/public.material.material-deleted.json",
+  "type": "object",
+  "properties": {
+    "materialId": {
+      "$ref": "http://justice.gov.uk/json/schemas/material/data-types.json#/definitions/uuid"
+    },
+    "alfrescoId": {
+      "type": "string"
+    },
+    "fileServiceId":{
+      "$ref": "http://justice.gov.uk/json/schemas/material/data-types.json#/definitions/uuid"
+    }
+  },
+  "required": [
+    "materialId",
+    "alfrescoId"
+  ]
+}

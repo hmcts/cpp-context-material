@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <include file="liquibase/material-view-store-db-changesets/001-initial-schema.changelog.xml"/>
+    <include file="liquibase/material-view-store-db-changesets/002-id-refactoring.changelog.xml"/>
+    <include file="liquibase/material-view-store-db-changesets/003-add-mimetype.changelog.xml"/>
+    <include file="liquibase/material-view-store-db-changesets/004-add-external-link.changelog.xml"/>
+    <include file="liquibase/material-view-store-db-changesets/005-add-time-zone.changelog.xml"/>
+    <include file="liquibase/material-view-store-db-changesets/006-alter-file-name-length.changelog.xml"/>
+    <include file="liquibase/material-view-store-db-changesets/007-create-table-material-upload-status.changelog.xml"/>
+    <include file="liquibase/material-view-store-db-changesets/008-structured-form-tables.xml"/>
+    <include file="liquibase/material-view-store-db-changesets/009-drop-process-event-index.xml"/>
+</databaseChangeLog>

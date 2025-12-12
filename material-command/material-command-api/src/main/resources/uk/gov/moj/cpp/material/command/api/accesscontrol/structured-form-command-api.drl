@@ -1,0 +1,40 @@
+package uk.gov.moj.cpp.accesscontrol;
+
+import uk.gov.moj.cpp.accesscontrol.drools.Outcome;
+import uk.gov.moj.cpp.accesscontrol.drools.Action;
+import uk.gov.moj.cpp.material.command.api.accesscontrol.RuleConstants;
+global uk.gov.moj.cpp.accesscontrol.common.providers.UserAndGroupProvider userAndGroupProvider;
+
+
+rule "Command - Rule for Add Structured Form"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.create-structured-form");
+    eval(userAndGroupProvider.hasPermission($action, RuleConstants.structuredFormGrantAccessPermissionForPET()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getBCMCreatePermission()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getPTPHCreatePermission()));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - Rule for Update Structured Form"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.update-structured-form");
+    eval(userAndGroupProvider.hasPermission($action, RuleConstants.structuredFormGrantAccessPermissionForPET()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getBCMEditPermission()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getPTPHEditPermission()));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - Rule for Update Structured Form For Defendant"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.command.update-structured-form-for-defendant");
+    eval(userAndGroupProvider.hasPermission($action, RuleConstants.structuredFormGrantAccessPermissionForPET()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getBCMEditPermission()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getPTPHEditPermission()));
+  then
+    $outcome.setSuccess(true);
+end

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>uk.gov.moj.cpp.material</groupId>
+        <artifactId>material-parent</artifactId>
+        <version>17.0.77-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>material-domain</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>material-domain-event</module>
+        <module>material-domain-aggregate</module>
+    </modules>
+
+
+</project>

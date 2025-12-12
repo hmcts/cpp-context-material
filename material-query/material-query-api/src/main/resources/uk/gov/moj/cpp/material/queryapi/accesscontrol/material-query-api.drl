@@ -1,0 +1,96 @@
+package uk.gov.moj.cpp.material.queryapi.accesscontrol;
+
+import uk.gov.moj.cpp.accesscontrol.drools.Outcome;
+import uk.gov.moj.cpp.accesscontrol.drools.Action;
+import uk.gov.moj.cpp.material.query.api.accesscontrol.RuleConstants;
+import java.util.Arrays;
+import java.util.ArrayList;
+
+global uk.gov.moj.cpp.accesscontrol.progression.providers.ProgressionProvider progressionProvider;
+global uk.gov.moj.cpp.accesscontrol.common.providers.UserAndGroupProvider userAndGroupProvider;
+
+rule "Query - material and material metadata - Allowed user groups"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.query.material-metadata");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action,
+                Arrays.asList("System Users", "Court Clerks", "Charging Lawyers", "Crown Court Admin", "Listing Officers", "Judiciary", "Legal Advisers")));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Query - material and material metadata detail - Allowed user groups"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.query.material-metadata-details");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action,
+                Arrays.asList("System Users")));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Query - find downloadable materials  - Allowed user groups"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.query.is-downloadable-materials");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action,
+                Arrays.asList("System Users","Court Clerks", "Crown Court Admin", "Listing Officers", "Court Administrators", "Legal Advisers",
+                                  "Prison Admin", "Court Admin", "Probation Admin", "Police Admin", "Victims & Witness Care Admin", "Youth Offending Service Admin",
+                                  "Magistrates", "Court Associate", "District Judge", "Probation Admin", "Judiciary", "Court Associate", "Deputies", "DJMC", "Judge",
+                                  "Second Line Support", "NCES", "Recorders", "Charging Lawyers", "Defence Users", "Defence Lawyers", "Advocates")));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Query - material - System user"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.query.material");
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, Arrays.asList("System Users")));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Query - material - CPS Prosecuted  Progression"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.query.material");
+    eval(userAndGroupProvider.hasPermission($action, RuleConstants.getNonCpsDocumentReadPermission())) or
+    eval(userAndGroupProvider.isMemberOfAnyOfTheSuppliedGroups($action, Arrays.asList("Court Clerks", "Crown Court Admin", "Listing Officers", "Judiciary")));
+    eval(progressionProvider.isMaterialFromCPSProsecutedCase($action));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - Rule for query structured form"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.query.structured-form");
+    eval(userAndGroupProvider.hasPermission($action, RuleConstants.structuredFormGrantAccessPermissionForPET()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getBCMViewPermission()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getPTPHViewPermission()));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - Rule for query structured-form-change-history"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.query.structured-form-change-history");
+    eval(userAndGroupProvider.hasPermission($action, RuleConstants.structuredFormGrantAccessPermissionForPET()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getBCMViewPermission()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getPTPHViewPermission()));
+  then
+    $outcome.setSuccess(true);
+end
+
+rule "Command - Rule for query structured form defendant user"
+  when
+    $outcome: Outcome();
+    $action: Action(name == "material.query.structured-form-defendant-user");
+    eval(userAndGroupProvider.hasPermission($action, RuleConstants.structuredFormGrantAccessPermissionForPET()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getBCMViewPermission()) ||
+        userAndGroupProvider.hasPermission($action, RuleConstants.getPTPHViewPermission()));
+  then
+    $outcome.setSuccess(true);
+end

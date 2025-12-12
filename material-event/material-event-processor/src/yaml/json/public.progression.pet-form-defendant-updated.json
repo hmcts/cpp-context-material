@@ -1,0 +1,10 @@
+{
+  "petId": "8f8fe782-a287-11eb-bcbc-0242ac130002",
+  "defendantId": "9a7fe782-a287-11eb-bcbc-0242ac130003",
+  "defendantData": "{\"id\": \"9a7fe782-a287-11eb-bcbc-0242ac130003\",\"defenceDynamicFormAnswers\": {\"someField\": true, \"someOtherField\": \"someOtherValue\"}}",
+  "updatedBy": {
+    "id": "eec14d5f-07b9-4a01-92db-f4cbc591b846",
+    "firstName": "firstName",
+    "lastName": "lastName"
+  }
+}

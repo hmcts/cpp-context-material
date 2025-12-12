@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "materialId": {
+      "type": "string"
+    },
+    "isUnbundledDocument": {
+      "type": "boolean",
+      "default": false
+    },
+    "document": {
+      "type": "object",
+      "properties": {
+        "fileReference": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fileReference",
+        "mimeType"
+      ]
+    },
+    "fileName": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "materialId",
+    "document",
+    "fileName"
+  ]
+}

@@ -1,0 +1,11 @@
+event_sources:
+  - name: material
+    is_default: true
+    location:
+      jms_uri:  jms:topic:material.event
+      rest_uri: http://localhost:8080/material-service/event-source-api/rest
+      data_source: java:/app/material-service/DS.eventstore
+
+  - name: public.event.source
+    location:
+      jms_uri:  jms:topic:public.event

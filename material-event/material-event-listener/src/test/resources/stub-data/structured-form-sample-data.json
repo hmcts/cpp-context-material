@@ -1,0 +1,298 @@
+{
+  "id": "261c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+  "formId": "361c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+  "caseId": "461c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+  "defendants": [
+    {
+      "defendantId": "261c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+      "offences": [
+        "261c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+        "361c2e22-7b4d-4f04-b4d4-be966c2be4ca"
+      ]
+    },
+    {
+      "defendantId": "DEFENDANT_ID",
+      "offences": [
+        "961c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+        "861c2e22-7b4d-4f04-b4d4-be966c2be4ca"
+      ]
+    }
+  ],
+  "data": {
+    "defence": {
+      "defendants": [
+        {
+          "id": "DEFENDANT_ID",
+          "defenceDynamicFormAnswers": {
+            "adviceOnPleaAndAbsenceGroup": { "creditForGuilty": "", "defendantUnderstand": "" },
+            "defencePartialGuiltyGroup": {
+              "defencePartialGuiltyGroupMixed": "Yes",
+              "defencePartialGuiltyGroupMixedYes": {
+                "defencePartialGuiltyGroupMixedYesDetails": "AAA"
+              },
+              "defencePartialMixedPleas": "",
+              "defencePartialMixedPleasYes": { "defencePartialMixedPleasYesDetails": "" },
+              "defenceDifferentOffence": "",
+              "defenceDifferentOffenceGroup": { "defenceDifferentOffenceGroupDetails": "" }
+            },
+            "PresenceGroup": {
+              "defendantPresent": "",
+              "defendantPresentYesGroup": { "defendantPresentDetail": "" },
+              "defendantInvolvement": "",
+              "defendantInvolvementDisputedGroup": { "defendantInvolvementDisputedGroupText": "" },
+              "injuryLossDamage": "",
+              "injuryLossDamageGroup": { "injuryLossDamageGroupText": "" },
+              "Identification": "",
+              "IdentificationGroup": { "IdentificationGroupText": "" },
+              "lawfulArrest": "",
+              "lawfulArrestGroup": { "lawfulArrestGroupText": "" },
+              "interview": "",
+              "interviewGroup": { "interviewGroupText": "" },
+              "fingerprintsDna": "",
+              "fingerprintsDnaGroup": { "fingerprintsDnaGroupText": "" },
+              "scientificEvidence": "",
+              "scientificEvidenceGroup": { "scientificEvidenceGroupText": "" },
+              "alcoholDrugTesting": "",
+              "alcoholDrugTestingGroup": { "alcoholDrugTestingGroupText": "" },
+              "disqualificationCourtOrder": "",
+              "disqualificationCourtOrderGroup": { "disqualificationCourtOrderGroupText": "" },
+              "continuity": "",
+              "continuityGroup": { "continuityGroupText": "" },
+              "anticipatedDefence": "",
+              "slaveryOrExploitationGroup": { "slaveryOrExploitationGroupText": "" }
+            },
+            "directionsGroup": {
+              "prosecutionWitnessRequires": "",
+              "prosecutionWitnessRequiresesGroup1": {
+                "prosecutionWitnessRequiresesGroup1Details": ""
+              },
+              "whatAreTheIssues": "",
+              "whatAreTheIssuesGroup": { "explainDispute": "", "explainLaw": "" },
+              "pointsOfLaw": "",
+              "pointsOfLawGroup": { "pointsOfLawGroupDetails": "" },
+              "defenceStatement": "",
+              "displayEquiment": ""
+            },
+            "applicationForDirectionsGroup": {
+              "variationStandardDirectionsDefendant": "",
+              "variationStandardDirectionsDefendantGroup": {
+                "variationStandardDirectionsDefendantGroupDetails": ""
+              },
+              "defendantOrWitnessRequireAssistance": "",
+              "defendantOrWitnessRequireAssistanceGroup": {
+                "defendantOrWitnessRequireAssistanceGroupDetails": ""
+              },
+              "groundRulesQuestioningDefendant": ""
+            }
+          },
+          "witnesses": []
+        },
+        {
+          "id": "fe43f936-c58d-4248-924e-2ad1a67287dd",
+          "defenceDynamicFormAnswers": {
+            "adviceOnPleaAndAbsenceGroup": { "creditForGuilty": "", "defendantUnderstand": "" },
+            "defencePartialGuiltyGroup": {
+              "defencePartialGuiltyGroupMixed": "Yes",
+              "defencePartialGuiltyGroupMixedYes": {
+                "defencePartialGuiltyGroupMixedYesDetails": "AAA"
+              },
+              "defencePartialMixedPleas": "",
+              "defencePartialMixedPleasYes": { "defencePartialMixedPleasYesDetails": "" },
+              "defenceDifferentOffence": "",
+              "defenceDifferentOffenceGroup": { "defenceDifferentOffenceGroupDetails": "" }
+            },
+            "PresenceGroup": {
+              "defendantPresent": "",
+              "defendantPresentYesGroup": { "defendantPresentDetail": "" },
+              "defendantInvolvement": "",
+              "defendantInvolvementDisputedGroup": { "defendantInvolvementDisputedGroupText": "" },
+              "injuryLossDamage": "",
+              "injuryLossDamageGroup": { "injuryLossDamageGroupText": "" },
+              "Identification": "",
+              "IdentificationGroup": { "IdentificationGroupText": "" },
+              "lawfulArrest": "",
+              "lawfulArrestGroup": { "lawfulArrestGroupText": "" },
+              "interview": "",
+              "interviewGroup": { "interviewGroupText": "" },
+              "fingerprintsDna": "",
+              "fingerprintsDnaGroup": { "fingerprintsDnaGroupText": "" },
+              "scientificEvidence": "",
+              "scientificEvidenceGroup": { "scientificEvidenceGroupText": "" },
+              "alcoholDrugTesting": "",
+              "alcoholDrugTestingGroup": { "alcoholDrugTestingGroupText": "" },
+              "disqualificationCourtOrder": "",
+              "disqualificationCourtOrderGroup": { "disqualificationCourtOrderGroupText": "" },
+              "continuity": "",
+              "continuityGroup": { "continuityGroupText": "" },
+              "anticipatedDefence": "",
+              "slaveryOrExploitationGroup": { "slaveryOrExploitationGroupText": "" }
+            },
+            "directionsGroup": {
+              "prosecutionWitnessRequires": "",
+              "prosecutionWitnessRequiresesGroup1": {
+                "prosecutionWitnessRequiresesGroup1Details": ""
+              },
+              "whatAreTheIssues": "",
+              "whatAreTheIssuesGroup": { "explainDispute": "", "explainLaw": "" },
+              "pointsOfLaw": "",
+              "pointsOfLawGroup": { "pointsOfLawGroupDetails": "" },
+              "defenceStatement": "",
+              "displayEquiment": ""
+            },
+            "applicationForDirectionsGroup": {
+              "variationStandardDirectionsDefendant": "",
+              "variationStandardDirectionsDefendantGroup": {
+                "variationStandardDirectionsDefendantGroupDetails": ""
+              },
+              "defendantOrWitnessRequireAssistance": "",
+              "defendantOrWitnessRequireAssistanceGroup": {
+                "defendantOrWitnessRequireAssistanceGroupDetails": ""
+              },
+              "groundRulesQuestioningDefendant": ""
+            }
+          },
+          "witnesses": [
+            {
+              "firstName": "aaa",
+              "lastName": "aaa",
+              "dateOfBirth": "2020-10-10",
+              "interpreterRequired": "no",
+              "specialOtherMeasuresRequired": "no",
+              "xExaminations": [
+                {
+                  "defendantId": "fe43f936-c58d-4248-924e-2ad1a67287dd",
+                  "attendInPerson": true,
+                  "whatIsDisputed": "Defence old disputed text"
+                }
+              ],
+              "id": "863de10c-f7b6-4661-92c5-b55ad8f7dfa2",
+              "selected": true,
+              "eInCMinutes": 610,
+              "xExamMinutes": 610,
+              "liveLinkOrdered": null,
+              "read": null,
+              "notes": null
+            },
+            {
+              "firstName": "bbb",
+              "lastName": "bbb",
+              "dateOfBirth": "2020-10-10",
+              "interpreterRequired": "no",
+              "specialOtherMeasuresRequired": "no",
+              "xExaminations": [],
+              "id": "872e4f79-eb35-4ab5-8ede-2ca04c091178",
+              "selected": true,
+              "eInCMinutes": 610,
+              "xExamMinutes": 0,
+              "liveLinkOrdered": null,
+              "read": null,
+              "notes": null
+            }
+          ]
+        }
+      ]
+    },
+    "prosecution": {
+      "witnesses": [
+        {
+          "firstName": "Joe",
+          "lastName": "Bloggs",
+          "age": null,
+          "interpreterRequired": "no",
+          "specialOtherMeasuresRequired": "no",
+          "prosecutionProposesWitnessAttendInPerson": "no",
+          "xExaminations": [
+            {
+              "defendantId": "fe43f936-c58d-4248-924e-2ad1a67287dd",
+              "attendInPerson": true,
+              "whatIsDisputed": "Prosecution old disputed text def 2 wit 1"
+            },
+            {
+              "defendantId": "DEFENDANT_ID",
+              "attendInPerson": true,
+              "whatIsDisputed": "Prosecution old disputed text def 1 wit 1"
+            }
+          ],
+          "id": "WITNESS_ID",
+          "selected": true,
+          "eInCMinutes": 610,
+          "xExamMinutes": 0,
+          "liveLinkOrdered": null,
+          "read": null,
+          "notes": null
+        },
+        {
+          "firstName": "Fred",
+          "lastName": "Jim",
+          "age": null,
+          "interpreterRequired": "no",
+          "specialOtherMeasuresRequired": "no",
+          "prosecutionProposesWitnessAttendInPerson": "no",
+          "xExaminations": [
+            {
+              "defendantId": "DEFENDANT_ID",
+              "attendInPerson": true,
+              "whatIsDisputed": "Prosecution old disputed text def 1 wit 2"
+            }
+          ],
+          "id": "WITNESS_2_ID",
+          "selected": true,
+          "eInCMinutes": 610,
+          "xExamMinutes": 610,
+          "liveLinkOrdered": null,
+          "read": null,
+          "notes": null
+        },
+        {
+          "firstName": "Fred",
+          "lastName": "Jim",
+          "age": null,
+          "interpreterRequired": "no",
+          "specialOtherMeasuresRequired": "no",
+          "prosecutionProposesWitnessAttendInPerson": "no",
+          "xExaminations": [
+            {
+              "defendantId": "261c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+              "attendInPerson": true,
+              "whatIsDisputed": "Prosecution old disputed text def 2 wit 3"
+            }
+          ],
+          "id": "111c2e22-7b4d-4f04-b4d4-be966c2be4ca",
+          "selected": true,
+          "eInCMinutes": 610,
+          "xExamMinutes": 610,
+          "liveLinkOrdered": null,
+          "read": null,
+          "notes": null
+        }
+      ],
+      "dynamicFormAnswers": {
+        "prosecutorGroup": {
+          "prosecutorServeEvidence": "",
+          "prosecutorServeEvidenceYesGroup": { "prosecutorServeEvidenceDetails": "" },
+          "prosecutionCompliance": "",
+          "prosecutionComplianceYesGroup": { "prosecutionComplianceDetailsYes": "" },
+          "prosecutionComplianceNoGroup": { "prosecutionComplianceDetailsNo": "" },
+          "pendingLinesOfEnquiry": "",
+          "pendingLinesOfEnquiryYesGroup": { "pendingLinesOfEnquiryYesGroup": "" },
+          "slaveryOrExploitation": "",
+          "slaveryOrExploitationYesGroup": { "slaveryOrExploitationDetails": "" },
+          "relyOn": "",
+          "displayEquipment": "",
+          "displayEquipmentYesGroup": { "displayEquipmentDetails": "" },
+          "pointOfLaw": "",
+          "pointOfLawYesGroup": { "pointOfLawDetails": "" }
+        },
+        "applicationsForDirectionsGroup": {
+          "prosecutorWitnessAssistance": "",
+          "prosecutorWitnessAssistanceYesGroup": { "witnessRequiresDetails": "" },
+          "groundRulesQuestioning": "",
+          "variationStandardDirectionsProsecutor": "",
+          "variationStandardDirectionsProsecutorYesGroup": {
+            "variationStandardDirectionsProsecutorYesGroupDetails": ""
+          }
+        }
+      }
+    }
+  }
+}

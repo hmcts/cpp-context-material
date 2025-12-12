@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://cpp.moj.gov.uk/material/json/schemas/event/public-duplicate-material-not-created.json",
+  "type": "object",
+  "properties": {
+    "materialId": {
+      "type": "string"
+    },
+    "failedCommand": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "materialId",
+    "failedCommand"
+  ]
+}

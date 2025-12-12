@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "materialId": {
+      "type": "string"
+    },
+    "document": {
+      "type": "object",
+      "properties": {
+        "externalLink": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "externalLink"
+      ]
+    },
+    "fileName": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "materialId",
+    "document",
+    "fileName"
+  ]
+}
