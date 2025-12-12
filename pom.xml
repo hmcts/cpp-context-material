@@ -11,7 +11,7 @@
 
     <groupId>uk.gov.moj.cpp.material</groupId>
     <artifactId>material-parent</artifactId>
-    <version>17.0.78-SNAPSHOT</version>
+    <version>17.0.78-CCT-2357-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>material-parent</name>
@@ -22,7 +22,7 @@
     <properties>
         <sonar.report.export.path>sonar-report.json</sonar.report.export.path>
         <sonar.scm.provider>git</sonar.scm.provider>
-        <coredomain.version>17.103.10</coredomain.version>
+        <coredomain.version>17.103.11-CCT-2357-SNAPSHOT</coredomain.version>
         <usersgroups.version>17.0.39</usersgroups.version>
         <stream-transformation-tool-anonymise.version>7.0.0</stream-transformation-tool-anonymise.version>
         <stream-transformation-tool.version>7.0.0</stream-transformation-tool.version>
