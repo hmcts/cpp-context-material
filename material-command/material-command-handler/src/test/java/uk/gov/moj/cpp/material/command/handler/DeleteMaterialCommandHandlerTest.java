@@ -29,7 +29,7 @@ import uk.gov.moj.cpp.material.domain.event.MaterialNotFound;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import javax.json.Json;
+import uk.gov.justice.services.messaging.JsonObjects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -117,7 +117,7 @@ public class DeleteMaterialCommandHandlerTest {
     private JsonEnvelope deleteMaterialCommand(final String materialId) {
         return JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName("material.command.handler.delete-material"),
-                Json.createObjectBuilder()
+                JsonObjects.createObjectBuilder()
                         .add("materialId", materialId)
                         .build()
         );

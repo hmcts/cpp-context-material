@@ -1,6 +1,6 @@
 package uk.gov.moj.cpp.material.command.api.accesscontrol;
 
-import static javax.json.Json.createObjectBuilder;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.moj.cpp.accesscontrol.drools.ExpectedPermission.builder;
 
 import uk.gov.justice.services.common.converter.jackson.ObjectMapperProducer;

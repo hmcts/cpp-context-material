@@ -39,7 +39,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
-import javax.json.Json;
+import uk.gov.justice.services.messaging.JsonObjects;
 import javax.json.JsonObject;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -202,7 +202,7 @@ public class MaterialEventProcessorTest {
                 .withPayloadOf(fileServiceId.toString(), "fileServiceId")
                 .build();
 
-        final JsonObject fileMetadata = Json.createObjectBuilder()
+        final JsonObject fileMetadata = JsonObjects.createObjectBuilder()
                 .add("fileName", htmlFileName)
                 .add("mediaType", htmlMediaType)
                 .build();
