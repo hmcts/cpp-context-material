@@ -6,12 +6,12 @@
     <parent>
         <groupId>uk.gov.moj.cpp.common</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>17.103.3</version>
+        <version>17.103.8</version>
     </parent>
 
     <groupId>uk.gov.moj.cpp.material</groupId>
     <artifactId>material-parent</artifactId>
-    <version>17.0.78-SNAPSHOT</version>
+    <version>17.0.78-PEG-2848-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>material-parent</name>
