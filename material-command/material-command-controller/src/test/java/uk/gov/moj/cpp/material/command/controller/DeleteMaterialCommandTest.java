@@ -11,7 +11,7 @@ import uk.gov.justice.services.messaging.Envelope;
 import uk.gov.justice.services.messaging.JsonEnvelope;
 import uk.gov.justice.services.test.utils.core.messaging.MetadataBuilderFactory;
 
-import javax.json.Json;
+import uk.gov.justice.services.messaging.JsonObjects;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +51,7 @@ public class DeleteMaterialCommandTest {
                 MetadataBuilderFactory
                         .metadataWithDefaults()
                         .withName("material.command.handler.delete-material"),
-                Json.createObjectBuilder()
+                JsonObjects.createObjectBuilder()
                         .add("materialId", materialId)
                         .build()
         );
