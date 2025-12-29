@@ -5,7 +5,7 @@ import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.newInputStream;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.fromString;
-import static javax.json.Json.createObjectBuilder;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_LOCATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;

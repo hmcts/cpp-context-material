@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.json.Json;
+import uk.gov.justice.services.messaging.JsonObjects;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -119,7 +119,7 @@ public class MaterialClientTest {
     public void shouldCallCreateMaterialBundleWithoutAdditionalMetadata() {
         final JsonEnvelope envelope = JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName("material.material-added"),
-                Json.createObjectBuilder()
+                JsonObjects.createObjectBuilder()
                         .add(SOURCE, "aa")
                         .add(CORRESPONDENCE_ID, UUID.randomUUID().toString())
                         .add(ID, randomUUID().toString())
@@ -134,7 +134,7 @@ public class MaterialClientTest {
     public void shouldCallCreateMaterialBundleWithAdditionalMetadata() {
         final JsonEnvelope envelope = JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName("material.material-added"),
-                Json.createObjectBuilder()
+                JsonObjects.createObjectBuilder()
                         .add(SOURCE, "aa")
                         .add(CORRESPONDENCE_ID, UUID.randomUUID().toString())
                         .add(ID, randomUUID().toString())

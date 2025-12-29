@@ -23,7 +23,7 @@ import uk.gov.moj.material.it.util.WiremockAccessControlEndpointStubber;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import javax.json.Json;
+import uk.gov.justice.services.messaging.JsonObjects;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.core.MultivaluedMap;
@@ -72,7 +72,7 @@ public class UploadFileIT extends BaseIT {
 
         final UUID nonExistentFileServiceId = randomUUID();
 
-        final JsonObjectBuilder uploadFilePayloadBuilder = Json.createObjectBuilder()
+        final JsonObjectBuilder uploadFilePayloadBuilder = JsonObjects.createObjectBuilder()
                 .add("materialId", materialId.toString())
                 .add("fileServiceId", nonExistentFileServiceId.toString())
                 .add(IS_UNBUNDLED_DOCUMENT, true);
@@ -101,7 +101,7 @@ public class UploadFileIT extends BaseIT {
         final byte[] documentContent = getDocumentBytesFromFile("upload_samples/sample.txt");
         final UUID fileServiceId = FileServiceClient.create("sample.txt", "plain/text", documentContent);
 
-        final JsonObjectBuilder uploadFilePayloadBuilder = Json.createObjectBuilder()
+        final JsonObjectBuilder uploadFilePayloadBuilder = JsonObjects.createObjectBuilder()
                 .add("materialId", materialId.toString())
                 .add("fileServiceId", fileServiceId.toString());
 

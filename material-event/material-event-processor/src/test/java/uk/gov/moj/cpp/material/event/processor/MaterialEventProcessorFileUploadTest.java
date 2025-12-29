@@ -37,7 +37,7 @@ import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import javax.json.Json;
+import uk.gov.justice.services.messaging.JsonObjects;
 import javax.json.JsonObject;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -189,7 +189,7 @@ public class MaterialEventProcessorFileUploadTest {
                 .withPayloadOf(fileServiceId.toString(), FILE_SERVICE_ID)
                 .build();
 
-        final JsonObject fileMetadata = Json.createObjectBuilder()
+        final JsonObject fileMetadata = JsonObjects.createObjectBuilder()
                 .add(FILE_NAME, htmlFileName)
                 .add("mediaType", htmlMediaType)
                 .build();
