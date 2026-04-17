@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.json.Json;
+import uk.gov.justice.services.messaging.JsonObjects;
 import javax.json.JsonObject;
 
 import com.google.common.collect.ImmutableMap;
@@ -75,7 +75,7 @@ public class MaterialFineRulesTest extends BaseDroolsAccessControlTest {
 
     @BeforeEach
     public void setUp() {
-        final JsonObject inputPayload = Json.createObjectBuilder().add("materialId", MATERIAL_ID).build();
+        final JsonObject inputPayload = JsonObjects.createObjectBuilder().add("materialId", MATERIAL_ID).build();
         final JsonEnvelope envelope1 = envelopeFrom(metadataWithRandomUUID(MATERIAL_QUERY_MATERIAL).build(), inputPayload);
         action = new Action(envelope1);
     }

@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import javax.json.Json;
+import uk.gov.justice.services.messaging.JsonObjects;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
@@ -39,7 +39,7 @@ public class FileUtil {
 
     public static JsonObject givenPayload(String filePath) throws IOException {
         try (InputStream inputStream = FileUtil.class.getResourceAsStream(filePath)) {
-            JsonReader jsonReader = Json.createReader(inputStream);
+            JsonReader jsonReader = JsonObjects.createReader(inputStream);
             return jsonReader.readObject();
         }
     }
