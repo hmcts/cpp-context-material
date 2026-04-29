@@ -12,7 +12,7 @@ import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.UploadMaterialTo
 
 import java.time.ZonedDateTime;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class HardFailureTaskFactory {
 

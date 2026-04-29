@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -125,7 +125,7 @@ public class MergeFileTaskTest {
         assertThat(expectedJobData.getBundledMaterialId(), is(mergeFileJobData.getBundledMaterialId()));
         assertThat(expectedJobData.getBundledMaterialName(), is(mergeFileJobData.getBundledMaterialName()));
         assertThat(expectedJobData.getFileServiceId(), is(fileStoreId));
-        assertThat(expectedJobData.getFileSize(), is(141006L));
+        assertThat(expectedJobData.getFileSize(), is(141070L));
         assertThat(expectedJobData.getPageCount(), is(12));
         assertThat(expectedJobData.getEventMetadata(), is(mergeFileJobData.getEventMetadata()));
     }

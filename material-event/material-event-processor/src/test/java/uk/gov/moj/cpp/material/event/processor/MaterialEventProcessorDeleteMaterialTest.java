@@ -29,7 +29,7 @@ import uk.gov.moj.cpp.material.domain.event.MaterialDeleted;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.json.Json;
+import jakarta.json.Json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

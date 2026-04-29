@@ -5,7 +5,7 @@ import static java.util.Objects.isNull;
 import uk.gov.justice.services.common.configuration.Value;
 import uk.gov.moj.cpp.material.event.processor.azure.service.exception.CloudException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;

@@ -1,6 +1,6 @@
 package uk.gov.moj.cpp.material.command.api;
 
-import static javax.json.Json.createObjectBuilder;
+import static jakarta.json.Json.createObjectBuilder;
 import static uk.gov.justice.services.core.annotation.Component.COMMAND_API;
 import static uk.gov.justice.services.messaging.Envelope.envelopeFrom;
 
@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
+import jakarta.inject.Inject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
 
 @ServiceComponent(COMMAND_API)
 public class DownloadableMaterialCommandApi {
