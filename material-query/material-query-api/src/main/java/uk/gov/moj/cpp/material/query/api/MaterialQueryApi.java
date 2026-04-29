@@ -13,7 +13,7 @@ import uk.gov.moj.cpp.material.query.view.MaterialQueryView;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
