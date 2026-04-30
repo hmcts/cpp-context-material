@@ -3,7 +3,7 @@ package uk.gov.moj.cpp.material.event.processor.jobstore.tasks.bundle;
 import static java.lang.String.format;
 import static java.nio.file.Files.delete;
 import static java.util.Objects.nonNull;
-import static javax.json.Json.createObjectBuilder;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.fromStatusCode;
 import static uk.gov.justice.services.core.annotation.Component.EVENT_PROCESSOR;
