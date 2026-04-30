@@ -23,7 +23,7 @@
         <sonar.report.export.path>sonar-report.json</sonar.report.export.path>
         <sonar.scm.provider>git</sonar.scm.provider>
         <coredomain.version>17.103.12</coredomain.version>
-        <usersgroups.version>17.104.47</usersgroups.version>
+        <usersgroups.version>17.104.48</usersgroups.version>
         <stream-transformation-tool-anonymise.version>7.0.0</stream-transformation-tool-anonymise.version>
         <stream-transformation-tool.version>7.0.0</stream-transformation-tool.version>
         <mireportdata.cc.dependency.version>1.0.48</mireportdata.cc.dependency.version>
