@@ -5,7 +5,7 @@
     <parent>
         <groupId>uk.gov.moj.cpp.material</groupId>
         <artifactId>material-parent</artifactId>
-        <version>17.0.80-SNAPSHOT</version>
+        <version>17.104.80-fw-e-upgrade-SNAPSHOT</version>
     </parent>
 
     <artifactId>material-domain</artifactId>
