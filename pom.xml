@@ -11,7 +11,7 @@
 
     <groupId>uk.gov.moj.cpp.material</groupId>
     <artifactId>material-parent</artifactId>
-    <version>17.104.80-fw-e-upgrade-SNAPSHOT</version>
+    <version>17.104.81-fw-e-upgrade-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>material-parent</name>
