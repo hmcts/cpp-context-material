@@ -127,4 +127,24 @@ public class AzureBlobClientService {
         }
     }
 
+    public String generateDownloadSasUrl(final CloudBlockBlob fileBlob) {
+        try {
+            final SharedAccessBlobPolicy itemPolicy = new SharedAccessBlobPolicy();
+            final LocalDateTime now = LocalDateTime.now();
+            final Instant startInstant = now.minusMinutes(15).atZone(ZoneOffset.UTC).toInstant();
+            final Instant expiryInstant = now.plusMinutes(expiryMinutes).atZone(ZoneOffset.UTC).toInstant();
+            itemPolicy.setSharedAccessStartTime(Date.from(startInstant));
+            itemPolicy.setSharedAccessExpiryTime(Date.from(expiryInstant));
+            itemPolicy.setPermissions(EnumSet.of(SharedAccessBlobPermissions.READ));
+            final String sasToken = fileBlob.generateSharedAccessSignature(itemPolicy, null);
+            return String.format("%s?%s", fileBlob.getUri(), sasToken);
+        } catch (StorageException ex) {
+            throw new AzureBlobClientException(format(
+                    "Error returned from azure service. Http code: %d and error code: %s",
+                    ex.getHttpStatusCode(), ex.getErrorCode()), ex);
+        } catch (InvalidKeyException ex) {
+            throw new AzureBlobClientException("Invalid connection string", ex);
+        }
+    }
+
 }
