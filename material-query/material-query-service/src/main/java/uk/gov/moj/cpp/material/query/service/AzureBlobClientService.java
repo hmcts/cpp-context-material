@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.BlobContainerPermissions;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
@@ -89,29 +88,7 @@ public class AzureBlobClientService {
             final BlobOutputStream blobOutputStream = fileBlob.openOutputStream();
             IOUtils.copy(inputStream,blobOutputStream);
             blobOutputStream.close();
-            final BlobContainerPermissions permissions = new BlobContainerPermissions();
-            // define a read-only base policy for downloads
-            final SharedAccessBlobPolicy readPolicy = new SharedAccessBlobPolicy();
-            readPolicy.setPermissions(EnumSet.of(SharedAccessBlobPermissions.READ));
-            permissions.getSharedAccessPolicies().put("DownloadPolicy", readPolicy);
-            container.uploadPermissions(permissions);
-            // define rights you want to add into the SAS
-            final SharedAccessBlobPolicy itemPolicy = new SharedAccessBlobPolicy();
-            // calculate Start Time
-            final LocalDateTime now = LocalDateTime.now();
-            // SAS applicable as of 15 minutes ago
-            Instant result = now.minusMinutes(15).atZone(ZoneOffset.UTC).toInstant();
-            final Date startTime = Date.from(result);
-            // calculate Expiration Time
-            result = now.plusMinutes(expiryMinutes).atZone(ZoneOffset.UTC).toInstant();
-            final Date expirationTime = Date.from(result);
-            itemPolicy.setSharedAccessStartTime(startTime);
-            itemPolicy.setSharedAccessExpiryTime(expirationTime);
-            // generate Download SAS token
-            final String sasToken = fileBlob.generateSharedAccessSignature(itemPolicy,
-                    "DownloadPolicy");
-            // the SAS URL is concatenation of the blob URI and the generated SAS token
-            return String.format("%s?%s", fileBlob.getUri(), sasToken);
+            return generateDownloadSasUrl(fileBlob);
         } catch (StorageException ex) {
             throw new AzureBlobClientException(format(
                     "Error returned from azure service. Http code: %d and error code: %s",
@@ -127,6 +104,17 @@ public class AzureBlobClientService {
         }
     }
 
+    /**
+     * Generates a time-limited read-only SAS download URL for the given blob.
+     *
+     * <p>Permissions are set explicitly on the token ({@code sp=r}) rather than via a stored
+     * container access policy. This avoids the Azure propagation delay (up to 30 seconds) that
+     * occurs when a stored policy is overwritten, which caused intermittent 307 redirects and
+     * CORS errors under concurrent uploads.
+     *
+     * @param fileBlob the blob to generate a download URL for
+     * @return SAS URL valid from 15 minutes ago until {@code expiryMinutes} from now
+     */
     public String generateDownloadSasUrl(final CloudBlockBlob fileBlob) {
         try {
             final SharedAccessBlobPolicy itemPolicy = new SharedAccessBlobPolicy();
