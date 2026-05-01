@@ -30,6 +30,19 @@ The fix: stop using stored policies. Set `sp=r` explicitly on each ad-hoc SAS to
 
 ---
 
+## Implementation Notes (post-execution)
+
+**`generateDownloadSasUrl` is package-private, not `public`:** The plan specified `public`, but during execution the code quality review confirmed that no external caller exists — the method is used only by `upload()` (same class) and `AzureBlobClientServiceTest` (same package). Making it package-private prevents external code from bypassing the upload state management. This is a deliberate architectural improvement over the plan.
+
+**Maven tests could not run:** The artifact repository (`libraries.mdv.cpp.nonlive`) was unreachable due to a network/certificate issue. `material-viewstore-persistence:17.0.80-SNAPSHOT` could not be resolved. This is a pre-existing environment constraint; correctness was verified by code inspection and static analysis.
+
+**Pre-existing technical debt (out of scope, raise separately):**
+- `AzureBlobClientService` uses CDI field injection (`@Inject` on fields) — should be constructor injection per project coding rules
+- Mutable `container` field on an `@ApplicationScoped` bean is not thread-safe under concurrent `upload()` calls — separate race condition from the one this fix addresses
+- Reflection-based field injection in `AzureBlobClientServiceTest` is a symptom of the field injection anti-pattern above
+
+---
+
 ### Task 1: Confirm the test currently fails to compile
 
 The test file already exists at:
