@@ -1,7 +1,6 @@
 package uk.gov.moj.cpp.material.query.service;
 
 import static java.lang.String.format;
-import static java.time.LocalDate.now;
 
 import com.microsoft.azure.storage.blob.BlobOutputStream;
 import org.apache.commons.io.IOUtils;
@@ -84,7 +83,7 @@ public class AzureBlobClientService {
             // get reference to the Blob you want to generate the SAS for
             final CloudBlockBlob fileBlob = container.getBlockBlobReference(destinationFileName);
             fileBlob.getProperties().setContentType(documentContentType);
-            LOGGER.info("Uploading {} inputStream to azure blob storage on {}", destinationFileName, now());
+            LOGGER.info("Uploading {} inputStream to azure blob storage on {}", destinationFileName, localDateTime);
             final BlobOutputStream blobOutputStream = fileBlob.openOutputStream();
             IOUtils.copy(inputStream,blobOutputStream);
             blobOutputStream.close();
@@ -115,7 +114,7 @@ public class AzureBlobClientService {
      * @param fileBlob the blob to generate a download URL for
      * @return SAS URL valid from 15 minutes ago until {@code expiryMinutes} from now
      */
-    public String generateDownloadSasUrl(final CloudBlockBlob fileBlob) {
+    String generateDownloadSasUrl(final CloudBlockBlob fileBlob) {
         try {
             final SharedAccessBlobPolicy itemPolicy = new SharedAccessBlobPolicy();
             final LocalDateTime now = LocalDateTime.now();
