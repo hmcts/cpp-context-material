@@ -31,7 +31,6 @@ runLiquibase() {
   runSystemLiquibase
   runEventTrackingLiquibase
   runJobStoreLiquibase
-  runFileServiceLiquibase
   printf "${CYAN}All liquibase $LIQUIBASE_COMMAND scripts run${NO_COLOUR}\n\n"
 }
 
@@ -39,7 +38,7 @@ buildDeployAndTest() {
   loginToDockerContainerRegistry
   buildWars
   undeployWarsFromDocker
-  buildAndStartContainers "--profile alfresco"
+  buildAndStartContainers "--profile alfresco --profile azurite"
   runLiquibase
   deployWiremock
   deployWars

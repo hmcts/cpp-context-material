@@ -4,18 +4,17 @@ import static java.lang.String.format;
 import static java.util.UUID.fromString;
 import static uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.SuccessfulMaterialUploadJobData.SuccessfulMaterialUploadJobDataBuilder.successfulMaterialUploadJobData;
 
-import com.azure.storage.blob.models.BlobProperties;
-import com.azure.storage.blob.specialized.BlobInputStream;
 import uk.gov.justice.services.file.api.sender.FileData;
 import uk.gov.justice.services.file.api.sender.FileSender;
-import uk.gov.justice.services.fileservice.domain.FileReference;
 import uk.gov.moj.cpp.material.event.processor.azure.service.StorageCloudClientService;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.SuccessfulMaterialUploadJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.SuccessfulMaterialUploadJobData.SuccessfulMaterialUploadJobDataBuilder;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.UploadMaterialToAlfrescoJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.util.AlfrescoFileNameGenerator;
 import uk.gov.moj.cpp.material.event.processor.jobstore.util.FileExtensionResolver;
+import uk.gov.moj.cpp.material.filestore.azure.StoredFile;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -27,6 +26,7 @@ import org.slf4j.Logger;
 public class AlfrescoFileUploader {
 
     public static final String ALFRESCO_FILE_NAME_CHECKER_REGEX = "(.*[\\\"\\*\\\\\\>\\<\\?\\/\\:\\|]+.*)|(.*[\\.]?.*[\\.]+$)|(.*[ ]+$)";
+
     @Inject
     private FileSender fileSender;
 
@@ -42,64 +42,69 @@ public class AlfrescoFileUploader {
 
     @SuppressWarnings("squid:S2221")
     public SuccessfulMaterialUploadJobData uploadFileToAlfresco(
-            final FileReference fileReference,
+            final StoredFile storedFile,
             final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData) {
 
-            final UUID fileServiceId = uploadMaterialToAlfrescoJobData.getFileServiceId();
+        final UUID fileServiceId = uploadMaterialToAlfrescoJobData.getFileServiceId();
 
-            final SuccessfulMaterialUploadJobDataBuilder successfulMaterialUploadJobData = successfulMaterialUploadJobData()
-                    .withFileServiceId(fileServiceId)
-                    .withMaterialId(uploadMaterialToAlfrescoJobData.getMaterialId())
-                    .withUnbundledDocument(uploadMaterialToAlfrescoJobData.isUnbundledDocument())
-                    .withFileUploadedEventMetadata(uploadMaterialToAlfrescoJobData.getFileUploadedEventMetadata());
+        final SuccessfulMaterialUploadJobDataBuilder successfulMaterialUploadJobDataBuilder = successfulMaterialUploadJobData()
+                .withFileServiceId(fileServiceId)
+                .withMaterialId(uploadMaterialToAlfrescoJobData.getMaterialId())
+                .withUnbundledDocument(uploadMaterialToAlfrescoJobData.isUnbundledDocument())
+                .withFileUploadedEventMetadata(uploadMaterialToAlfrescoJobData.getFileUploadedEventMetadata());
 
-                try {
-                    final JsonObject fileReferenceMetadata = fileReference.getMetadata();
-                    final String originalFileName = fileReferenceMetadata.getString("fileName");
-                    final String mediaType = fileReferenceMetadata.getString("mediaType");
-                    final String uniqueAlfrescoFileName = alfrescoFileNameGenerator.generateAlfrescoCompliantFileName(originalFileName, uploadMaterialToAlfrescoJobData.getMaterialId(), mediaType);
+        try {
+            final String originalFileName = storedFile.getMetadata().get("filename");
+            final String mediaType = storedFile.getMetadata().getOrDefault("media_type", "application/octet-stream");
+            final String uniqueAlfrescoFileName = alfrescoFileNameGenerator.generateAlfrescoCompliantFileName(
+                    originalFileName, uploadMaterialToAlfrescoJobData.getMaterialId(), mediaType);
 
-                    final FileData fileData = fileSender.send(uniqueAlfrescoFileName, fileReference.getContentStream());
+            final FileData fileData = fileSender.send(uniqueAlfrescoFileName, storedFile.getInputStream());
+            final UUID alfrescoFileId = fromString(fileData.fileId());
 
-                    final UUID alfrescoFileId = fromString(fileData.fileId());
+            successfulMaterialUploadJobDataBuilder
+                    .withAlfrescoFileId(alfrescoFileId)
+                    .withFileName(originalFileName)
+                    .withMediaType(mediaType);
 
-                    successfulMaterialUploadJobData
-                            .withAlfrescoFileId(alfrescoFileId)
-                            .withFileName(originalFileName)
-                            .withMediaType(mediaType);
+        } finally {
+            try {
+                storedFile.getInputStream().close();
+            } catch (final Exception e) {
+                logger.warn(format("Failed to close InputStream to the file store for file with id '%s'", fileServiceId), e);
+            }
+        }
 
-                } finally {
-                    try {
-                        fileReference.close();
-                    } catch (final Exception e) {
-                        logger.warn(format("Failed to close InputStream to the file store for file with id '%s'", fileServiceId), e);
-                    }
-                }
-
-                return successfulMaterialUploadJobData.build();
+        return successfulMaterialUploadJobDataBuilder.build();
     }
 
     public SuccessfulMaterialUploadJobData uploadFileFromAzureToAlfresco(final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData) {
         final String cloudLocation = uploadMaterialToAlfrescoJobData.getCloudLocation();
-        final BlobInputStream blobInputStream = storageCloudClientService.downloadBlobContents(cloudLocation);
-        final BlobProperties blobProperties = blobInputStream.getProperties();
-        final String originalFileName = Objects.requireNonNullElse(blobProperties.getMetadata().get("name"),cloudLocation.substring(cloudLocation.lastIndexOf("/")+1));
-        String fileExtension = cloudLocation.substring(cloudLocation.lastIndexOf('.') + 1);
-        final String mediaType = FileExtensionResolver.getMimeType(fileExtension);
-        final String uniqueAlfrescoFileName = alfrescoFileNameGenerator.generateAlfrescoCompliantFileName(originalFileName, uploadMaterialToAlfrescoJobData.getMaterialId(), mediaType);
-        final FileData fileData = fileSender.send(uniqueAlfrescoFileName, blobInputStream);
-        final UUID alfrescoFileId = fromString(fileData.fileId());
+        final StoredFile storedFile = storageCloudClientService.downloadBlobContents(cloudLocation);
+        try {
+            final String originalFileName = Objects.requireNonNullElse(storedFile.getMetadata().get("name"), cloudLocation.substring(cloudLocation.lastIndexOf("/") + 1));
+            final String fileExtension = cloudLocation.substring(cloudLocation.lastIndexOf('.') + 1);
+            final String mediaType = FileExtensionResolver.getMimeType(fileExtension);
+            final String uniqueAlfrescoFileName = alfrescoFileNameGenerator.generateAlfrescoCompliantFileName(
+                    originalFileName, uploadMaterialToAlfrescoJobData.getMaterialId(), mediaType);
+            final FileData fileData = fileSender.send(uniqueAlfrescoFileName, storedFile.getInputStream());
+            final UUID alfrescoFileId = fromString(fileData.fileId());
 
-        final SuccessfulMaterialUploadJobDataBuilder successfulMaterialUploadJobData = successfulMaterialUploadJobData()
-                .withMaterialId(uploadMaterialToAlfrescoJobData.getMaterialId())
-                .withUnbundledDocument(uploadMaterialToAlfrescoJobData.isUnbundledDocument())
-                .withFileUploadedEventMetadata(uploadMaterialToAlfrescoJobData.getFileUploadedEventMetadata())
-                .withAlfrescoFileId(alfrescoFileId)
-                .withFileName(originalFileName)
-                .withMediaType(mediaType)
-                .withFileCloudLocation(cloudLocation);
-
-        return successfulMaterialUploadJobData.build();
+            return successfulMaterialUploadJobData()
+                    .withMaterialId(uploadMaterialToAlfrescoJobData.getMaterialId())
+                    .withUnbundledDocument(uploadMaterialToAlfrescoJobData.isUnbundledDocument())
+                    .withFileUploadedEventMetadata(uploadMaterialToAlfrescoJobData.getFileUploadedEventMetadata())
+                    .withAlfrescoFileId(alfrescoFileId)
+                    .withFileName(originalFileName)
+                    .withMediaType(mediaType)
+                    .withFileCloudLocation(cloudLocation)
+                    .build();
+        } finally {
+            try {
+                storedFile.close();
+            } catch (final IOException ignored) {
+                logger.warn("Failed to close StoredFile for cloud location '{}'", cloudLocation);
+            }
+        }
     }
-
 }

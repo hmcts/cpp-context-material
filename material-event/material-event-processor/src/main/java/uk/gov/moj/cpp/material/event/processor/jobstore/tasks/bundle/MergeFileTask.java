@@ -18,8 +18,6 @@ import uk.gov.justice.services.common.converter.ObjectToJsonObjectConverter;
 import uk.gov.justice.services.common.util.UtcClock;
 import uk.gov.justice.services.core.annotation.ServiceComponent;
 import uk.gov.justice.services.core.sender.Sender;
-import uk.gov.justice.services.fileservice.api.FileServiceException;
-import uk.gov.justice.services.fileservice.client.FileService;
 import uk.gov.moj.cpp.jobstore.api.annotation.Task;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutableTask;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutionInfo;
@@ -29,6 +27,8 @@ import uk.gov.moj.cpp.material.event.processor.error.SystemUserIdNotAvailableExc
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.bundle.FailedBundleUploadJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.bundle.MergeFileJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.bundle.UploadBundleToAlfrescoJobData;
+import uk.gov.moj.cpp.material.filestore.azure.StorageFileStorer;
+import uk.gov.moj.cpp.material.filestore.azure.StoragePath;
 import uk.gov.moj.cpp.systemusers.ServiceContextSystemUserProvider;
 
 import java.io.BufferedInputStream;
@@ -68,7 +68,7 @@ public class MergeFileTask implements ExecutableTask {
     private ObjectToJsonObjectConverter objectToJsonObjectConverter;
 
     @Inject
-    private FileService fileService;
+    private StorageFileStorer storageFileStorer;
 
     @Inject
     private UtcClock clock;
@@ -104,7 +104,7 @@ public class MergeFileTask implements ExecutableTask {
             final Long fileSize = mergedDocument.length();
             final int pageCount = getPageCount(mergedDocument);
 
-            final UUID fileStoreId = storeMergedDocument(mergedDocument);
+            final UUID fileStoreId = storeMergedDocument(mergedDocument, bundledMaterialId);
 
             final UploadBundleToAlfrescoJobData uploadBundleToAlfrescoJobData = new UploadBundleToAlfrescoJobData(
                     bundledMaterialId,
@@ -170,7 +170,7 @@ public class MergeFileTask implements ExecutableTask {
         return materialList;
     }
 
-    private File mergeDocuments(UUID bundledMaterialId, final List<String> materialList) throws IOException {
+    private File mergeDocuments(final UUID bundledMaterialId, final List<String> materialList) throws IOException {
         final File tempFile = File.createTempFile(format(BUNDLE_PREFIX, bundledMaterialId), EXTENSION_PDF);
         final PDFMergerUtility pdfMerger = new PDFMergerUtility();
         pdfMerger.setDestinationFileName(tempFile.getAbsolutePath());
@@ -182,31 +182,24 @@ public class MergeFileTask implements ExecutableTask {
         return tempFile;
     }
 
-    private UUID storeMergedDocument(File mergedDocument) throws IOException, FileServiceException {
-        final JsonObject metaData = createObjectBuilder()
-                .add(FILE_NAME, mergedDocument.getName())
-                .add(MEDIA_TYPE, APPLICATION_PDF)
-                .build();
-
-        UUID fileStoreId;
+    private UUID storeMergedDocument(final File mergedDocument, final UUID bundledMaterialId) throws IOException {
         try (final InputStream inputStream = new BufferedInputStream(new FileInputStream(mergedDocument))) {
-            fileStoreId = fileService.store(metaData, inputStream);
+            return storageFileStorer.store(StoragePath.internal(), bundledMaterialId, mergedDocument.getName(), inputStream);
         }
-        return fileStoreId;
     }
 
-    private void deleteFile(File mergedDocument) {
+    private void deleteFile(final File mergedDocument) {
         if (nonNull(mergedDocument)) {
             try {
                 delete(mergedDocument.toPath());
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 logger.error("Failed to delete mergedDocument from temp location: {}", mergedDocument.getAbsolutePath(), e);
             }
         }
     }
 
     private int getPageCount(final File mergedDocument) throws IOException {
-        try (PDDocument pdDocument = PDDocument.load(mergedDocument, MemoryUsageSetting.setupTempFileOnly())) {
+        try (final PDDocument pdDocument = PDDocument.load(mergedDocument, MemoryUsageSetting.setupTempFileOnly())) {
             return pdDocument.getNumberOfPages();
         }
     }

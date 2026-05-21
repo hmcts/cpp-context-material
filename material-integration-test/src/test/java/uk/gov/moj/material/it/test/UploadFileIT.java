@@ -5,8 +5,8 @@ import static java.util.UUID.randomUUID;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.justice.services.integrationtest.utils.jms.JmsMessageConsumerClientProvider.newPublicJmsMessageConsumerClientProvider;
 import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
@@ -15,13 +15,11 @@ import static uk.gov.moj.material.it.helper.BaseMaterialTestHelper.WRITE_ENDPOIN
 import static uk.gov.moj.material.it.util.FileUtil.getDocumentBytesFromFile;
 
 import uk.gov.justice.services.common.http.HeaderConstants;
-import uk.gov.justice.services.fileservice.api.FileServiceException;
 import uk.gov.justice.services.integrationtest.utils.jms.JmsMessageConsumerClient;
 import uk.gov.justice.services.test.utils.core.rest.RestClient;
 import uk.gov.moj.material.it.helper.FileServiceClient;
 import uk.gov.moj.material.it.util.WiremockAccessControlEndpointStubber;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 import javax.json.JsonObject;
@@ -93,7 +91,7 @@ public class UploadFileIT extends BaseIT {
 
     }
 
-    private void readsFileServiceAndAddsNewMaterialFor(final boolean isUnbundledDocument) throws SQLException, FileServiceException {
+    private void readsFileServiceAndAddsNewMaterialFor(final boolean isUnbundledDocument) {
         accessControlStub.stubUsersAndGroupsUserAsSystemUser(userId.toString());
         accessControlStub.stubStructureAsProsecutedBy("TFL");
         accessControlStub.setupLoggedInUsersPermissionQueryStub(userId.toString());
@@ -129,7 +127,7 @@ public class UploadFileIT extends BaseIT {
 
         final String azureContentUrl = response.readEntity(String.class);
 
-        assertThat(azureContentUrl, containsString("https://sastelargefiles.blob.core.windows.net/largefiles-blob-container/"));
+        assertThat("Expected a URI in the upload-file response body", azureContentUrl, startsWith("http"));
     }
 
     private Response pollForMaterial(final UUID materialId) {

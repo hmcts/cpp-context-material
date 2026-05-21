@@ -1,5 +1,7 @@
 package uk.gov.moj.cpp.material.event.processor.jobstore.tasks.bundle;
 
+import static java.util.Map.of;
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,6 +19,7 @@ import static uk.gov.moj.cpp.material.event.processor.jobstore.tasks.UploadMater
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -25,9 +28,6 @@ import uk.gov.justice.services.common.converter.JsonObjectToObjectConverter;
 import uk.gov.justice.services.common.converter.ObjectToJsonObjectConverter;
 import uk.gov.justice.services.common.converter.jackson.ObjectMapperProducer;
 import uk.gov.justice.services.common.util.UtcClock;
-import uk.gov.justice.services.fileservice.api.FileServiceException;
-import uk.gov.justice.services.fileservice.client.FileService;
-import uk.gov.justice.services.fileservice.domain.FileReference;
 import uk.gov.justice.services.messaging.Metadata;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutionInfo;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutionStatus;
@@ -38,6 +38,9 @@ import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.bundle.Successfu
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.bundle.UploadBundleToAlfrescoJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.service.FileUploadRetryConfiguration;
 import uk.gov.moj.cpp.material.event.processor.jobstore.upload.AlfrescoFileUploader;
+import uk.gov.moj.cpp.material.filestore.azure.StorageFileRetriever;
+import uk.gov.moj.cpp.material.filestore.azure.StoragePath;
+import uk.gov.moj.cpp.material.filestore.azure.StoredFile;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -67,7 +70,7 @@ public class AlfrescoUploadBundleTaskTest {
     private ObjectToJsonObjectConverter objectToJsonObjectConverter;
 
     @Mock
-    private FileService fileService;
+    private StorageFileRetriever storageFileRetriever;
 
     @Mock
     private AlfrescoFileUploader alfrescoFileUploader;
@@ -80,7 +83,7 @@ public class AlfrescoUploadBundleTaskTest {
     private Logger logger;
 
     @Mock
-    private FileReference fileReference;
+    private InputStream contentStream;
 
     @Mock
     private FileUploadRetryConfiguration fileUploadRetryConfiguration;
@@ -105,30 +108,34 @@ public class AlfrescoUploadBundleTaskTest {
 
     @Test
     public void shouldUploadBundleFileToAlfrescoThenScheduleNextTask() throws Exception {
-        UUID fileStoreId = UUID.randomUUID();
-        UUID alfrescoFileId = UUID.randomUUID();
+        final UUID fileStoreId = UUID.randomUUID();
+        final UUID alfrescoFileId = UUID.randomUUID();
         final ZonedDateTime nextTaskStartTime = new UtcClock().now();
-        List<UUID> materialIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
+        final List<UUID> materialIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
+        final StoredFile storedFile = new StoredFile(contentStream, of("filename", "bundle.pdf", "media_type", "application/pdf"));
 
-        //given
-        UploadBundleToAlfrescoJobData uploadBundleToAlfrescoJobData = new UploadBundleToAlfrescoJobData(bundledMaterialId, BUNDLED_MATERIAL_NAME, materialIds,
+        final UploadBundleToAlfrescoJobData uploadBundleToAlfrescoJobData = new UploadBundleToAlfrescoJobData(
+                bundledMaterialId, BUNDLED_MATERIAL_NAME, materialIds,
                 fileStoreId, expectedFileSize, expectedPageCount,
                 expectedEventMetadata.asJsonObject());
 
-        ExecutionInfo executionInfo = ExecutionInfo.executionInfo().withJobData(objectToJsonObjectConverter.convert(uploadBundleToAlfrescoJobData)).build();
-        when(fileService.retrieve(fileStoreId)).thenReturn(of(fileReference));
-        SuccessfulMaterialUploadJobData successfulMaterialUploadJobData = getSuccessfulMaterialUploadJobData(bundledMaterialId, fileStoreId, alfrescoFileId, BUNDLED_MATERIAL_NAME, "mediaType", expectedEventMetadata.asJsonObject());
-        when(alfrescoFileUploader.uploadFileToAlfresco(eq(fileReference), any(UploadMaterialToAlfrescoJobData.class))).thenReturn(successfulMaterialUploadJobData);
+        final ExecutionInfo executionInfo = ExecutionInfo.executionInfo()
+                .withJobData(objectToJsonObjectConverter.convert(uploadBundleToAlfrescoJobData)).build();
+        when(storageFileRetriever.retrieve(StoragePath.internal(), fileStoreId)).thenReturn(of(storedFile));
+        final SuccessfulMaterialUploadJobData successfulMaterialUploadJobData = getSuccessfulMaterialUploadJobData(
+                bundledMaterialId, fileStoreId, alfrescoFileId, BUNDLED_MATERIAL_NAME, "mediaType",
+                expectedEventMetadata.asJsonObject());
+        when(alfrescoFileUploader.uploadFileToAlfresco(eq(storedFile), any(UploadMaterialToAlfrescoJobData.class)))
+                .thenReturn(successfulMaterialUploadJobData);
         when(clock.now()).thenReturn(nextTaskStartTime);
 
-        //when
-        ExecutionInfo actualExecutionInfo = alfrescoUploadBundleTask.execute(executionInfo);
+        final ExecutionInfo actualExecutionInfo = alfrescoUploadBundleTask.execute(executionInfo);
 
-        //then
         assertThat(actualExecutionInfo.getExecutionStatus(), is(ExecutionStatus.INPROGRESS));
         assertThat(actualExecutionInfo.getNextTaskStartTime(), is(nextTaskStartTime));
         assertThat(actualExecutionInfo.getNextTask(), is(SUCCESSFUL_BUNDLE_UPLOAD_COMMAND_TASK));
-        SuccessfulBundleUploadJobData actualSuccessfulBundleUploadJobData = jsonObjectConverter.convert(actualExecutionInfo.getJobData(), SuccessfulBundleUploadJobData.class);
+        final SuccessfulBundleUploadJobData actualSuccessfulBundleUploadJobData = jsonObjectConverter.convert(
+                actualExecutionInfo.getJobData(), SuccessfulBundleUploadJobData.class);
         assertThat(actualSuccessfulBundleUploadJobData.getMaterialId(), is(successfulMaterialUploadJobData.getMaterialId()));
         assertThat(actualSuccessfulBundleUploadJobData.getAlfrescoFileId(), is(successfulMaterialUploadJobData.getAlfrescoFileId()));
         assertThat(actualSuccessfulBundleUploadJobData.getFileServiceId(), is(successfulMaterialUploadJobData.getFileServiceId()));
@@ -140,92 +147,100 @@ public class AlfrescoUploadBundleTaskTest {
     }
 
     @Test
-    public void shouldReturnFailureTaskWhenBundleMaterialNotFoundInFileStore() throws Exception {
-        UUID fileStoreId = UUID.randomUUID();
+    public void shouldReturnFailureTaskWhenBundleMaterialNotFoundInStorage() throws Exception {
+        final UUID fileStoreId = UUID.randomUUID();
         final ZonedDateTime nextTaskStartTime = new UtcClock().now();
-        List<UUID> materialIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
+        final List<UUID> materialIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
 
-        //given
-        UploadBundleToAlfrescoJobData uploadBundleToAlfrescoJobData = new UploadBundleToAlfrescoJobData(bundledMaterialId, BUNDLED_MATERIAL_NAME, materialIds,
+        final UploadBundleToAlfrescoJobData uploadBundleToAlfrescoJobData = new UploadBundleToAlfrescoJobData(
+                bundledMaterialId, BUNDLED_MATERIAL_NAME, materialIds,
                 fileStoreId, expectedFileSize, expectedPageCount,
                 expectedEventMetadata.asJsonObject());
 
-        ExecutionInfo executionInfo = ExecutionInfo.executionInfo().withJobData(objectToJsonObjectConverter.convert(uploadBundleToAlfrescoJobData)).build();
-        when(fileService.retrieve(fileStoreId)).thenReturn(Optional.empty());
+        final ExecutionInfo executionInfo = ExecutionInfo.executionInfo()
+                .withJobData(objectToJsonObjectConverter.convert(uploadBundleToAlfrescoJobData)).build();
+        when(storageFileRetriever.retrieve(StoragePath.internal(), fileStoreId)).thenReturn(Optional.empty());
         when(clock.now()).thenReturn(nextTaskStartTime);
 
-        //when
-        ExecutionInfo actualExecutionInfo = alfrescoUploadBundleTask.execute(executionInfo);
+        final ExecutionInfo actualExecutionInfo = alfrescoUploadBundleTask.execute(executionInfo);
 
-        //then
         assertThat(actualExecutionInfo.getExecutionStatus(), is(ExecutionStatus.INPROGRESS));
         assertThat(actualExecutionInfo.getNextTaskStartTime(), is(nextTaskStartTime));
         assertThat(actualExecutionInfo.getNextTask(), is(FAILED_BUNDLE_UPLOAD_COMMAND_TASK));
-        FailedBundleUploadJobData actualFailedBundleUploadJobData = jsonObjectConverter.convert(actualExecutionInfo.getJobData(), FailedBundleUploadJobData.class);
+        final FailedBundleUploadJobData actualFailedBundleUploadJobData = jsonObjectConverter.convert(
+                actualExecutionInfo.getJobData(), FailedBundleUploadJobData.class);
         assertThat(actualFailedBundleUploadJobData.getBundledMaterialId(), is(bundledMaterialId));
         assertThat(actualFailedBundleUploadJobData.getMaterialIds(), is(materialIds));
-        assertThat(actualFailedBundleUploadJobData.getErrorMessage(), is("Failed to upload file to alfresco. No file found in file service with id '" + fileStoreId + "'"));
+        assertThat(actualFailedBundleUploadJobData.getErrorMessage(),
+                is("Failed to upload file to alfresco. No file found in storage with id '" + fileStoreId + "'"));
         assertThat(actualFailedBundleUploadJobData.getFailedTime(), notNullValue());
         assertThat(actualFailedBundleUploadJobData.getEventMetadata(), is(expectedEventMetadata.asJsonObject()));
     }
 
     static Stream<Arguments> failureScenarios() {
         return Stream.of(
-                Arguments.of(new FileServiceException(""), "Failed to retrieve file from file service with id '%s'"),
-                Arguments.of(new RuntimeException(), "Unexpected error occurred when attempting to upload file to alfresco for fileId: '%s'")
+                Arguments.of(new RuntimeException("storage error"), "Unexpected error occurred when attempting to upload file to alfresco for fileId: '%s'")
         );
     }
 
     @ParameterizedTest
     @MethodSource("failureScenarios")
-    public void shouldReturnRetryTaskWhenUploadBundleToAlfrescoFailWithFileServiceException(Exception exceptionToThrow, String expectedErrorMessage) throws Exception {
+    public void shouldReturnRetryTaskWhenUploadBundleToAlfrescoFails(final Exception exceptionToThrow, final String expectedErrorMessage) throws Exception {
         final UUID fileStoreId = UUID.randomUUID();
         final ZonedDateTime exhaustTaskStartTime = new UtcClock().now().plusMinutes(5);
         final List<UUID> materialIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
-        final UploadBundleToAlfrescoJobData uploadBundleToAlfrescoJobData = new UploadBundleToAlfrescoJobData(bundledMaterialId, BUNDLED_MATERIAL_NAME, materialIds,
+        final UploadBundleToAlfrescoJobData uploadBundleToAlfrescoJobData = new UploadBundleToAlfrescoJobData(
+                bundledMaterialId, BUNDLED_MATERIAL_NAME, materialIds,
                 fileStoreId, expectedFileSize, expectedPageCount,
                 expectedEventMetadata.asJsonObject());
-        final ExecutionInfo executionInfo = ExecutionInfo.executionInfo().withJobData(objectToJsonObjectConverter.convert(uploadBundleToAlfrescoJobData)).build();
-        doThrow(exceptionToThrow).when(fileService).retrieve(eq(fileStoreId));
+        final ExecutionInfo executionInfo = ExecutionInfo.executionInfo()
+                .withJobData(objectToJsonObjectConverter.convert(uploadBundleToAlfrescoJobData)).build();
+        doThrow(exceptionToThrow).when(storageFileRetriever).retrieve(eq(StoragePath.internal()), eq(fileStoreId));
         when(clock.now()).thenReturn(exhaustTaskStartTime);
 
-        ExecutionInfo actualExecutionInfo = alfrescoUploadBundleTask.execute(executionInfo);
+        final ExecutionInfo actualExecutionInfo = alfrescoUploadBundleTask.execute(executionInfo);
 
         assertRetryWithExhaustTaskExecutionInfo(exhaustTaskStartTime, uploadBundleToAlfrescoJobData, actualExecutionInfo, expectedErrorMessage);
     }
 
     @Test
     void getRetryDurationsInSecs_shouldReturnDurations() {
-        List<Long> retryDurations = List.of(2L);
+        final List<Long> retryDurations = List.of(2L);
         when(fileUploadRetryConfiguration.getAlfrescoFileUploadTaskRetryDurationsSeconds()).thenReturn(retryDurations);
 
-        Optional<List<Long>> actual = alfrescoUploadBundleTask.getRetryDurationsInSecs();
+        final Optional<List<Long>> actual = alfrescoUploadBundleTask.getRetryDurationsInSecs();
 
         assertThat(actual.get(), is(retryDurations));
     }
 
-    private void assertRetryWithExhaustTaskExecutionInfo(ZonedDateTime exhaustTaskStartTime, UploadBundleToAlfrescoJobData uploadBundleToAlfrescoJobData,
-                                                         ExecutionInfo actualExecutionInfo, String expectedErrorMessage) {
+    private void assertRetryWithExhaustTaskExecutionInfo(final ZonedDateTime exhaustTaskStartTime,
+                                                         final UploadBundleToAlfrescoJobData uploadBundleToAlfrescoJobData,
+                                                         final ExecutionInfo actualExecutionInfo,
+                                                         final String expectedErrorMessage) {
         assertThat(actualExecutionInfo.getNextTask(), is(FAILED_BUNDLE_UPLOAD_COMMAND_TASK));
         assertThat(actualExecutionInfo.getExecutionStatus(), is(INPROGRESS));
         assertThat(actualExecutionInfo.getNextTaskStartTime(), is(exhaustTaskStartTime));
         assertThat(actualExecutionInfo.isShouldRetry(), is(true));
 
-        final FailedBundleUploadJobData failedMaterialUploadJobData = jsonObjectConverter.convert(actualExecutionInfo.getJobData(), FailedBundleUploadJobData.class);
+        final FailedBundleUploadJobData failedMaterialUploadJobData = jsonObjectConverter.convert(
+                actualExecutionInfo.getJobData(), FailedBundleUploadJobData.class);
         assertThat(failedMaterialUploadJobData.getBundledMaterialId(), is(uploadBundleToAlfrescoJobData.getBundledMaterialId()));
         assertThat(failedMaterialUploadJobData.getMaterialIds(), is(uploadBundleToAlfrescoJobData.getMaterialIds()));
         assertThat(failedMaterialUploadJobData.getFileServiceId().get(), is(uploadBundleToAlfrescoJobData.getFileServiceId()));
         assertThat(failedMaterialUploadJobData.getErrorType(), is(BundleErrorType.UPLOAD_FILE_ERROR));
         assertThat(failedMaterialUploadJobData.getEventMetadata(), is(uploadBundleToAlfrescoJobData.getEventMetadata()));
-        assertThat(failedMaterialUploadJobData.getErrorMessage(), startsWith(String.format(expectedErrorMessage, uploadBundleToAlfrescoJobData.getFileServiceId())));
+        assertThat(failedMaterialUploadJobData.getErrorMessage(),
+                startsWith(String.format(expectedErrorMessage, uploadBundleToAlfrescoJobData.getFileServiceId())));
         assertThat(failedMaterialUploadJobData.getFailedTime(), is(exhaustTaskStartTime));
     }
 
-    private SuccessfulMaterialUploadJobData getSuccessfulMaterialUploadJobData(UUID materialId, UUID fileServiceId,
-                                                                               UUID alfrescoFileId, String fileName,
-                                                                               String mediaType, JsonObject fileUploadedEventMetadata) {
-        return new SuccessfulMaterialUploadJobData(materialId, fileServiceId,"" , alfrescoFileId,
+    private SuccessfulMaterialUploadJobData getSuccessfulMaterialUploadJobData(final UUID materialId,
+                                                                               final UUID fileServiceId,
+                                                                               final UUID alfrescoFileId,
+                                                                               final String fileName,
+                                                                               final String mediaType,
+                                                                               final JsonObject fileUploadedEventMetadata) {
+        return new SuccessfulMaterialUploadJobData(materialId, fileServiceId, "", alfrescoFileId,
                 false, fileName, mediaType, fileUploadedEventMetadata);
     }
-
 }

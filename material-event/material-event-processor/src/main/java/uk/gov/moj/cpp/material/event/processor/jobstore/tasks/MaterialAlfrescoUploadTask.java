@@ -11,9 +11,6 @@ import java.util.List;
 import uk.gov.justice.services.common.converter.JsonObjectToObjectConverter;
 import uk.gov.justice.services.common.converter.ObjectToJsonObjectConverter;
 import uk.gov.justice.services.common.util.UtcClock;
-import uk.gov.justice.services.fileservice.api.FileServiceException;
-import uk.gov.justice.services.fileservice.client.FileService;
-import uk.gov.justice.services.fileservice.domain.FileReference;
 import uk.gov.moj.cpp.jobstore.api.annotation.Task;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutableTask;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutionInfo;
@@ -21,6 +18,9 @@ import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.SuccessfulMateri
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.UploadMaterialToAlfrescoJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.service.FileUploadRetryConfiguration;
 import uk.gov.moj.cpp.material.event.processor.jobstore.upload.AlfrescoFileUploader;
+import uk.gov.moj.cpp.material.filestore.azure.StorageFileRetriever;
+import uk.gov.moj.cpp.material.filestore.azure.StoragePath;
+import uk.gov.moj.cpp.material.filestore.azure.StoredFile;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -39,14 +39,13 @@ public class MaterialAlfrescoUploadTask implements ExecutableTask {
     private ObjectToJsonObjectConverter objectToJsonObjectConverter;
 
     @Inject
-    private FileService fileService;
+    private StorageFileRetriever storageFileRetriever;
 
     @Inject
     private AlfrescoFileUploader alfrescoFileUploader;
 
     @Inject
     private HardFailureTaskFactory hardFailureTaskFactory;
-
 
     @Inject
     private UtcClock clock;
@@ -73,42 +72,37 @@ public class MaterialAlfrescoUploadTask implements ExecutableTask {
         final UUID fileServiceId = jobData.getFileServiceId();
 
         if (fileServiceId != null) {
-            return handleFileServiceUpload(fileServiceId, jobData);
+            return handleStoredFileUpload(fileServiceId, jobData);
         } else {
             return handleAzureUpload(jobData);
         }
     }
 
-    private ExecutionInfo handleFileServiceUpload(UUID fileServiceId, UploadMaterialToAlfrescoJobData jobData) {
+    private ExecutionInfo handleStoredFileUpload(final UUID fileServiceId, final UploadMaterialToAlfrescoJobData jobData) {
         try {
-            return uploadFileServiceFileToAlfresco(fileServiceId, jobData);
-        } catch (final FileServiceException e) {
-            String errorMessage = String.format("Failed to retrieve file from file service with id '%s'. %s: %s",
-                    fileServiceId, e.getClass().getSimpleName(), e.getMessage());
-            return createRetryTask(jobData, errorMessage);
+            return uploadStoredFileToAlfresco(fileServiceId, jobData);
         } catch (final Exception e) {
-            String errorMessage = String.format("Unexpected error occurred when attempting to upload file to alfresco for fileId: '%s'. %s:%s", fileServiceId, e.getClass().getSimpleName(), e.getMessage());
+            final String errorMessage = format("Unexpected error occurred when attempting to upload file to alfresco for fileId: '%s'. %s:%s",
+                    fileServiceId, e.getClass().getSimpleName(), e.getMessage());
             return createRetryTask(jobData, errorMessage);
         }
     }
 
-    private ExecutionInfo handleAzureUpload(UploadMaterialToAlfrescoJobData jobData) {
+    private ExecutionInfo handleAzureUpload(final UploadMaterialToAlfrescoJobData jobData) {
         try {
             return uploadAzureFileToAlfresco(jobData);
         } catch (final Exception e) {
-            String errorMessage = String.format("Unexpected error occurred when attempting to upload file to Alfresco for cloudLocation: '%s'. %s: %s",
+            final String errorMessage = format("Unexpected error occurred when attempting to upload file to Alfresco for cloudLocation: '%s'. %s: %s",
                     jobData.getCloudLocation(), e.getClass().getSimpleName(), e.getMessage());
             return createRetryTask(jobData, errorMessage);
         }
     }
 
-    private ExecutionInfo createRetryTask(UploadMaterialToAlfrescoJobData jobData, String errorMessage) {
+    private ExecutionInfo createRetryTask(final UploadMaterialToAlfrescoJobData jobData, final String errorMessage) {
         return hardFailureTaskFactory.createRetryWithHardFailureTaskOnExhaust(jobData, errorMessage);
     }
 
-
-    private ExecutionInfo uploadAzureFileToAlfresco(UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData) throws FileServiceException {
-
+    private ExecutionInfo uploadAzureFileToAlfresco(final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData) {
         final SuccessfulMaterialUploadJobData successfulMaterialUploadJobData = alfrescoFileUploader.uploadFileFromAzureToAlfresco(
                 uploadMaterialToAlfrescoJobData);
         return executionInfo()
@@ -117,32 +111,26 @@ public class MaterialAlfrescoUploadTask implements ExecutableTask {
                 .withNextTaskStartTime(clock.now())
                 .withJobData(objectToJsonObjectConverter.convert(successfulMaterialUploadJobData))
                 .build();
-
     }
 
-    private ExecutionInfo uploadFileServiceFileToAlfresco(UUID fileServiceId, UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData) throws FileServiceException {
-        final Optional<FileReference> fileReferenceOptional = fileService.retrieve(fileServiceId);
+    private ExecutionInfo uploadStoredFileToAlfresco(final UUID fileServiceId, final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData) {
+        final Optional<StoredFile> storedFileOptional = storageFileRetriever.retrieve(StoragePath.internal(), fileServiceId);
 
-        if (fileReferenceOptional.isPresent()) {
-            try (final FileReference fileReference = fileReferenceOptional.get()) {
-                final SuccessfulMaterialUploadJobData successfulMaterialUploadJobData = alfrescoFileUploader.uploadFileToAlfresco(
-                        fileReference,
-                        uploadMaterialToAlfrescoJobData);
+        if (storedFileOptional.isPresent()) {
+            final SuccessfulMaterialUploadJobData successfulMaterialUploadJobData = alfrescoFileUploader.uploadFileToAlfresco(
+                    storedFileOptional.get(),
+                    uploadMaterialToAlfrescoJobData);
 
-                return executionInfo()
-                        .withExecutionStatus(INPROGRESS)
-                        .withNextTask(SUCCESSFUL_MATERIAL_UPLOAD_COMMAND_TASK)
-                        .withNextTaskStartTime(clock.now())
-                        .withJobData(objectToJsonObjectConverter.convert(successfulMaterialUploadJobData))
-                        .build();
-            }
+            return executionInfo()
+                    .withExecutionStatus(INPROGRESS)
+                    .withNextTask(SUCCESSFUL_MATERIAL_UPLOAD_COMMAND_TASK)
+                    .withNextTaskStartTime(clock.now())
+                    .withJobData(objectToJsonObjectConverter.convert(successfulMaterialUploadJobData))
+                    .build();
         } else {
-            final String errorMessage = format("Failed to upload file to alfresco. No file found in file service with id '%s'", fileServiceId);
+            final String errorMessage = format("Failed to upload file to alfresco. No file found in storage with id '%s'", fileServiceId);
             logger.error(errorMessage);
-            return hardFailureTaskFactory.createHardFailureTask(
-                    uploadMaterialToAlfrescoJobData,
-                    errorMessage
-            );
+            return hardFailureTaskFactory.createHardFailureTask(uploadMaterialToAlfrescoJobData, errorMessage);
         }
     }
 }
