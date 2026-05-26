@@ -69,8 +69,8 @@ public class AlfrescoFileUploader {
 
         } finally {
             try {
-                storedFile.getInputStream().close();
-            } catch (final Exception e) {
+                storedFile.close();
+            } catch (final IOException e) {
                 logger.warn(format("Failed to close InputStream to the file store for file with id '%s'", fileServiceId), e);
             }
         }
