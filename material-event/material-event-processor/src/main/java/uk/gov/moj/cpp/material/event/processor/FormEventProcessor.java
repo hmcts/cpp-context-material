@@ -96,7 +96,7 @@ public class FormEventProcessor {
         final String courtFormId = payload.getString(COURT_FORM_ID);
         LOGGER.info("Received public.progression.form-finalised for courtFormId: {}", courtFormId);
         payload.getJsonArray(DOCUMENT_META_DATA).forEach(documentMetaData -> {
-            final JsonObject metaData = (JsonObject) documentMetaData;
+            final JsonObject metaData = documentMetaData.asJsonObject();
             final JsonObject finaliseStructuredFormPayload = createObjectBuilder()
                     .add(STRUCTURED_FORM_ID, payload.getString(COURT_FORM_ID))
                     .add(MATERIAL_ID, metaData.getString(MATERIAL_ID))

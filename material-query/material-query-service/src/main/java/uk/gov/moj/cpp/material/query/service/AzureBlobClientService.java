@@ -73,9 +73,9 @@ public class AzureBlobClientService {
     }
 
     private UserDelegationKey getDelegationKey(final OffsetDateTime startTime, final OffsetDateTime keyExpiry) {
-        if (cachedDelegationKey == null || utcClock.now().toOffsetDateTime().isAfter(cachedKeyExpiry.minus(alfrescoAzureBlobConfiguration.getSasStartSkew()))) {
+        if (cachedDelegationKey == null || cachedKeyExpiry == null || utcClock.now().toOffsetDateTime().isAfter(cachedKeyExpiry.minus(alfrescoAzureBlobConfiguration.getSasStartSkew()))) {
             synchronized (this) {
-                if (cachedDelegationKey == null || utcClock.now().toOffsetDateTime().isAfter(cachedKeyExpiry.minus(alfrescoAzureBlobConfiguration.getSasStartSkew()))) {
+                if (cachedDelegationKey == null || cachedKeyExpiry == null || utcClock.now().toOffsetDateTime().isAfter(cachedKeyExpiry.minus(alfrescoAzureBlobConfiguration.getSasStartSkew()))) {
                     cachedDelegationKey = blobServiceClient.getUserDelegationKey(startTime, keyExpiry);
                     cachedKeyExpiry = keyExpiry;
                 }

@@ -25,7 +25,7 @@ public class StoredFile implements AutoCloseable {
 
     private final InputStream trackingStream;
     private final Map<String, String> metadata;
-    private boolean closed = false;
+    private volatile boolean closed = false;
 
     /**
      * Wraps {@code inputStream} in a tracking delegate so that closing the stream via any

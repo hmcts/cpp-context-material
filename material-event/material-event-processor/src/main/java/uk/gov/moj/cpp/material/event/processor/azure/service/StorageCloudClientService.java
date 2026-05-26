@@ -26,6 +26,7 @@ public class StorageCloudClientService {
     @StorageBlobContainer
     private BlobContainerClient blobContainerClient;
 
+    @SuppressWarnings("squid:S1166")
     public StoredFile downloadBlobContents(final String blobName) {
         final BlobClient blobClient = blobContainerClient.getBlobClient(blobName);
         try {

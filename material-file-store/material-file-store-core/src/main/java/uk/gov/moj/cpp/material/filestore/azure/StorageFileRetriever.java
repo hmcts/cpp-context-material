@@ -40,6 +40,7 @@ public class StorageFileRetriever {
     @StorageBlobContainer
     private BlobContainerClient blobContainerClient;
 
+    @SuppressWarnings("squid:S1166")
     public Optional<StoredFile> retrieve(final StoragePath storagePath, final UUID fileId) {
         final String blobName = storagePath.blobName(fileId);
         final BlobClient blobClient = blobContainerClient.getBlobClient(blobName);
