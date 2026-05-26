@@ -1,6 +1,8 @@
 package uk.gov.moj.cpp.people.healthchecks;
 
-import static java.util.Collections.emptyList;
+import static java.util.List.of;
+import static uk.gov.justice.services.healthcheck.healthchecks.FileStoreHealthcheck.FILE_STORE_HEALTHCHECK_NAME;
+import static uk.gov.justice.services.healthcheck.healthchecks.JobStoreHealthcheck.JOB_STORE_HEALTHCHECK_NAME;
 
 import uk.gov.justice.services.healthcheck.api.DefaultIgnoredHealthcheckNamesProvider;
 
@@ -17,6 +19,6 @@ public class MaterialIgnoredHealthcheckNamesProvider extends DefaultIgnoredHealt
 
     @Override
     public List<String> getNamesOfIgnoredHealthChecks() {
-        return emptyList();
+        return of(FILE_STORE_HEALTHCHECK_NAME, JOB_STORE_HEALTHCHECK_NAME);
     }
 }

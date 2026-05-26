@@ -37,8 +37,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.microsoft.azure</groupId>
-            <artifactId>azure-storage</artifactId>
+            <groupId>uk.gov.moj.cpp.material</groupId>
+            <artifactId>material-file-store-core</artifactId>
         </dependency>
 
         <!-- Test dependencies -->

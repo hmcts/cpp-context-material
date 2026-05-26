@@ -22,8 +22,9 @@ import uk.gov.justice.services.core.sender.Sender;
 import uk.gov.justice.services.file.api.requester.FileRequester;
 import uk.gov.justice.services.file.api.sender.FileData;
 import uk.gov.justice.services.file.api.sender.FileSender;
-import uk.gov.justice.services.fileservice.client.FileService;
-import uk.gov.justice.services.fileservice.domain.FileReference;
+import uk.gov.moj.cpp.material.filestore.azure.StorageFileRetriever;
+import uk.gov.moj.cpp.material.filestore.azure.StoragePath;
+import uk.gov.moj.cpp.material.filestore.azure.StoredFile;
 import uk.gov.justice.services.messaging.Envelope;
 import uk.gov.justice.services.messaging.JsonEnvelope;
 import uk.gov.moj.cpp.material.domain.FileDetails;
@@ -33,9 +34,11 @@ import uk.gov.moj.cpp.material.domain.event.MaterialBundlingFailed;
 import uk.gov.moj.cpp.material.domain.event.MaterialZipFailed;
 import uk.gov.moj.cpp.material.domain.event.MaterialZipped;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -63,7 +66,7 @@ public class MaterialEventProcessorTest {
     private Sender sender;
 
     @Mock
-    private FileService fileService;
+    private StorageFileRetriever storageFileRetriever;
 
     @Mock
     private JsonEnvelope envelope;
@@ -202,22 +205,20 @@ public class MaterialEventProcessorTest {
                 .withPayloadOf(fileServiceId.toString(), "fileServiceId")
                 .build();
 
-        final JsonObject fileMetadata = createObjectBuilder()
-                .add("fileName", htmlFileName)
-                .add("mediaType", htmlMediaType)
-                .build();
+        final StoredFile storedFile = new StoredFile(inputStream,
+                Map.of("filename", htmlFileName, "media_type", htmlMediaType));
+        final InputStream trackingStream = storedFile.getInputStream();
+        final InputStream pdfInputStream = new ByteArrayInputStream(new byte[0]);
 
-        final FileReference fileReference = new FileReference(fileServiceId, fileMetadata, inputStream);
-
-        when(fileService.retrieve(fileServiceId)).thenReturn(of(fileReference));
+        when(storageFileRetriever.retrieve(StoragePath.internal(), fileServiceId)).thenReturn(of(storedFile));
         when(fileData.fileId()).thenReturn(alfrescoId);
-        when(fileSender.send(htmlFileName, inputStream)).thenReturn(fileData);
-        when(fileSender.send(pdfFileName, inputStream)).thenReturn(fileData);
-        when(fileRequester.requestPdf(fileData.fileId(), htmlFileName)).thenReturn(of(inputStream));
+        when(fileSender.send(htmlFileName, trackingStream)).thenReturn(fileData);
+        when(fileSender.send(pdfFileName, pdfInputStream)).thenReturn(fileData);
+        when(fileRequester.requestPdf(alfrescoId, htmlFileName)).thenReturn(of(pdfInputStream));
 
         materialEventProcessor.handleFileUploadedAsPdf(event);
 
-        verify(fileSender).send(htmlFileName, inputStream);
+        verify(fileSender).send(htmlFileName, trackingStream);
         verify(sender).send(envelopeCaptor.capture());
         assertThat(envelopeCaptor.getValue().metadata(),
                 is(metadata()

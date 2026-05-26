@@ -89,18 +89,37 @@
             <groupId>com.azure</groupId>
             <artifactId>azure-storage-blob</artifactId>
             <version>12.25.3</version>
+            <exclusions>
+                <exclusion>
+                    <!-- MUST exclude — Netty conflicts with WildFly's bundled Netty modules -->
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-core-http-netty</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-core</artifactId>
-            <version>1.49.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-storage-queue</artifactId>
             <version>12.20.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-core-http-netty</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Declared provided to prevent netty being bundled in the WAR via transitive paths (audit-client etc).
+             WildFly 26 bundles its own Netty; azure-core-http-netty would conflict and is not needed — JDK HTTP transport is used. -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-core-http-netty</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

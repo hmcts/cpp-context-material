@@ -1,58 +1,48 @@
 package uk.gov.moj.cpp.material.event.processor.azure.service;
 
-import static java.util.Objects.isNull;
+import static com.azure.core.util.Context.NONE;
 
-import uk.gov.justice.services.common.configuration.Value;
-import uk.gov.moj.cpp.material.event.processor.azure.service.exception.CloudException;
+import uk.gov.moj.cpp.material.filestore.azure.StorageBlobContainer;
+import uk.gov.moj.cpp.material.filestore.azure.StoredFile;
 
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.models.BlobRange;
+
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.UncheckedIOException;
+
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobContainerClientBuilder;
-import com.azure.storage.blob.specialized.BlobInputStream;
-
+@ApplicationScoped
 public class StorageCloudClientService {
 
-    @Inject
-    @Value(key = "azure.storage.connection-string")
-    private String storageConnectionString;
+    private static final long MAX_BLOB_SIZE_BYTES = 1_073_741_824L;
 
     @Inject
-    @Value(key = "azure.storage.container-name")
-    private String azureStorageContainerName;
-
+    @StorageBlobContainer
     private BlobContainerClient blobContainerClient;
 
-    private void setBlobContainerClient() {
-        if (isNull(blobContainerClient)) {
-            try{
-                blobContainerClient = new BlobContainerClientBuilder()
-                        .connectionString(storageConnectionString)
-                        .containerName(azureStorageContainerName)
-                        .buildClient();
-            } catch (Exception e) {
-                throw new CloudException("Error while creating BlobContainerClient", e);
-            }
+    @SuppressWarnings("squid:S1166")
+    public StoredFile downloadBlobContents(final String blobName) {
+        final BlobClient blobClient = blobContainerClient.getBlobClient(blobName);
+        try {
+            final PipedOutputStream pipedOutputStream = new PipedOutputStream();
+            final PipedInputStream pipedInputStream = new PipedInputStream(pipedOutputStream);
+            new Thread(() -> {
+                try (final PipedOutputStream toClose = pipedOutputStream) {
+                    blobClient.downloadStreamWithResponse(toClose, new BlobRange(0, MAX_BLOB_SIZE_BYTES),
+                            null, null, false, null, NONE);
+                } catch (final IOException ignored) {
+                    // pipe already closed or consumer closed early
+                }
+            }).start();
+            return new StoredFile(pipedInputStream, blobClient.getProperties().getMetadata());
+        } catch (final IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
-
-    /**
-     * Downloads the content of a blob
-     *
-     * @param blobName - String
-     * @return The download content of the blob as a String,or an empty string if there's an error.
-     */
-    public BlobInputStream downloadBlobContents(String blobName) {
-        setBlobContainerClient();
-        return blobContainerClient.getBlobClient(blobName).openInputStream(); // to work on
-    }
-    
-    /**
-     *
-     *  uncomment when yoo want to test but will eventually go when stable
-     public static void main(String[] args) {
-     final BlobInputStream theStream = storageCloudClientService.downloadBlobContents("28DI1855718/test1.pdf");
-     }
-     *
-     */
 }

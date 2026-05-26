@@ -22,8 +22,10 @@ import uk.gov.justice.services.file.api.remover.FileRemover;
 import uk.gov.justice.services.file.api.requester.FileRequester;
 import uk.gov.justice.services.file.api.sender.FileData;
 import uk.gov.justice.services.file.api.sender.FileSender;
-import uk.gov.justice.services.fileservice.client.FileService;
-import uk.gov.justice.services.fileservice.domain.FileReference;
+import uk.gov.moj.cpp.material.filestore.azure.StorageFileDeleter;
+import uk.gov.moj.cpp.material.filestore.azure.StorageFileRetriever;
+import uk.gov.moj.cpp.material.filestore.azure.StoragePath;
+import uk.gov.moj.cpp.material.filestore.azure.StoredFile;
 import uk.gov.justice.services.messaging.Envelope;
 import uk.gov.justice.services.messaging.JsonEnvelope;
 import uk.gov.justice.services.messaging.Metadata;
@@ -94,7 +96,10 @@ public class MaterialEventProcessor {
     private ObjectToJsonObjectConverter objectToJsonObjectConverter;
 
     @Inject
-    private FileService fileService;
+    private StorageFileRetriever storageFileRetriever;
+
+    @Inject
+    private StorageFileDeleter storageFileDeleter;
 
     @Inject
     private FileSender fileSender;
@@ -191,23 +196,19 @@ public class MaterialEventProcessor {
         final UUID materialId = fromString(fileUploadedPayload.getString(MATERIAL_FIELD_NAME));
         final UUID fileServiceId = fromString(fileUploadedPayload.getString(FILE_SERVICE_ID));
         final boolean isUnbundledDocument = fileUploadedPayload.getBoolean(IS_UNBUNDLED_DOCUMENT, false);
-        try (@SuppressWarnings("squid:S3655") final FileReference fileReference = fileService.retrieve(fileServiceId).get()) {
-            String fileName = fileReference.getMetadata().getString(FILE_NAME);
-            String mediaType = fileReference.getMetadata().getString(MEDIA_TYPE);
-            //send original file to alfresco
-            FileData fileData = fileSender.send(fileName, fileReference.getContentStream());
-            //get back the file as pdf
-            final Optional<InputStream> pdfDocument = fileRequester.requestPdf(fileData.fileId(), fileName);
+        try (final StoredFile storedFile = storageFileRetriever.retrieve(StoragePath.internal(), fileServiceId).orElseThrow()) {
+            String fileName = storedFile.getMetadata().getOrDefault("filename", "");
+            String mediaType = storedFile.getMetadata().getOrDefault("media_type", "application/octet-stream");
+            FileData fileData = fileSender.send(fileName, storedFile.getInputStream());
 
+            final Optional<InputStream> pdfDocument = fileRequester.requestPdf(fileData.fileId(), fileName);
             if (pdfDocument.isPresent()) {
-                //send converted pdf file to alfresco
                 fileName = FilenameUtils.getBaseName(fileName).concat(EXTENSION_PDF);
                 mediaType = MEDIA_TYPE_PDF;
                 fileData = fileSender.send(fileName, pdfDocument.get());
             }
 
             final JsonObject addMaterialCommandPayload = getAddMaterialCommandPayload(materialId, isUnbundledDocument, fileName, mediaType, fileData);
-
             sender.send(envelop(addMaterialCommandPayload)
                     .withName(ADD_MATERIAL_COMMAND_NAME)
                     .withMetadataFrom(fileUploadedEvent));
@@ -255,13 +256,9 @@ public class MaterialEventProcessor {
                 .withMetadataFrom(event));
     }
 
-    private void checkAndDeleteFromFileService(final MaterialDeleted materialDeleted) throws Exception {
+    private void checkAndDeleteFromFileService(final MaterialDeleted materialDeleted) {
         if (nonNull(materialDeleted.getFileServiceId())) {
-            final Optional<FileReference> fileReferenceOptional = fileService.retrieve(materialDeleted.getFileServiceId());
-            if (fileReferenceOptional.isPresent()) {
-                fileReferenceOptional.get().close();
-                fileService.delete(materialDeleted.getFileServiceId());
-            }
+            storageFileDeleter.delete(StoragePath.internal(), materialDeleted.getFileServiceId());
         }
     }
 

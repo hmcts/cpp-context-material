@@ -1,7 +1,7 @@
 package uk.gov.moj.cpp.material.event.processor.jobstore.tasks;
 
+import static java.util.Map.of;
 import static java.util.Optional.empty;
-import static java.util.Optional.of;
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static org.hamcrest.CoreMatchers.is;
@@ -14,25 +14,25 @@ import static org.mockito.Mockito.when;
 import static uk.gov.moj.cpp.jobstore.api.task.ExecutionStatus.INPROGRESS;
 import static uk.gov.moj.cpp.material.event.processor.jobstore.tasks.UploadMaterialTaskNames.SUCCESSFUL_MATERIAL_UPLOAD_COMMAND_TASK;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.justice.services.common.converter.JsonObjectToObjectConverter;
 import uk.gov.justice.services.common.converter.ObjectToJsonObjectConverter;
 import uk.gov.justice.services.common.util.UtcClock;
-import uk.gov.justice.services.fileservice.api.FileServiceException;
-import uk.gov.justice.services.fileservice.client.FileService;
-import uk.gov.justice.services.fileservice.domain.FileReference;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutionInfo;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.SuccessfulMaterialUploadJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.UploadMaterialToAlfrescoJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.service.FileUploadRetryConfiguration;
 import uk.gov.moj.cpp.material.event.processor.jobstore.upload.AlfrescoFileUploader;
+import uk.gov.moj.cpp.material.filestore.azure.StorageFileRetriever;
+import uk.gov.moj.cpp.material.filestore.azure.StoragePath;
+import uk.gov.moj.cpp.material.filestore.azure.StoredFile;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -47,7 +47,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 
 @ExtendWith(MockitoExtension.class)
- class MaterialAlfrescoUploadTaskTest {
+class MaterialAlfrescoUploadTaskTest {
 
     @Mock
     private JsonObjectToObjectConverter jsonObjectConverter;
@@ -56,7 +56,7 @@ import org.slf4j.Logger;
     private ObjectToJsonObjectConverter objectToJsonObjectConverter;
 
     @Mock
-    private FileService fileService;
+    private StorageFileRetriever storageFileRetriever;
 
     @Mock
     private AlfrescoFileUploader alfrescoFileUploader;
@@ -77,28 +77,23 @@ import org.slf4j.Logger;
     private MaterialAlfrescoUploadTask materialAlfrescoUploadTask;
 
     @Test
-  void shouldUploadFileToAlfrescoThenScheduleNextTask() throws Exception {
-
+    void shouldUploadFileToAlfrescoThenScheduleNextTask() throws Exception {
         final UUID fileServiceId = randomUUID();
         final ZonedDateTime now = new UtcClock().now();
+        final InputStream inputStream = mock(InputStream.class);
+        final StoredFile storedFile = new StoredFile(inputStream, of("filename", "test.pdf", "media_type", "application/pdf"));
 
         final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = mock(UploadMaterialToAlfrescoJobData.class);
         final ExecutionInfo inputExecutionInfo = mock(ExecutionInfo.class);
         final JsonObject inputJobData = mock(JsonObject.class);
         final JsonObject outputJobData = mock(JsonObject.class);
-        final FileReference fileReference = mock(FileReference.class);
         final SuccessfulMaterialUploadJobData successfulMaterialUploadJobData = mock(SuccessfulMaterialUploadJobData.class);
 
         when(inputExecutionInfo.getJobData()).thenReturn(inputJobData);
         when(uploadMaterialToAlfrescoJobData.getFileServiceId()).thenReturn(fileServiceId);
-
-        when(jsonObjectConverter.convert(
-                inputJobData,
-                UploadMaterialToAlfrescoJobData.class)).thenReturn(uploadMaterialToAlfrescoJobData);
-        when(fileService.retrieve(fileServiceId)).thenReturn(of(fileReference));
-        when(alfrescoFileUploader.uploadFileToAlfresco(
-                fileReference,
-                uploadMaterialToAlfrescoJobData)).thenReturn(successfulMaterialUploadJobData);
+        when(jsonObjectConverter.convert(inputJobData, UploadMaterialToAlfrescoJobData.class)).thenReturn(uploadMaterialToAlfrescoJobData);
+        when(storageFileRetriever.retrieve(StoragePath.internal(), fileServiceId)).thenReturn(Optional.of(storedFile));
+        when(alfrescoFileUploader.uploadFileToAlfresco(storedFile, uploadMaterialToAlfrescoJobData)).thenReturn(successfulMaterialUploadJobData);
         when(objectToJsonObjectConverter.convert(successfulMaterialUploadJobData)).thenReturn(outputJobData);
         when(clock.now()).thenReturn(now);
 
@@ -112,7 +107,6 @@ import org.slf4j.Logger;
 
     @Test
     void shouldUploadAzureFileToAlfrescoThenScheduleNextTask() throws Exception {
-
         final ZonedDateTime now = new UtcClock().now();
 
         final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = mock(UploadMaterialToAlfrescoJobData.class);
@@ -123,12 +117,8 @@ import org.slf4j.Logger;
 
         when(inputExecutionInfo.getJobData()).thenReturn(inputJobData);
         when(uploadMaterialToAlfrescoJobData.getFileServiceId()).thenReturn(null);
-
-        when(jsonObjectConverter.convert(
-                inputJobData,
-                UploadMaterialToAlfrescoJobData.class)).thenReturn(uploadMaterialToAlfrescoJobData);
-        when(alfrescoFileUploader.uploadFileFromAzureToAlfresco(
-                uploadMaterialToAlfrescoJobData)).thenReturn(successfulMaterialUploadJobData);
+        when(jsonObjectConverter.convert(inputJobData, UploadMaterialToAlfrescoJobData.class)).thenReturn(uploadMaterialToAlfrescoJobData);
+        when(alfrescoFileUploader.uploadFileFromAzureToAlfresco(uploadMaterialToAlfrescoJobData)).thenReturn(successfulMaterialUploadJobData);
         when(objectToJsonObjectConverter.convert(successfulMaterialUploadJobData)).thenReturn(outputJobData);
         when(clock.now()).thenReturn(now);
 
@@ -141,10 +131,9 @@ import org.slf4j.Logger;
     }
 
     @Test
-    void shouldCreateHardFailureTaskIfNoFileFoundInFileService() throws Exception {
-
+    void shouldCreateHardFailureTaskIfNoFileFoundInStorage() throws Exception {
         final UUID fileServiceId = fromString("dae2f001-96cc-49ac-938b-b569f4adfb3a");
-        final String errorMessage = "Failed to upload file to alfresco. No file found in file service with id 'dae2f001-96cc-49ac-938b-b569f4adfb3a'";
+        final String errorMessage = "Failed to upload file to alfresco. No file found in storage with id 'dae2f001-96cc-49ac-938b-b569f4adfb3a'";
 
         final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = mock(UploadMaterialToAlfrescoJobData.class);
         final ExecutionInfo inputExecutionInfo = mock(ExecutionInfo.class);
@@ -154,10 +143,10 @@ import org.slf4j.Logger;
         when(inputExecutionInfo.getJobData()).thenReturn(inputJobData);
         when(uploadMaterialToAlfrescoJobData.getFileServiceId()).thenReturn(fileServiceId);
         when(jsonObjectConverter.convert(inputJobData, UploadMaterialToAlfrescoJobData.class)).thenReturn(uploadMaterialToAlfrescoJobData);
-        when(fileService.retrieve(fileServiceId)).thenReturn(empty());
+        when(storageFileRetriever.retrieve(StoragePath.internal(), fileServiceId)).thenReturn(empty());
         when(hardFailureTaskFactory.createHardFailureTask(uploadMaterialToAlfrescoJobData, errorMessage)).thenReturn(outputExecutionInfo);
 
-        ExecutionInfo result = materialAlfrescoUploadTask.execute(inputExecutionInfo);
+        final ExecutionInfo result = materialAlfrescoUploadTask.execute(inputExecutionInfo);
         assertThat(result, is(outputExecutionInfo));
 
         verify(logger).error(errorMessage);
@@ -165,15 +154,14 @@ import org.slf4j.Logger;
 
     static Stream<Arguments> failureScenarios() {
         return Stream.of(
-                Arguments.of(new FileServiceException(""), "Failed to retrieve file from file service with id '%s'"),
-                Arguments.of(new RuntimeException(), "Unexpected error occurred when attempting to upload file to alfresco for fileId: '%s'")
+                Arguments.of(new RuntimeException("storage error"),
+                        "Unexpected error occurred when attempting to upload file to alfresco for fileId: '%s'")
         );
     }
 
     @ParameterizedTest
     @MethodSource("failureScenarios")
-    void shouldCreateRetryTaskWithExhaustTaskConfiguredIfGettingException(Exception exceptionToThrow, String expectedErrorMessage) throws Exception {
-
+    void shouldCreateRetryTaskWithExhaustTaskConfiguredIfGettingException(final Exception exceptionToThrow, final String expectedErrorMessage) throws Exception {
         final UUID fileServiceId = fromString("dd3eb062-de73-4ba1-af99-b01c52b6d104");
 
         final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = mock(UploadMaterialToAlfrescoJobData.class);
@@ -183,7 +171,7 @@ import org.slf4j.Logger;
         when(inputExecutionInfo.getJobData()).thenReturn(inputJobData);
         when(uploadMaterialToAlfrescoJobData.getFileServiceId()).thenReturn(fileServiceId);
         when(jsonObjectConverter.convert(inputJobData, UploadMaterialToAlfrescoJobData.class)).thenReturn(uploadMaterialToAlfrescoJobData);
-        when(fileService.retrieve(fileServiceId)).thenThrow(exceptionToThrow);
+        when(storageFileRetriever.retrieve(StoragePath.internal(), fileServiceId)).thenThrow(exceptionToThrow);
 
         materialAlfrescoUploadTask.execute(inputExecutionInfo);
 
@@ -193,8 +181,7 @@ import org.slf4j.Logger;
     }
 
     @Test
-    void shouldCreateRetryTaskWithExhaustTaskConfigurationAzure( ) throws Exception {
-
+    void shouldCreateRetryTaskWithExhaustTaskConfigurationAzure() throws Exception {
         final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = mock(UploadMaterialToAlfrescoJobData.class);
         final ExecutionInfo inputExecutionInfo = mock(ExecutionInfo.class);
         final JsonObject inputJobData = mock(JsonObject.class);
@@ -202,22 +189,21 @@ import org.slf4j.Logger;
         when(inputExecutionInfo.getJobData()).thenReturn(inputJobData);
         when(uploadMaterialToAlfrescoJobData.getFileServiceId()).thenReturn(null);
         when(jsonObjectConverter.convert(inputJobData, UploadMaterialToAlfrescoJobData.class)).thenReturn(uploadMaterialToAlfrescoJobData);
-        when(alfrescoFileUploader.uploadFileFromAzureToAlfresco(
-                uploadMaterialToAlfrescoJobData)).thenThrow(new RuntimeException());
+        when(alfrescoFileUploader.uploadFileFromAzureToAlfresco(uploadMaterialToAlfrescoJobData)).thenThrow(new RuntimeException());
 
         materialAlfrescoUploadTask.execute(inputExecutionInfo);
 
         verify(hardFailureTaskFactory).createRetryWithHardFailureTaskOnExhaust(
                 eq(uploadMaterialToAlfrescoJobData),
-                startsWith(String.format("Unexpected error occurred when attempting to upload file to Alfresco for cloudLocation: ")));
+                startsWith("Unexpected error occurred when attempting to upload file to Alfresco for cloudLocation: "));
     }
 
     @Test
     void getRetryDurationsInSecs_shouldReturnDurations() {
-        List<Long> retryDurations = List.of(2L);
+        final List<Long> retryDurations = List.of(2L);
         when(fileUploadRetryConfiguration.getAlfrescoFileUploadTaskRetryDurationsSeconds()).thenReturn(retryDurations);
 
-        Optional<List<Long>> actual = materialAlfrescoUploadTask.getRetryDurationsInSecs();
+        final Optional<List<Long>> actual = materialAlfrescoUploadTask.getRetryDurationsInSecs();
 
         assertThat(actual.get(), Matchers.is(retryDurations));
     }

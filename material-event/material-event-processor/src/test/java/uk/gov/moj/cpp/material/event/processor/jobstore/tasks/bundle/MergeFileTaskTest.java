@@ -16,8 +16,6 @@ import uk.gov.justice.services.common.converter.JsonObjectToObjectConverter;
 import uk.gov.justice.services.common.converter.ObjectToJsonObjectConverter;
 import uk.gov.justice.services.common.converter.jackson.ObjectMapperProducer;
 import uk.gov.justice.services.common.util.UtcClock;
-import uk.gov.justice.services.fileservice.api.FileServiceException;
-import uk.gov.justice.services.fileservice.client.FileService;
 import uk.gov.justice.services.messaging.Metadata;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutionInfo;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutionStatus;
@@ -25,6 +23,7 @@ import uk.gov.moj.cpp.material.client.MaterialClient;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.bundle.FailedBundleUploadJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.bundle.MergeFileJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.bundle.UploadBundleToAlfrescoJobData;
+import uk.gov.moj.cpp.material.filestore.azure.StorageFileStorer;
 import uk.gov.moj.cpp.systemusers.ServiceContextSystemUserProvider;
 
 import java.io.File;
@@ -58,7 +57,8 @@ public class MergeFileTaskTest {
     private Response response;
 
     @Mock
-    private FileService fileService;
+    private StorageFileStorer storageFileStorer;
+
     @Mock
     private UtcClock clock;
 
@@ -84,15 +84,13 @@ public class MergeFileTaskTest {
 
     @Test
     public void shouldMergeMaterialFilesAndInitiateUploadBundleToAlfrescoTask() throws Exception {
-
-        UUID userId = UUID.randomUUID();
-        UUID fileStoreId = UUID.randomUUID();
+        final UUID userId = UUID.randomUUID();
+        final UUID fileStoreId = UUID.randomUUID();
         final ZonedDateTime nextTaskStartTime = new UtcClock().now();
 
-        //given
-        UUID bundledMaterialId = UUID.randomUUID();
-        Metadata expectedEventMetadata = metadataWithRandomUUIDAndName().build();
-        MergeFileJobData mergeFileJobData = MergeFileJobData.MergeFileJobDataBuilder.mergeFileJobDataBuilder()
+        final UUID bundledMaterialId = UUID.randomUUID();
+        final Metadata expectedEventMetadata = metadataWithRandomUUIDAndName().build();
+        final MergeFileJobData mergeFileJobData = MergeFileJobData.MergeFileJobDataBuilder.mergeFileJobDataBuilder()
                 .withBundledMaterialId(bundledMaterialId)
                 .withBundledMaterialName(BUNDLED_MATERIAL_NAME)
                 .withMaterialIds(Arrays.asList(UUID.randomUUID(), UUID.randomUUID()))
@@ -104,24 +102,25 @@ public class MergeFileTaskTest {
         final ClassLoader classLoader = getClass().getClassLoader();
         final File file1 = new File(classLoader.getResource("file1.pdf").getFile());
         final File file2 = new File(classLoader.getResource("file2.pdf").getFile());
-        when(response.getLocation()).thenReturn(new URI("file:" + file1.getAbsolutePath())).thenReturn(new URI("file:" + file2.getAbsolutePath()));
+        when(response.getLocation()).thenReturn(new URI("file:" + file1.getAbsolutePath()))
+                .thenReturn(new URI("file:" + file2.getAbsolutePath()));
         when(response.getStatus()).thenReturn(200);
 
-        when(fileService.store(any(), any())).thenReturn(fileStoreId);
+        when(storageFileStorer.store(any(), any(UUID.class), any(String.class), any())).thenReturn(fileStoreId);
         when(clock.now()).thenReturn(nextTaskStartTime);
 
-        ExecutionInfo initialExecutionInfo = ExecutionInfo.executionInfo().withJobData(objectToJsonObjectConverter.convert(mergeFileJobData)).build();
+        final ExecutionInfo initialExecutionInfo = ExecutionInfo.executionInfo()
+                .withJobData(objectToJsonObjectConverter.convert(mergeFileJobData)).build();
 
-        //when
-        ExecutionInfo actualExecutionInfo = mergeFileTask.execute(initialExecutionInfo);
+        final ExecutionInfo actualExecutionInfo = mergeFileTask.execute(initialExecutionInfo);
 
-        //then
         assertThat(actualExecutionInfo.getExecutionStatus(), is(ExecutionStatus.INPROGRESS));
         assertThat(actualExecutionInfo.getNextTaskStartTime(), is(nextTaskStartTime));
         assertThat(actualExecutionInfo.getNextTask(), is(UPLOAD_BUNDLE_TO_ALFRESCO_TASK));
         assertFalse(actualExecutionInfo.isShouldRetry());
 
-        UploadBundleToAlfrescoJobData expectedJobData = jsonObjectConverter.convert(actualExecutionInfo.getJobData(), UploadBundleToAlfrescoJobData.class);
+        final UploadBundleToAlfrescoJobData expectedJobData = jsonObjectConverter.convert(
+                actualExecutionInfo.getJobData(), UploadBundleToAlfrescoJobData.class);
         assertThat(expectedJobData.getBundledMaterialId(), is(mergeFileJobData.getBundledMaterialId()));
         assertThat(expectedJobData.getBundledMaterialName(), is(mergeFileJobData.getBundledMaterialName()));
         assertThat(expectedJobData.getFileServiceId(), is(fileStoreId));
@@ -132,14 +131,12 @@ public class MergeFileTaskTest {
 
     @Test
     public void shouldInitiateFailedMergeTaskWhenMaterialNotFound() throws Exception {
-
-        UUID userId = UUID.randomUUID();
+        final UUID userId = UUID.randomUUID();
         final ZonedDateTime nextTaskStartTime = new UtcClock().now();
 
-        //given
-        UUID bundledMaterialId = UUID.randomUUID();
-        Metadata expectedEventMetadata = metadataWithRandomUUIDAndName().build();
-        MergeFileJobData mergeFileJobData = MergeFileJobData.MergeFileJobDataBuilder.mergeFileJobDataBuilder()
+        final UUID bundledMaterialId = UUID.randomUUID();
+        final Metadata expectedEventMetadata = metadataWithRandomUUIDAndName().build();
+        final MergeFileJobData mergeFileJobData = MergeFileJobData.MergeFileJobDataBuilder.mergeFileJobDataBuilder()
                 .withBundledMaterialId(bundledMaterialId)
                 .withBundledMaterialName(BUNDLED_MATERIAL_NAME)
                 .withMaterialIds(Arrays.asList(UUID.randomUUID(), UUID.randomUUID()))
@@ -151,29 +148,27 @@ public class MergeFileTaskTest {
         when(response.getStatus()).thenReturn(404);
         when(clock.now()).thenReturn(nextTaskStartTime);
 
-        ExecutionInfo initialExecutionInfo = ExecutionInfo.executionInfo().withJobData(objectToJsonObjectConverter.convert(mergeFileJobData)).build();
+        final ExecutionInfo initialExecutionInfo = ExecutionInfo.executionInfo()
+                .withJobData(objectToJsonObjectConverter.convert(mergeFileJobData)).build();
 
-        //when
-        ExecutionInfo actualExecutionInfo = mergeFileTask.execute(initialExecutionInfo);
+        final ExecutionInfo actualExecutionInfo = mergeFileTask.execute(initialExecutionInfo);
 
-        //then
         assertThat(actualExecutionInfo.getExecutionStatus(), is(ExecutionStatus.INPROGRESS));
         assertThat(actualExecutionInfo.getNextTaskStartTime(), is(nextTaskStartTime));
         assertThat(actualExecutionInfo.getNextTask(), is(FAILED_MERGE_FILE_TASK));
-        assertThat(jsonObjectConverter.convert(actualExecutionInfo.getJobData(), FailedBundleUploadJobData.class), is(instanceOf(FailedBundleUploadJobData.class)));
+        assertThat(jsonObjectConverter.convert(actualExecutionInfo.getJobData(), FailedBundleUploadJobData.class),
+                is(instanceOf(FailedBundleUploadJobData.class)));
         assertFalse(actualExecutionInfo.isShouldRetry());
     }
 
     @Test
     public void shouldInitiateFailedMergeTaskWhenExceptionStoringMergedDocument() throws Exception {
-
-        UUID userId = UUID.randomUUID();
+        final UUID userId = UUID.randomUUID();
         final ZonedDateTime nextTaskStartTime = new UtcClock().now();
 
-        //given
-        UUID bundledMaterialId = UUID.randomUUID();
-        Metadata expectedEventMetadata = metadataWithRandomUUIDAndName().build();
-        MergeFileJobData mergeFileJobData = MergeFileJobData.MergeFileJobDataBuilder.mergeFileJobDataBuilder()
+        final UUID bundledMaterialId = UUID.randomUUID();
+        final Metadata expectedEventMetadata = metadataWithRandomUUIDAndName().build();
+        final MergeFileJobData mergeFileJobData = MergeFileJobData.MergeFileJobDataBuilder.mergeFileJobDataBuilder()
                 .withBundledMaterialId(bundledMaterialId)
                 .withBundledMaterialName(BUNDLED_MATERIAL_NAME)
                 .withMaterialIds(Arrays.asList(UUID.randomUUID(), UUID.randomUUID()))
@@ -185,24 +180,23 @@ public class MergeFileTaskTest {
         final ClassLoader classLoader = getClass().getClassLoader();
         final File file1 = new File(classLoader.getResource("file1.pdf").getFile());
         final File file2 = new File(classLoader.getResource("file2.pdf").getFile());
-        when(response.getLocation()).thenReturn(new URI("file:" + file1.getAbsolutePath())).thenReturn(new URI("file:" + file2.getAbsolutePath()));
+        when(response.getLocation()).thenReturn(new URI("file:" + file1.getAbsolutePath()))
+                .thenReturn(new URI("file:" + file2.getAbsolutePath()));
         when(response.getStatus()).thenReturn(200);
 
-        when(fileService.store(any(), any())).thenThrow(FileServiceException.class);
+        when(storageFileStorer.store(any(), any(UUID.class), any(String.class), any())).thenThrow(new RuntimeException("store failed"));
         when(clock.now()).thenReturn(nextTaskStartTime);
 
-        //when
-        ExecutionInfo initialExecutionInfo = ExecutionInfo.executionInfo().withJobData(objectToJsonObjectConverter.convert(mergeFileJobData)).build();
+        final ExecutionInfo initialExecutionInfo = ExecutionInfo.executionInfo()
+                .withJobData(objectToJsonObjectConverter.convert(mergeFileJobData)).build();
 
-        //then
-        ExecutionInfo actualExecutionInfo = mergeFileTask.execute(initialExecutionInfo);
+        final ExecutionInfo actualExecutionInfo = mergeFileTask.execute(initialExecutionInfo);
 
         assertThat(actualExecutionInfo.getExecutionStatus(), is(ExecutionStatus.INPROGRESS));
         assertThat(actualExecutionInfo.getNextTaskStartTime(), is(nextTaskStartTime));
         assertThat(actualExecutionInfo.getNextTask(), is(FAILED_MERGE_FILE_TASK));
-        assertThat(jsonObjectConverter.convert(actualExecutionInfo.getJobData(), FailedBundleUploadJobData.class), is(instanceOf(FailedBundleUploadJobData.class)));
+        assertThat(jsonObjectConverter.convert(actualExecutionInfo.getJobData(), FailedBundleUploadJobData.class),
+                is(instanceOf(FailedBundleUploadJobData.class)));
         assertFalse(actualExecutionInfo.isShouldRetry());
     }
-
-
 }

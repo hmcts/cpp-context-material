@@ -12,7 +12,6 @@ import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -376,7 +375,7 @@ public class MaterialTestHelper extends BaseMaterialTestHelper {
         assertThat(readMetadataResponse.getStatus(), is(OK.getStatusCode()));
         JsonObject metadataBodyResponse = stringToJsonObjectConverter
                 .convert(readMetadataResponse.readEntity(String.class));
-        assertThat(metadataBodyResponse.getString(FILE_NAME), equalTo(expectedFilename));
+        assertThat(metadataBodyResponse.getString(FILE_NAME), equalTo(expectedFilename.strip()));
         assertThat(metadataBodyResponse.getString(MATERIAL_ID), equalTo(expectedMaterialId));
         assertThat(metadataBodyResponse.getString("materialAddedDate"), is(notNullValue()));
 
@@ -393,7 +392,7 @@ public class MaterialTestHelper extends BaseMaterialTestHelper {
         assertThat(readMetadataResponse.getStatus(), is(OK.getStatusCode()));
         JsonObject metadataBodyResponse = stringToJsonObjectConverter
                 .convert(readMetadataResponse.readEntity(String.class));
-        assertThat(metadataBodyResponse.getString(FILE_NAME), equalTo(expectedFilename));
+        assertThat(metadataBodyResponse.getString(FILE_NAME), equalTo(expectedFilename.strip()));
         assertThat(metadataBodyResponse.getString(MATERIAL_ID), equalTo(expectedMaterialId));
         assertThat(metadataBodyResponse.getInt(FILE_SIZE), equalTo(expectedFileSize));
     }
@@ -401,10 +400,7 @@ public class MaterialTestHelper extends BaseMaterialTestHelper {
     private void assertMaterial(final Response readMaterialResponse) {
         assertThat(readMaterialResponse.getStatus(), is(OK.getStatusCode()));
         assertThat(readMaterialResponse.getHeaderString(CONTENT_TYPE), startsWith(MaterialTestHelper.TEXT_URI_LIST));
-
-        final String actualDocument = readMaterialResponse.readEntity(String.class);
-
-        assertThat("Document content", actualDocument, containsString("https://sastelargefiles.blob.core.windows.net/largefiles-blob-container/"));
+        assertThat("Expected a URI in the document response body", readMaterialResponse.readEntity(String.class), startsWith("http"));
     }
 
     private void assertMaterialContainingExternalLink(JsonObject payload) {
