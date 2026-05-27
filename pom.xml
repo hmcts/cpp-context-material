@@ -6,7 +6,7 @@
     <parent>
         <groupId>uk.gov.moj.cpp.common</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>17.103.3</version>
+        <version>17.103.9-M1</version>
     </parent>
 
     <groupId>uk.gov.moj.cpp.material</groupId>
@@ -39,6 +39,7 @@
         <material-azure.version>1.38.1</material-azure.version>
         <material-azure-storage.version>8.4.0</material-azure-storage.version>
         <jgitflow.maven.developBranchName>main</jgitflow.maven.developBranchName>
+        <sjp-command-api.version>17.103.167</sjp-command-api.version>
     </properties>
 
     <modules>
