@@ -3,7 +3,7 @@ package uk.gov.moj.cpp.material.client;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
-import static javax.json.Json.createObjectBuilder;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static javax.ws.rs.client.ClientBuilder.newClient;
 import static uk.gov.justice.services.common.http.HeaderConstants.USER_ID;
 import static uk.gov.justice.services.messaging.Envelope.metadataFrom;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.json.Json;
+import uk.gov.justice.services.messaging.JsonObjects;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -113,7 +113,7 @@ public class MaterialClient {
                 .accept(CREATE_BUNDLE_MATERIAL);
 
 
-        final JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        final JsonArrayBuilder jsonArrayBuilder = JsonObjects.createArrayBuilder();
         materialIds.stream().map(materialId -> jsonArrayBuilder.add(materialId.toString())).collect(toList());
         final JsonObject jsonObject = createObjectBuilder()
                 .add(BUNDLED_MATERIAL_ID, bundleMaterialId.toString())
