@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 
 import uk.gov.moj.cpp.material.command.handler.alfresco.exception.AlfrescoUploadException;
 import uk.gov.moj.cpp.material.command.handler.client.RestClient;
@@ -15,7 +16,6 @@ import uk.gov.moj.cpp.material.domain.UploadedMaterial;
 import java.io.IOException;
 import java.util.UUID;
 
-import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.client.Entity;
@@ -143,7 +143,7 @@ public class AlfrescoUploadServiceTest {
 
     @Test
     public void shouldThrowExceptionIfNoDocument() throws IOException {
-        JsonObject command = Json.createObjectBuilder()
+        JsonObject command = createObjectBuilder()
                 .add(MATERIAL_ID_NAME, MATERIAL_ID.toString())
                 .add("fileName", FILENAME)
                 .build();
@@ -153,7 +153,7 @@ public class AlfrescoUploadServiceTest {
 
     @Test
     public void shouldThrowExceptionIfNoFilename() throws IOException {
-        JsonObject command = Json.createObjectBuilder()
+        JsonObject command = createObjectBuilder()
                 .add(MATERIAL_ID_NAME, MATERIAL_ID.toString())
                 .add("document", withDocumentData())
                 .build();
@@ -161,7 +161,7 @@ public class AlfrescoUploadServiceTest {
     }
 
     private JsonObject buildRequestData() {
-        return Json.createObjectBuilder()
+        return createObjectBuilder()
                 .add(MATERIAL_ID_NAME, MATERIAL_ID.toString())
                 .add("document", withDocumentData().build())
                 .add("fileName", FILENAME)
@@ -169,6 +169,6 @@ public class AlfrescoUploadServiceTest {
     }
 
     private JsonObjectBuilder withDocumentData() {
-        return Json.createObjectBuilder().add("content", DOCUMENT_DATA);
+        return createObjectBuilder().add("content", DOCUMENT_DATA);
     }
 }
