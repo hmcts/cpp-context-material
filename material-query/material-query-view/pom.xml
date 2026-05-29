@@ -3,7 +3,7 @@
     <parent>
         <artifactId>material-query</artifactId>
         <groupId>uk.gov.moj.cpp.material</groupId>
-        <version>17.0.80-SNAPSHOT</version>
+        <version>17.0.82-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -19,6 +19,16 @@
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>uk.gov.moj.cpp.material</groupId>
