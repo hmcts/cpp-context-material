@@ -4,8 +4,9 @@ import static java.util.UUID.randomUUID;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.justice.services.integrationtest.utils.jms.JmsMessageConsumerClientProvider.newPublicJmsMessageConsumerClientProvider;
+import static uk.gov.justice.services.messaging.JsonObjects.createArrayBuilder;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.moj.material.it.helper.BaseMaterialTestHelper.ZIP_ENDPOINT;
-import static uk.gov.moj.material.it.util.WiremockAccessControlEndpointStubber.setupUsersGroupQueryStub;
 
 import uk.gov.justice.services.common.http.HeaderConstants;
 import uk.gov.justice.services.integrationtest.utils.jms.JmsMessageConsumerClient;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 public class ZipMaterialIT extends BaseIT {
     private final RestClient restClient = new RestClient();
-    private final WiremockAccessControlEndpointStubber accessControlStub = new WiremockAccessControlEndpointStubber();
+    private WiremockAccessControlEndpointStubber accessControlStub;
     private MultivaluedMap<String, Object> headers;
     private List<UUID> materialIds;
     private List<UUID> fileIds;
@@ -43,6 +43,7 @@ public class ZipMaterialIT extends BaseIT {
 
     @BeforeEach
     public void init() {
+        accessControlStub = new WiremockAccessControlEndpointStubber(wireMock);
         materialIds = new ArrayList<>();
         materialIds.add(randomUUID());
         materialIds.add(randomUUID());
@@ -54,7 +55,7 @@ public class ZipMaterialIT extends BaseIT {
         accessControlStub.stubUsersAndGroupsForUserDetail(USER_ID_FOR_META_DATA);
         headers = new MultivaluedMapImpl<>();
         headers.add(HeaderConstants.USER_ID, userId);
-        setupUsersGroupQueryStub();
+        accessControlStub.setupUsersGroupQueryStub();
     }
 
     @Test
@@ -62,14 +63,14 @@ public class ZipMaterialIT extends BaseIT {
         accessControlStub.stubUsersAndGroupsUserAsSystemUser(userId.toString());
         accessControlStub.stubStructureAsProsecutedBy("TFL");
 
-        final JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        final JsonArrayBuilder jsonArrayBuilder = createArrayBuilder();
         materialIds.forEach(materialId ->
                 jsonArrayBuilder.add(materialId.toString()));
 
-        final JsonArrayBuilder jsonFileIDArrayBuilder = Json.createArrayBuilder();
+        final JsonArrayBuilder jsonFileIDArrayBuilder = createArrayBuilder();
         fileIds.forEach(fileId ->
                 jsonFileIDArrayBuilder.add(fileId.toString()));
-        final JsonObjectBuilder uploadFilePayloadBuilder = Json.createObjectBuilder().add("materialIds", jsonArrayBuilder.build()).add("fileIds", jsonFileIDArrayBuilder.build()).add("caseURN", "test").add("caseId", randomUUID().toString());
+        final JsonObjectBuilder uploadFilePayloadBuilder = createObjectBuilder().add("materialIds", jsonArrayBuilder.build()).add("fileIds", jsonFileIDArrayBuilder.build()).add("caseURN", "test").add("caseId", randomUUID().toString());
         final JsonObject zipMaterial = uploadFilePayloadBuilder.build();
 
         restClient.postCommand(ZIP_ENDPOINT, "application/vnd.material.command.zip-material+json",
@@ -86,14 +87,14 @@ public class ZipMaterialIT extends BaseIT {
         accessControlStub.stubUsersAndGroupsUserAsSystemUser(userId.toString());
         accessControlStub.stubStructureAsProsecutedBy("TFL");
 
-        final JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        final JsonArrayBuilder jsonArrayBuilder = createArrayBuilder();
         materialIds.forEach(materialId ->
                 jsonArrayBuilder.add(materialId.toString()));
 
-        final JsonArrayBuilder jsonFileIDArrayBuilder = Json.createArrayBuilder();
+        final JsonArrayBuilder jsonFileIDArrayBuilder = createArrayBuilder();
         fileIds.forEach(fileId ->
                 jsonFileIDArrayBuilder.add(fileId.toString()));
-        final JsonObjectBuilder uploadFilePayloadBuilder = Json.createObjectBuilder().add("materialIds", jsonArrayBuilder.build()).add("fileIds", jsonFileIDArrayBuilder.build()).add("caseURN", "test").add("caseId", randomUUID().toString());
+        final JsonObjectBuilder uploadFilePayloadBuilder = createObjectBuilder().add("materialIds", jsonArrayBuilder.build()).add("fileIds", jsonFileIDArrayBuilder.build()).add("caseURN", "test").add("caseId", randomUUID().toString());
         final JsonObject zipMaterial = uploadFilePayloadBuilder.build();
         restClient.postCommand(ZIP_ENDPOINT, "application/vnd.material.command.zip-material+json",
                 zipMaterial.toString(), headers);
