@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.justice.services.test.utils.core.enveloper.EnveloperFactory.createEnveloperWithEvents;
 import static uk.gov.justice.services.test.utils.core.matchers.JsonEnvelopeMatcher.jsonEnvelope;
 import static uk.gov.justice.services.test.utils.core.matchers.JsonEnvelopeMetadataMatcher.withMetadataEnvelopedFrom;
@@ -29,6 +28,8 @@ import uk.gov.moj.cpp.material.domain.event.MaterialNotFound;
 
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import javax.json.Json;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,7 +117,7 @@ public class DeleteMaterialCommandHandlerTest {
     private JsonEnvelope deleteMaterialCommand(final String materialId) {
         return JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName("material.command.handler.delete-material"),
-                createObjectBuilder()
+                Json.createObjectBuilder()
                         .add("materialId", materialId)
                         .build()
         );

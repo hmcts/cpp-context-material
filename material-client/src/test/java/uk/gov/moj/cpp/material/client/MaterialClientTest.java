@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.services.common.http.HeaderConstants.USER_ID;
 import static uk.gov.justice.services.messaging.JsonMetadata.ID;
-import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.moj.cpp.material.MaterialUrls.MATERIAL_METADATA_REQUEST_PATH;
 import static uk.gov.moj.cpp.material.client.MaterialClient.REQUEST_PARAM_ADD_INLINE_CONTENT_DISPOSITION_HEADER;
 
@@ -24,6 +23,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.json.Json;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -119,7 +119,7 @@ public class MaterialClientTest {
     public void shouldCallCreateMaterialBundleWithoutAdditionalMetadata() {
         final JsonEnvelope envelope = JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName("material.material-added"),
-                createObjectBuilder()
+                Json.createObjectBuilder()
                         .add(SOURCE, "aa")
                         .add(CORRESPONDENCE_ID, UUID.randomUUID().toString())
                         .add(ID, randomUUID().toString())
@@ -134,7 +134,7 @@ public class MaterialClientTest {
     public void shouldCallCreateMaterialBundleWithAdditionalMetadata() {
         final JsonEnvelope envelope = JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName("material.material-added"),
-                createObjectBuilder()
+                Json.createObjectBuilder()
                         .add(SOURCE, "aa")
                         .add(CORRESPONDENCE_ID, UUID.randomUUID().toString())
                         .add(ID, randomUUID().toString())

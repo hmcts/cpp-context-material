@@ -21,8 +21,6 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static uk.gov.justice.services.integrationtest.utils.jms.JmsMessageConsumerClientProvider.newPublicJmsMessageConsumerClientProvider;
-import static uk.gov.justice.services.messaging.JsonObjects.createArrayBuilder;
-import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.justice.services.test.utils.core.http.BaseUriProvider.getBaseUri;
 import static uk.gov.justice.services.test.utils.core.http.RequestParamsBuilder.requestParams;
 import static uk.gov.justice.services.test.utils.core.http.RequestParamsBuilder.requestParamswithHeaders;
@@ -45,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -77,7 +76,7 @@ public class MaterialTestHelper extends BaseMaterialTestHelper {
 
     public void setUploadFileProperties(String filePath, String fileName, String mimeType) {
 
-        this.document = createObjectBuilder()
+        this.document = Json.createObjectBuilder()
                 .add("content", Base64.getEncoder().encodeToString(getDocumentBytesFromFile(filePath)))
                 .build();
         this.fileName = fileName;
@@ -88,7 +87,7 @@ public class MaterialTestHelper extends BaseMaterialTestHelper {
     public void setExternalFileProperties(String externalLink, String fileName) {
         this.externalLink = externalLink;
         this.fileName = fileName;
-        this.document = createObjectBuilder().add("externalLink", externalLink).build();
+        this.document = Json.createObjectBuilder().add("externalLink", externalLink).build();
         this.isUploadFileTest = false;
     }
 
@@ -263,7 +262,7 @@ public class MaterialTestHelper extends BaseMaterialTestHelper {
 
     private Response isMaterialDownloadable(final String materialId) {
         return restClient.postCommand(IS_DOWNLOADABLE_ENDPOINT, "application/vnd.material.command.publish-is-downloadable-materials+json",
-                createObjectBuilder().add("materialIds", createArrayBuilder().add(materialId).build()).build().toString(), headers);
+                Json.createObjectBuilder().add("materialIds", Json.createArrayBuilder().add(materialId).build()).build().toString(), headers);
     }
 
     public void verifyMaterialExists(final String materialId, final Matcher... matchers) {
@@ -337,7 +336,7 @@ public class MaterialTestHelper extends BaseMaterialTestHelper {
     }
 
     private String buildAddMaterialRequest(final String materialId) {
-        JsonObjectBuilder materialBuilder = createObjectBuilder();
+        JsonObjectBuilder materialBuilder = Json.createObjectBuilder();
         materialBuilder.add(MATERIAL_ID, materialId);
         materialBuilder.add(DOCUMENT, document);
         materialBuilder.add(FILE_NAME, fileName);
@@ -347,10 +346,10 @@ public class MaterialTestHelper extends BaseMaterialTestHelper {
 
 
     public String buildCreateMaterialBundleRequest(String bundleMaterialId, List<String> materialIds) {
-        JsonObjectBuilder materialBuilder = createObjectBuilder();
+        JsonObjectBuilder materialBuilder = Json.createObjectBuilder();
         materialBuilder.add("bundledMaterialId", bundleMaterialId);
         materialBuilder.add("bundledMaterialName", "Barkingside Magistrates' Court 17072021.pdf");
-        JsonArrayBuilder jsonArrayBuilder = createArrayBuilder();
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
         materialIds.stream().map(jsonArrayBuilder::add).toList();
         materialBuilder.add("materialIds", jsonArrayBuilder.build());
 
@@ -441,7 +440,7 @@ public class MaterialTestHelper extends BaseMaterialTestHelper {
     }
 
     public void uploadFile(final UUID fileServiceId, final String materialId) {
-        final JsonObjectBuilder uploadFilePayloadBuilder = createObjectBuilder()
+        final JsonObjectBuilder uploadFilePayloadBuilder = Json.createObjectBuilder()
                 .add("materialId", materialId)
                 .add("fileServiceId", fileServiceId.toString())
                 .add(MATERIAL_ID, materialId)

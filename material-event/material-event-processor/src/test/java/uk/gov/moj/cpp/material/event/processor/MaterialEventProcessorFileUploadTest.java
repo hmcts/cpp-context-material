@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.justice.services.test.utils.core.matchers.JsonEnvelopeMetadataMatcher.metadata;
 import static uk.gov.justice.services.test.utils.core.messaging.JsonEnvelopeBuilder.envelope;
 import static uk.gov.justice.services.test.utils.core.messaging.MetadataBuilderFactory.metadataOf;
@@ -38,6 +37,7 @@ import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -189,7 +189,7 @@ public class MaterialEventProcessorFileUploadTest {
                 .withPayloadOf(fileServiceId.toString(), FILE_SERVICE_ID)
                 .build();
 
-        final JsonObject fileMetadata = createObjectBuilder()
+        final JsonObject fileMetadata = Json.createObjectBuilder()
                 .add(FILE_NAME, htmlFileName)
                 .add("mediaType", htmlMediaType)
                 .build();
