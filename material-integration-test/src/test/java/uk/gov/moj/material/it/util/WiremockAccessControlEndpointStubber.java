@@ -1,7 +1,9 @@
 package uk.gov.moj.material.it.util;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.reset;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
@@ -18,7 +20,6 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.UUID;
 
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -26,12 +27,12 @@ import org.apache.commons.io.IOUtils;
  */
 public class WiremockAccessControlEndpointStubber {
 
+    private static final String HOST = System.getProperty("INTEGRATION_HOST_KEY", "localhost");
     private static final int HTTP_STATUS_OK = 200;
 
-    private final WireMockExtension wireMock;
-
-    public WiremockAccessControlEndpointStubber(WireMockExtension wireMock) {
-        this.wireMock = wireMock;
+    public WiremockAccessControlEndpointStubber() {
+        configureFor(HOST, 8080);
+        reset();
     }
 
 
@@ -45,7 +46,7 @@ public class WiremockAccessControlEndpointStubber {
 
     }
 
-    public void setupUsersGroupQueryStub() {
+    public static void setupUsersGroupQueryStub() {
         stubFor(get(urlPathMatching("/usersgroups-service/query/api/rest/usersgroups/users/.*/groups"))
                 .willReturn(aResponse().withStatus(HTTP_STATUS_OK)
                         .withHeader("CPPID", randomUUID().toString())

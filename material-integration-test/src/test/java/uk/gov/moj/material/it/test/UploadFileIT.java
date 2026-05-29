@@ -9,7 +9,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.justice.services.integrationtest.utils.jms.JmsMessageConsumerClientProvider.newPublicJmsMessageConsumerClientProvider;
-import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.moj.material.it.helper.BaseMaterialTestHelper.READ_ENDPOINT;
 import static uk.gov.moj.material.it.helper.BaseMaterialTestHelper.WRITE_ENDPOINT;
 import static uk.gov.moj.material.it.util.FileUtil.getDocumentBytesFromFile;
@@ -24,6 +23,7 @@ import uk.gov.moj.material.it.util.WiremockAccessControlEndpointStubber;
 import java.sql.SQLException;
 import java.util.UUID;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.core.MultivaluedMap;
@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 public class UploadFileIT extends BaseIT {
 
     private static final RestClient restClient = new RestClient();
-    private WiremockAccessControlEndpointStubber accessControlStub;
+    private final WiremockAccessControlEndpointStubber accessControlStub = new WiremockAccessControlEndpointStubber();
     private MultivaluedMap<String, Object> headers;
     private UUID materialId, userId;
 
@@ -46,7 +46,6 @@ public class UploadFileIT extends BaseIT {
 
     @BeforeEach
     public void init() {
-        accessControlStub = new WiremockAccessControlEndpointStubber(wireMock);
         materialId = randomUUID();
         userId = randomUUID();
         headers = new MultivaluedMapImpl<>();
@@ -73,7 +72,7 @@ public class UploadFileIT extends BaseIT {
 
         final UUID nonExistentFileServiceId = randomUUID();
 
-        final JsonObjectBuilder uploadFilePayloadBuilder = createObjectBuilder()
+        final JsonObjectBuilder uploadFilePayloadBuilder = Json.createObjectBuilder()
                 .add("materialId", materialId.toString())
                 .add("fileServiceId", nonExistentFileServiceId.toString())
                 .add(IS_UNBUNDLED_DOCUMENT, true);
@@ -102,7 +101,7 @@ public class UploadFileIT extends BaseIT {
         final byte[] documentContent = getDocumentBytesFromFile("upload_samples/sample.txt");
         final UUID fileServiceId = FileServiceClient.create("sample.txt", "plain/text", documentContent);
 
-        final JsonObjectBuilder uploadFilePayloadBuilder = createObjectBuilder()
+        final JsonObjectBuilder uploadFilePayloadBuilder = Json.createObjectBuilder()
                 .add("materialId", materialId.toString())
                 .add("fileServiceId", fileServiceId.toString());
 

@@ -3,7 +3,7 @@ package uk.gov.moj.material.it.helper;
 
 import static java.util.UUID.randomUUID;
 import static uk.gov.justice.services.integrationtest.utils.jms.JmsMessageConsumerClientProvider.newPrivateJmsMessageConsumerClientProvider;
-import static uk.gov.moj.material.it.test.BaseIT.wireMock;
+import static uk.gov.moj.material.it.util.WiremockAccessControlEndpointStubber.setupUsersGroupQueryStub;
 
 import uk.gov.justice.services.common.converter.StringToJsonObjectConverter;
 import uk.gov.justice.services.common.http.HeaderConstants;
@@ -19,7 +19,7 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 public class BaseMaterialTestHelper {
 
-    private WiremockAccessControlEndpointStubber wiremockAccessControlEndpointStubber;
+    private final static WiremockAccessControlEndpointStubber wiremockAccessControlEndpointStubber = new WiremockAccessControlEndpointStubber();
 
     protected static final String HOST = System.getProperty("INTEGRATION_HOST_KEY", "localhost");
     public static final String MATERIAL_ADDED_EVENT = "material.events.material-added";
@@ -54,8 +54,11 @@ public class BaseMaterialTestHelper {
 
     private static final UUID userId = randomUUID();
 
+    static {
+        setupUsersGroupQueryStub();
+    }
+
     public void setup() {
-        wiremockAccessControlEndpointStubber = new WiremockAccessControlEndpointStubber(wireMock);
         wiremockAccessControlEndpointStubber.stubUsersAndGroupsUserAsSystemUser(userId.toString());
         wiremockAccessControlEndpointStubber.stubStructureAsCPSProsecutedCase();
         wiremockAccessControlEndpointStubber.setupLoggedInUsersPermissionQueryStub(userId.toString());

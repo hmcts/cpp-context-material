@@ -1,14 +1,13 @@
 package uk.gov.moj.cpp.material.command.handler;
 
 import static java.util.UUID.randomUUID;
+import static javax.json.Json.createObjectBuilder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.services.messaging.JsonEnvelope.envelopeFrom;
-import static uk.gov.justice.services.messaging.JsonObjects.createArrayBuilder;
-import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.justice.services.test.utils.core.messaging.MetadataBuilderFactory.metadataOf;
 
 import uk.gov.justice.services.common.converter.JsonObjectToObjectConverter;
@@ -36,6 +35,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.hamcrest.MatcherAssert;
@@ -241,7 +241,7 @@ public class MaterialCommandHandlerTest {
     private JsonEnvelope getRecordMaterialBundleCommand() {
         return JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName(EVENT_NAME),
-                createObjectBuilder()
+                Json.createObjectBuilder()
                         .add(BUNDLED_MATERIAL_ID_STRING, BUNDLED_MATERIAL_ID.toString())
                         .add(FILE_REFERENCE, materialBundleDetailsRecorded.getFileDetails().getAlfrescoAssetId())
                         .add(MIME_TYPE, materialBundleDetailsRecorded.getFileDetails().getMimeType())
@@ -256,10 +256,10 @@ public class MaterialCommandHandlerTest {
     private JsonEnvelope getRecordMaterialBundleFailedCommand(final UUID bundledMaterialId, final List<UUID> materialIds) {
         return JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName(EVENT_NAME),
-                createObjectBuilder()
+                Json.createObjectBuilder()
                         .add(BUNDLED_MATERIAL_ID_STRING, bundledMaterialId.toString())
                         .add(MATERIAL_IDS_STRING,
-                                createArrayBuilder()
+                                Json.createArrayBuilder()
                                         .add(materialIds.get(0).toString())
                                         .add(materialIds.get(1).toString()).build())
                         .add("errorCode", "errorCode")
@@ -273,12 +273,12 @@ public class MaterialCommandHandlerTest {
     private JsonEnvelope createMaterialBundleCommand(final UUID bundledMaterialId, final List<UUID> materialIds) {
         return JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName(EVENT_NAME),
-                createObjectBuilder()
+                Json.createObjectBuilder()
                         .add(BUNDLED_MATERIAL_ID_STRING, bundledMaterialId.toString())
                         .add(FILE_REFERENCE, randomUUID().toString())
                         .add(BUNDLED_MATERIAL_NAME_STRING, BUNDLED_MATERIAL_NAME)
                         .add(MATERIAL_IDS_STRING,
-                                createArrayBuilder()
+                                Json.createArrayBuilder()
                                         .add(materialIds.get(0).toString())
                                         .add(materialIds.get(1).toString()).build())
                         .build()

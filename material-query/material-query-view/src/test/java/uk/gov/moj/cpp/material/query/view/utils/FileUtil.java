@@ -1,7 +1,6 @@
 package uk.gov.moj.cpp.material.query.view.utils;
 
 import static org.junit.Assert.fail;
-import static uk.gov.justice.services.messaging.JsonObjects.createReader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
@@ -39,7 +39,7 @@ public class FileUtil {
 
     public static JsonObject givenPayload(String filePath) throws IOException {
         try (InputStream inputStream = FileUtil.class.getResourceAsStream(filePath)) {
-            JsonReader jsonReader = createReader(inputStream);
+            JsonReader jsonReader = Json.createReader(inputStream);
             return jsonReader.readObject();
         }
     }

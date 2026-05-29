@@ -5,14 +5,14 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.IntStream.range;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.moj.material.it.util.WiremockAccessControlEndpointStubber.setupUsersGroupQueryStub;
 
 import uk.gov.moj.material.it.helper.MaterialTestHelper;
-import uk.gov.moj.material.it.util.WiremockAccessControlEndpointStubber;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +31,10 @@ public class BundleMaterialIT extends BaseIT {
     private static final String FILE_PATH_PDF = "upload_samples/sample.pdf";
     private static MaterialTestHelper testHelper;
 
-    private WiremockAccessControlEndpointStubber wiremockAccessControlEndpointStubber;
 
-    @BeforeEach
-    public void beforeAll() {
-        wiremockAccessControlEndpointStubber = new WiremockAccessControlEndpointStubber(wireMock);
-        wiremockAccessControlEndpointStubber.setupUsersGroupQueryStub();
+    @BeforeAll
+    public static void beforeAll() {
+        setupUsersGroupQueryStub();
         testHelper = new MaterialTestHelper();
         testHelper.setup();
     }
