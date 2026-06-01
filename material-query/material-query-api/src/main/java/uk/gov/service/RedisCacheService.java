@@ -59,7 +59,7 @@ public class RedisCacheService implements CacheService {
     private void setRedisClient() {
         LOGGER.info("Redis host : {}", host);
         final String keyPart = ("none".equals(this.key) ? "" : this.key + "@");
-        final RedisURI redisURI = RedisURI.create("redis://" + keyPart + host + ":" + port + "/2");
+        final RedisURI redisURI = RedisURI.create("redis://" + keyPart + host + ":" + port + "/0");
         redisURI.setSsl(Boolean.parseBoolean(useSsl));
 
         redisClient = RedisClient.create(redisURI);
