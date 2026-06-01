@@ -32,7 +32,7 @@
         <xml.maven.plugin.version>1.0.1</xml.maven.plugin.version>
         <rename.maven.plugin.version>1.0.1</rename.maven.plugin.version>
         <jmeter.lightning.maven.plugin.version>0.1.1</jmeter.lightning.maven.plugin.version>
-        <junit4.version>4.13.1</junit4.version>
+
         <!--These azure lib versions override defined below are to be removed in
         PEG-377  as well as the corresponding entry in the dependencyManagement section -->
         <azure.functions.maven.plugin.version>1.24.0</azure.functions.maven.plugin.version>
@@ -79,11 +79,7 @@
                 <artifactId>mireportdata-cc-dependency</artifactId>
                 <version>${mireportdata.cc.dependency.version}</version>
             </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit4.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>com.microsoft.azure</groupId>
                 <artifactId>azure</artifactId>
