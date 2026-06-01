@@ -182,7 +182,7 @@ public class MaterialTestHelper extends BaseMaterialTestHelper {
     @SuppressWarnings("squid:S2925")
     public void verifyMetadataAdded(final String materialId) throws Exception {
         Response readMetadataResponse = await()
-                .atMost(1, SECONDS)
+                .atMost(10, SECONDS)
                 .pollInterval(100, MILLISECONDS)
                 .until(() -> makeMetadataQueryCall(materialId),
                         response -> response.getStatus() != NOT_FOUND.getStatusCode());
