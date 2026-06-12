@@ -3,9 +3,9 @@ package uk.gov.moj.cpp.material.event.processor.jobstore.tasks.bundle;
 import static java.lang.String.format;
 import static java.nio.file.Files.delete;
 import static java.util.Objects.nonNull;
-import static javax.json.Json.createObjectBuilder;
-import static javax.ws.rs.core.Response.Status.OK;
-import static javax.ws.rs.core.Response.Status.fromStatusCode;
+import static jakarta.json.Json.createObjectBuilder;
+import static jakarta.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.Response.Status.fromStatusCode;
 import static uk.gov.justice.services.core.annotation.Component.EVENT_PROCESSOR;
 import static uk.gov.moj.cpp.jobstore.api.task.ExecutionInfo.executionInfo;
 import static uk.gov.moj.cpp.jobstore.api.task.ExecutionStatus.INPROGRESS;
@@ -42,9 +42,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.inject.Inject;
-import javax.json.JsonObject;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.json.JsonObject;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;

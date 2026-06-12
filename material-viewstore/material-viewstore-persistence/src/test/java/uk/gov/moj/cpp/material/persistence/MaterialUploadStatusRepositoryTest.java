@@ -1,4 +1,4 @@
-package uk.gov.moj.cpp.material.persistence.repository;
+package uk.gov.moj.cpp.material.persistence;
 
 import static java.util.UUID.randomUUID;
 import static org.hamcrest.CoreMatchers.equalTo;

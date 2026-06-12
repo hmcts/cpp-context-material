@@ -2,8 +2,8 @@ package uk.gov.moj.cpp.material.query.view;
 
 import static java.util.Objects.nonNull;
 import static java.util.UUID.fromString;
-import static javax.json.Json.createArrayBuilder;
-import static javax.json.Json.createObjectBuilder;
+import static jakarta.json.Json.createArrayBuilder;
+import static jakarta.json.Json.createObjectBuilder;
 import static uk.gov.justice.services.messaging.JsonEnvelope.envelopeFrom;
 import static uk.gov.moj.cpp.material.query.view.StructuredFormQueryView.ZONE_DATETIME_FORMATTER;
 
@@ -18,9 +18,9 @@ import uk.gov.moj.cpp.material.query.view.response.UpdatedBy;
 import java.util.List;
 import java.util.UUID;
 
-import javax.inject.Inject;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
+import jakarta.inject.Inject;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
 
 public class StructuredFormChangeHistoryQueryView {
     public static final String STRUCTURED_FORM_ID = "structuredFormId";

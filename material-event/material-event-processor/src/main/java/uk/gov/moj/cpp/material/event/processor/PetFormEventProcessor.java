@@ -1,6 +1,6 @@
 package uk.gov.moj.cpp.material.event.processor;
 
-import static javax.json.Json.createObjectBuilder;
+import static jakarta.json.Json.createObjectBuilder;
 import static uk.gov.justice.services.core.annotation.Component.EVENT_PROCESSOR;
 import static uk.gov.justice.services.messaging.Envelope.metadataFrom;
 import static uk.gov.justice.services.messaging.JsonEnvelope.envelopeFrom;
@@ -16,8 +16,8 @@ import uk.gov.moj.cpp.material.domain.event.StructuredFormFinalised;
 import uk.gov.moj.cpp.material.domain.event.StructuredFormPublished;
 import uk.gov.moj.cpp.material.domain.event.StructuredFormUpdatedForDefendant;
 
-import javax.inject.Inject;
-import javax.json.JsonObject;
+import jakarta.inject.Inject;
+import jakarta.json.JsonObject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

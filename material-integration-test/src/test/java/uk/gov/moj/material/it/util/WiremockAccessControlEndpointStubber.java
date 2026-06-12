@@ -11,7 +11,7 @@ import static java.lang.ClassLoader.getSystemResourceAsStream;
 import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static uk.gov.justice.services.common.http.HeaderConstants.ID;
 import static uk.gov.moj.material.it.util.FileUtil.getPayload;
 
