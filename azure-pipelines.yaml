@@ -21,12 +21,12 @@ resources:
       type: github
       name: hmcts/cpp-azure-devops-templates
       endpoint: 'hmcts'
-      ref: 'main'
+      ref: 'wildfly40'
 
 pool:
   name: "MDV-ADO-AGENT-AKS-01"
   demands:
-    - identifier -equals centos8-j17
+    - identifier -equals ubuntu-j25-postgres
 
 variables:
   sonarqubeProject: "uk.gov.moj.cpp.material:material-parent"

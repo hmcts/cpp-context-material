@@ -3,10 +3,10 @@ package uk.gov.moj.cpp.material.client;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
-import static jakarta.json.Json.createObjectBuilder;
 import static jakarta.ws.rs.client.ClientBuilder.newClient;
 import static uk.gov.justice.services.common.http.HeaderConstants.USER_ID;
 import static uk.gov.justice.services.messaging.Envelope.metadataFrom;
+import static uk.gov.justice.services.messaging.JsonObjects.getJsonBuilderFactory;
 import static uk.gov.moj.cpp.material.MaterialUrls.BASE_URI;
 import static uk.gov.moj.cpp.material.MaterialUrls.BUNDLE_MATERIAL_REQUEST_PATH;
 import static uk.gov.moj.cpp.material.MaterialUrls.COMMAND_BASE_URI;
@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -113,9 +112,9 @@ public class MaterialClient {
                 .accept(CREATE_BUNDLE_MATERIAL);
 
 
-        final JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        final JsonArrayBuilder jsonArrayBuilder = getJsonBuilderFactory().createArrayBuilder();
         materialIds.stream().map(materialId -> jsonArrayBuilder.add(materialId.toString())).collect(toList());
-        final JsonObject jsonObject = createObjectBuilder()
+        final JsonObject jsonObject = getJsonBuilderFactory().createObjectBuilder()
                 .add(BUNDLED_MATERIAL_ID, bundleMaterialId.toString())
                 .add(BUNDLED_MATERIAL_NAME, bundleMaterialName)
                 .add(MATERIAL_IDS, jsonArrayBuilder.build())
@@ -162,7 +161,7 @@ public class MaterialClient {
     }
 
     private JsonObjectBuilder createObjectBuilderFrom(final JsonObject source) {
-        final JsonObjectBuilder builder = createObjectBuilder();
+        final JsonObjectBuilder builder = getJsonBuilderFactory().createObjectBuilder();
         source.forEach(builder::add);
         return builder;
     }
