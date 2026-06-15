@@ -74,4 +74,25 @@ class MaterialRepositoryTest {
         final Material material = materialRepository.findBy(UUID.randomUUID());
         assertThat(material, is(nullValue()));
     }
+
+    @Test
+    void shouldRemoveAndFlushManagedMaterial() {
+        final UUID materialId = UUID.randomUUID();
+        final Material managed = materialRepository.save(new Material(materialId, "alfrescoX", "fileX.txt", TEXT_PLAIN, new UtcClock().now(), null));
+
+        materialRepository.removeAndFlush(managed);
+
+        assertThat(materialRepository.findBy(materialId), is(nullValue()));
+    }
+
+    @Test
+    void shouldRemoveAndFlushDetachedMaterial() {
+        final UUID materialId = UUID.randomUUID();
+        materialRepository.save(new Material(materialId, "alfrescoY", "fileY.txt", TEXT_PLAIN, new UtcClock().now(), null));
+
+        final Material detached = new Material(materialId, "alfrescoY", "fileY.txt", TEXT_PLAIN, new UtcClock().now(), null);
+        materialRepository.removeAndFlush(detached);
+
+        assertThat(materialRepository.findBy(materialId), is(nullValue()));
+    }
 }
