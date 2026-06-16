@@ -1,3 +1,4 @@
+# Java 25 / WildFly 40 upgrade (25.104.x)
 name: CPP Context Verify & Validation
 
 trigger:
