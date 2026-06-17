@@ -2,13 +2,13 @@ package uk.gov.moj.material.it.test;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.UUID.randomUUID;
-import static javax.json.Json.createObjectBuilder;
 import static org.exparity.hamcrest.date.ZonedDateTimeMatchers.within;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.justice.services.integrationtest.utils.jms.JmsMessageConsumerClientProvider.newPublicJmsMessageConsumerClientProvider;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 
 import uk.gov.justice.services.common.util.UtcClock;
 import uk.gov.justice.services.integrationtest.utils.jms.JmsMessageConsumerClient;
@@ -35,7 +35,7 @@ public class AddMaterialReferenceIT extends BaseIT {
 
     private final MaterialRestClient materialRestClient = new MaterialRestClient();
     private static final DatabaseCleaner databaseCleaner = new DatabaseCleaner();
-    private final WiremockAccessControlEndpointStubber wiremockAccessControlEndpointStubber = new WiremockAccessControlEndpointStubber();
+    private WiremockAccessControlEndpointStubber wiremockAccessControlEndpointStubber;
 
     private final MaterialDataAccessor materialDataAccessor = new MaterialDataAccessor();
     private final Poller poller = new Poller();
@@ -49,6 +49,7 @@ public class AddMaterialReferenceIT extends BaseIT {
 
     @BeforeEach
     public void stubAccessControlWithWiremock() {
+        wiremockAccessControlEndpointStubber = new WiremockAccessControlEndpointStubber(wireMock);
         wiremockAccessControlEndpointStubber.stubStructureAsCPSProsecutedCase();
         wiremockAccessControlEndpointStubber.stubUsersAndGroupsUserAsSystemUser(userId.toString());
         wiremockAccessControlEndpointStubber.setupLoggedInUsersPermissionQueryStub(userId.toString());
