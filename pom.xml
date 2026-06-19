@@ -6,7 +6,7 @@
     <parent>
         <groupId>uk.gov.moj.cpp.common</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>25.104.0-M2</version>
+        <version>25.104.0-M4</version>
     </parent>
 
     <groupId>uk.gov.moj.cpp.material</groupId>
@@ -22,7 +22,7 @@
     <properties>
         <sonar.report.export.path>sonar-report.json</sonar.report.export.path>
         <sonar.scm.provider>git</sonar.scm.provider>
-        <coredomain.version>25.104.0-M2</coredomain.version>
+        <coredomain.version>25.104.0-M4</coredomain.version>
         <usersgroups.version>17.104.48</usersgroups.version>
         <stream-transformation-tool-anonymise.version>7.0.0</stream-transformation-tool-anonymise.version>
         <stream-transformation-tool.version>7.0.0</stream-transformation-tool.version>
