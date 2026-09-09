@@ -1,5 +1,8 @@
 package uk.gov.moj.cpp.material.event.utils;
 
+import static org.junit.jupiter.api.Assertions.fail;
+import static uk.gov.justice.services.messaging.JsonObjects.createReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -13,8 +16,6 @@ import jakarta.json.JsonReader;
 import com.google.common.io.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Utility class for reading json response from a file.
@@ -39,7 +40,7 @@ public class FileUtil {
 
     public static JsonObject givenPayload(String filePath) throws IOException {
         try (InputStream inputStream = FileUtil.class.getResourceAsStream(filePath)) {
-            JsonReader jsonReader = Json.createReader(inputStream);
+            JsonReader jsonReader = createReader(inputStream);
             return jsonReader.readObject();
         }
     }

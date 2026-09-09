@@ -4,6 +4,7 @@ import static java.util.UUID.randomUUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.justice.services.test.utils.core.matchers.JsonEnvelopeMetadataMatcher.metadata;
 
 import uk.gov.justice.services.core.sender.Sender;
@@ -49,7 +50,7 @@ public class DeleteMaterialCommandTest {
     private JsonEnvelope deleteMaterialCommand(final String materialId) {
         return JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName("any-name"),
-                Json.createObjectBuilder()
+                createObjectBuilder()
                         .add("materialId", materialId)
                         .build()
         );

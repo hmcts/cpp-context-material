@@ -1,10 +1,11 @@
 package uk.gov.moj.cpp.material.command.api;
 
 import static java.util.UUID.randomUUID;
-import static jakarta.json.Json.createArrayBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
+import static uk.gov.justice.services.messaging.JsonObjects.createArrayBuilder;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.justice.services.test.utils.core.matchers.JsonEnvelopeMetadataMatcher.metadata;
 import static uk.gov.justice.services.test.utils.core.reflection.ReflectionUtil.setField;
 
@@ -70,7 +71,7 @@ public class ZipMaterialCommandTest {
     private JsonEnvelope createZipMaterialCommand() {
         return JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName("any-name"),
-                Json.createObjectBuilder()
+                createObjectBuilder()
                         .add("materialIds", createArrayBuilder().add(materialId1)
                                 .add(materialId2)
                                 .build())

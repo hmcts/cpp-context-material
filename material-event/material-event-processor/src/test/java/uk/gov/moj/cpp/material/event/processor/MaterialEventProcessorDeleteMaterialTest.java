@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.justice.services.test.utils.core.messaging.MetadataBuilderFactory.metadataWithDefaults;
 
 import uk.gov.justice.services.common.converter.JsonObjectToObjectConverter;
@@ -86,7 +87,7 @@ public class MaterialEventProcessorDeleteMaterialTest {
 
         when(jsonObjectConverter.convert(any(), any(Class.class))).thenReturn(materialDeleted);
         doNothing().when(fileRemover).remove(any());
-        FileReference fileReference = new FileReference(randomUUID(), Json.createObjectBuilder().build(), null);
+        FileReference fileReference = new FileReference(randomUUID(), createObjectBuilder().build(), null);
         when(fileService.retrieve(any())).thenReturn(Optional.of(fileReference));
         doNothing().when(fileService).delete(any());
 
@@ -187,7 +188,7 @@ public class MaterialEventProcessorDeleteMaterialTest {
         );
 
         when(jsonObjectConverter.convert(any(), any(Class.class))).thenReturn(materialDeleted);
-        FileReference fileReference = new FileReference(randomUUID(), Json.createObjectBuilder().build(), null);
+        FileReference fileReference = new FileReference(randomUUID(), createObjectBuilder().build(), null);
         when(fileService.retrieve(any())).thenReturn(Optional.of(fileReference));
         doThrow(new FileServiceException("Can not be deleted")).when(fileService).delete(any());
 

@@ -5,6 +5,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.services.messaging.JsonObjects.createArrayBuilder;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 
 import uk.gov.justice.services.messaging.Envelope;
 import uk.gov.justice.services.messaging.JsonEnvelope;
@@ -39,8 +41,8 @@ public class DownloadableMaterialCommandApiTest {
 
         final JsonEnvelope command = JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName("any-name"),
-                Json.createObjectBuilder()
-                        .add("materialIds", Json.createArrayBuilder().add(MaterialId1.toString()).add(MaterialId2.toString()).build())
+                createObjectBuilder()
+                        .add("materialIds", createArrayBuilder().add(MaterialId1.toString()).add(MaterialId2.toString()).build())
                         .build()
         );
         final HashMap<UUID, Boolean> statusMap = new HashMap<>();

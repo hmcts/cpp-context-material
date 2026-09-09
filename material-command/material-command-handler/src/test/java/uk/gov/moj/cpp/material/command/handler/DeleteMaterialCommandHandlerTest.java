@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.justice.services.test.utils.core.enveloper.EnveloperFactory.createEnveloperWithEvents;
 import static uk.gov.justice.services.test.utils.core.matchers.JsonEnvelopeMatcher.jsonEnvelope;
 import static uk.gov.justice.services.test.utils.core.matchers.JsonEnvelopeMetadataMatcher.withMetadataEnvelopedFrom;
@@ -117,7 +118,7 @@ public class DeleteMaterialCommandHandlerTest {
     private JsonEnvelope deleteMaterialCommand(final String materialId) {
         return JsonEnvelope.envelopeFrom(
                 MetadataBuilderFactory.metadataWithDefaults().withName("material.command.handler.delete-material"),
-                Json.createObjectBuilder()
+                createObjectBuilder()
                         .add("materialId", materialId)
                         .build()
         );
