@@ -3,6 +3,7 @@
 #The prerequisite for this script is that vagrant is running
 #Script that runs, liquibase, deploys wars and runs integration tests
 CONTEXT_NAME=material
+#
 
 FRAMEWORK_LIBRARIES_VERSION=$(mvn help:evaluate -Dexpression=framework-libraries.version -q -DforceStdout)
 FRAMEWORK_VERSION=$(mvn help:evaluate -Dexpression=framework.version -q -DforceStdout)

@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.justice.services.test.utils.core.matchers.JsonEnvelopeMetadataMatcher.metadata;
 import static uk.gov.justice.services.test.utils.core.messaging.JsonEnvelopeBuilder.envelope;
 import static uk.gov.justice.services.test.utils.core.messaging.MetadataBuilderFactory.metadataWithRandomUUID;
@@ -202,7 +203,7 @@ public class MaterialEventProcessorTest {
                 .withPayloadOf(fileServiceId.toString(), "fileServiceId")
                 .build();
 
-        final JsonObject fileMetadata = Json.createObjectBuilder()
+        final JsonObject fileMetadata = createObjectBuilder()
                 .add("fileName", htmlFileName)
                 .add("mediaType", htmlMediaType)
                 .build();

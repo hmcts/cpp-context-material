@@ -60,3 +60,9 @@ buildContexts.sh
 lightning-jenkins.properties
 **/.DS_Store
 
+# Claude Code — not tracked on the 25.104.x line. Note that main tracks
+# .claude/agents|rules|skills via 9c98a9a69; this line deliberately does not,
+# so a future merge from main will reintroduce them and they must be dropped again.
+CLAUDE.md
+.claude/
+
