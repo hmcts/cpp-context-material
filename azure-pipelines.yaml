@@ -1,4 +1,7 @@
 # Java 25 / WildFly 40 upgrade (25.104.x)
+# Rebuild 10 Sep 2026: the run after PR #45 reported "Build and push completed
+# successfully" but no manifest reached ACR - the jdk25 tag still resolved to the
+# 15 Jun digest. Re-triggering to produce a 25.104.0 image.
 name: CPP Context Verify & Validation
 
 trigger:
