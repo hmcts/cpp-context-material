@@ -53,7 +53,7 @@ public class AddMaterialCommandFactoryTest {
                 alfrescoFileId,
                 unbundledDocument,
                 fileName,
-                mediaType, fileUploadedEventMetadata);
+                mediaType, fileUploadedEventMetadata, null);
 
         final JsonEnvelope commandEnvelope = addMaterialCommandFactory.createCommandEnvelope(jobState);
 

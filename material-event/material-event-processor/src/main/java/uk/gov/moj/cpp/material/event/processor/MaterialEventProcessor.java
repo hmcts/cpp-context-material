@@ -61,6 +61,7 @@ public class MaterialEventProcessor {
     public static final String MEDIA_TYPE = "mediaType";
     public static final String FILE_SERVICE_ID = "fileServiceId";
     public static final String FILE_CLOUD_LOCATION = "fileCloudLocation";
+    public static final String FILE_URI = "fileUri";
     public static final String FILE_REFERENCE = "fileReference";
     public static final String MIME_TYPE = "mimeType";
     public static final String DOCUMENT = "document";
@@ -155,6 +156,7 @@ public class MaterialEventProcessor {
         final UUID fileServiceId =  Optional.ofNullable(fileUploadedPayload.getString(FILE_SERVICE_ID, null)).map(UUID::fromString).orElse(null);
 
         final String fileCloudLocation = fileUploadedPayload.getString(FILE_CLOUD_LOCATION, null);
+        final String fileUri = fileUploadedPayload.getString(FILE_URI, null);
         final boolean isUnbundledDocument = fileUploadedPayload.getBoolean(IS_UNBUNDLED_DOCUMENT, false);
 
 
@@ -162,7 +164,7 @@ public class MaterialEventProcessor {
                 materialId,
                 fileServiceId,
                 isUnbundledDocument,
-                fileUploadedEvent.metadata().asJsonObject(), fileCloudLocation);
+                fileUploadedEvent.metadata().asJsonObject(), fileCloudLocation, fileUri);
 
         final ExecutionInfo executionInfo = new ExecutionInfo(
                 objectToJsonObjectConverter.convert(uploadMaterialToAlfrescoJobData),
@@ -179,6 +181,13 @@ public class MaterialEventProcessor {
     @Handles("material.events.cloud-blob-file-uploaded")
     @SuppressWarnings({"squid:S00112", "squid:S2629"})
     public void handleCloudBlobFileUploaded(final JsonEnvelope fileUploadedEvent) {
+
+        fileUploaded(fileUploadedEvent);
+    }
+
+    @Handles("material.events.file-uploaded-from-uri")
+    @SuppressWarnings({"squid:S00112", "squid:S2629"})
+    public void handleFileUploadedFromUri(final JsonEnvelope fileUploadedEvent) {
 
         fileUploaded(fileUploadedEvent);
     }

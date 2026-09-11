@@ -43,6 +43,8 @@ subscriptions_descriptor:
           schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/material.events.material-zipped.json
         - name: material.events.cloud-blob-file-uploaded
           schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/cloud-blob-file-uploaded.json
+        - name: material.events.file-uploaded-from-uri
+          schema_uri: http://cpp.moj.gov.uk/material/json/schemas/event/file-uploaded-from-uri.json
       event_source_name: material
 
     - name: public event subscription

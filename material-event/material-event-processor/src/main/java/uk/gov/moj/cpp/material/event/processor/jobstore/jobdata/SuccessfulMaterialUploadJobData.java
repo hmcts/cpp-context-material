@@ -9,6 +9,7 @@ public class SuccessfulMaterialUploadJobData {
     private final UUID materialId;
     private final UUID fileServiceId;
     private final String fileCloudLocation;
+    private final String fileUri;
     private final UUID alfrescoFileId;
     private final boolean unbundledDocument;
     private final String fileName;
@@ -22,7 +23,8 @@ public class SuccessfulMaterialUploadJobData {
             final boolean unbundledDocument,
             final String fileName,
             final String mediaType,
-            final JsonObject fileUploadedEventMetadata) {
+            final JsonObject fileUploadedEventMetadata,
+            final String fileUri) {
         this.materialId = materialId;
         this.fileServiceId = fileServiceId;
         this.fileCloudLocation = fileCloudLocation;
@@ -31,6 +33,7 @@ public class SuccessfulMaterialUploadJobData {
         this.fileName = fileName;
         this.mediaType = mediaType;
         this.fileUploadedEventMetadata = fileUploadedEventMetadata;
+        this.fileUri = fileUri;
     }
 
     public UUID getMaterialId() {
@@ -61,6 +64,10 @@ public class SuccessfulMaterialUploadJobData {
         return fileCloudLocation;
     }
 
+    public String getFileUri() {
+        return fileUri;
+    }
+
     public JsonObject getFileUploadedEventMetadata() {
         return fileUploadedEventMetadata;
     }
@@ -70,6 +77,7 @@ public class SuccessfulMaterialUploadJobData {
         private UUID materialId;
         private UUID fileServiceId;
         private  String fileCloudLocation;
+        private String fileUri;
         private UUID alfrescoFileId;
         private boolean unbundledDocument;
         private String fileName;
@@ -112,6 +120,11 @@ public class SuccessfulMaterialUploadJobData {
             return this;
         }
 
+        public SuccessfulMaterialUploadJobDataBuilder withFileUri(final String fileUri) {
+            this.fileUri = fileUri;
+            return this;
+        }
+
         public SuccessfulMaterialUploadJobDataBuilder withMediaType(final String mediaType) {
             this.mediaType = mediaType;
             return this;
@@ -132,7 +145,8 @@ public class SuccessfulMaterialUploadJobData {
                     unbundledDocument,
                     fileName,
                     mediaType,
-                    fileUploadedEventMetadata);
+                    fileUploadedEventMetadata,
+                    fileUri);
         }
 
     }

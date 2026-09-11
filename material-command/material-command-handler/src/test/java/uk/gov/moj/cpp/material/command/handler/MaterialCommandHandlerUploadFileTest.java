@@ -5,7 +5,11 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.withJsonPath;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.services.test.utils.core.helper.EventStreamMockHelper.verifyAppendAndGetArgumentFrom;
 import static uk.gov.justice.services.test.utils.core.matchers.JsonEnvelopeMatcher.jsonEnvelope;
@@ -26,6 +30,7 @@ import uk.gov.moj.cpp.material.domain.aggregate.Material;
 import uk.gov.moj.cpp.material.domain.event.CloudBlobFileUploaded;
 import uk.gov.moj.cpp.material.domain.event.FileUploaded;
 import uk.gov.moj.cpp.material.domain.event.FileUploadedAsPdf;
+import uk.gov.moj.cpp.material.domain.event.FileUploadedFromUri;
 
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -53,7 +58,7 @@ public class MaterialCommandHandlerUploadFileTest {
     private Material material;
 
     @Spy
-    private Enveloper enveloper = EnveloperFactory.createEnveloperWithEvents(FileUploaded.class, FileUploadedAsPdf.class);
+    private Enveloper enveloper = EnveloperFactory.createEnveloperWithEvents(FileUploaded.class, FileUploadedAsPdf.class, FileUploadedFromUri.class);
 
     @InjectMocks
     private MaterialCommandHandler materialCommandHandler;
@@ -149,6 +154,198 @@ public class MaterialCommandHandlerUploadFileTest {
         verify(material).uploadCloudBlobFile(materialId,fileCloudLocation);
 
 
+    }
+
+    @Test
+    void shouldHandleFileUploadFromUri() throws EventStreamException {
+
+        final UUID materialId = UUID.randomUUID();
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/payload/2789.json";
+        final boolean isUnbundledDocument = true;
+
+        final JsonEnvelope command = envelope()
+                .with(metadataWithRandomUUID("material.command.upload-file"))
+                .withPayloadOf(materialId.toString(), "materialId")
+                .withPayloadOf(fileUri, "fileUri")
+                .withPayloadOf(isUnbundledDocument, "isUnbundledDocument")
+                .build();
+
+        final FileUploadedFromUri fileUploadedFromUri = new FileUploadedFromUri(materialId, fileUri, isUnbundledDocument);
+        when(eventSource.getStreamById(materialId)).thenReturn(eventStream);
+        when(aggregateService.get(eventStream, Material.class)).thenReturn(material);
+        when(material.uploadFileFromUri(materialId, fileUri, isUnbundledDocument)).thenReturn(Stream.of(fileUploadedFromUri));
+
+        materialCommandHandler.uploadFile(command);
+
+        assertThat(verifyAppendAndGetArgumentFrom(eventStream), streamContaining(
+                jsonEnvelope(
+                        metadata()
+                                .withName("material.events.file-uploaded-from-uri"),
+                        payload().isJson(allOf(
+                                withJsonPath("$.materialId", equalTo(materialId.toString())),
+                                withJsonPath("$.fileUri", equalTo(fileUri)),
+                                withJsonPath("$.isUnbundledDocument", equalTo(isUnbundledDocument))
+                        ))
+                ))
+        );
+    }
+
+    @Test
+    void shouldRejectUploadFileCommandCarryingMoreThanOneFileReference() throws EventStreamException {
+
+        final UUID materialId = UUID.randomUUID();
+        final UUID fileServiceId = UUID.randomUUID();
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/payload/2789.json";
+
+        final JsonEnvelope command = envelope()
+                .with(metadataWithRandomUUID("material.command.upload-file"))
+                .withPayloadOf(materialId.toString(), "materialId")
+                .withPayloadOf(fileServiceId.toString(), "fileServiceId")
+                .withPayloadOf(fileUri, "fileUri")
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> materialCommandHandler.uploadFile(command));
+
+        verifyNoInteractions(eventSource);
+        verify(material, never()).uploadFile(any(), any(), any());
+        verify(material, never()).uploadCloudBlobFile(any(), any());
+        verify(material, never()).uploadFileFromUri(any(), any(), any());
+    }
+
+    @Test
+    void shouldRejectUploadFileCommandCarryingFileServiceIdAndFileCloudLocation() throws EventStreamException {
+
+        final UUID materialId = UUID.randomUUID();
+        final UUID fileServiceId = UUID.randomUUID();
+        final String fileCloudLocation = "2789/test_1.pdf";
+
+        final JsonEnvelope command = envelope()
+                .with(metadataWithRandomUUID("material.command.upload-file"))
+                .withPayloadOf(materialId.toString(), "materialId")
+                .withPayloadOf(fileServiceId.toString(), "fileServiceId")
+                .withPayloadOf(fileCloudLocation, "fileCloudLocation")
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> materialCommandHandler.uploadFile(command));
+
+        verifyNoInteractions(eventSource);
+        verify(material, never()).uploadFile(any(), any(), any());
+        verify(material, never()).uploadCloudBlobFile(any(), any());
+        verify(material, never()).uploadFileFromUri(any(), any(), any());
+    }
+
+    @Test
+    void shouldRejectUploadFileCommandCarryingFileCloudLocationAndFileUri() throws EventStreamException {
+
+        final UUID materialId = UUID.randomUUID();
+        final String fileCloudLocation = "2789/test_1.pdf";
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/payload/2789.json";
+
+        final JsonEnvelope command = envelope()
+                .with(metadataWithRandomUUID("material.command.upload-file"))
+                .withPayloadOf(materialId.toString(), "materialId")
+                .withPayloadOf(fileCloudLocation, "fileCloudLocation")
+                .withPayloadOf(fileUri, "fileUri")
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> materialCommandHandler.uploadFile(command));
+
+        verifyNoInteractions(eventSource);
+        verify(material, never()).uploadFile(any(), any(), any());
+        verify(material, never()).uploadCloudBlobFile(any(), any());
+        verify(material, never()).uploadFileFromUri(any(), any(), any());
+    }
+
+    @Test
+    void shouldRejectUploadFileCommandCarryingAllThreeFileReferences() throws EventStreamException {
+
+        final UUID materialId = UUID.randomUUID();
+        final UUID fileServiceId = UUID.randomUUID();
+        final String fileCloudLocation = "2789/test_1.pdf";
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/payload/2789.json";
+
+        final JsonEnvelope command = envelope()
+                .with(metadataWithRandomUUID("material.command.upload-file"))
+                .withPayloadOf(materialId.toString(), "materialId")
+                .withPayloadOf(fileServiceId.toString(), "fileServiceId")
+                .withPayloadOf(fileCloudLocation, "fileCloudLocation")
+                .withPayloadOf(fileUri, "fileUri")
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> materialCommandHandler.uploadFile(command));
+
+        verifyNoInteractions(eventSource);
+        verify(material, never()).uploadFile(any(), any(), any());
+        verify(material, never()).uploadCloudBlobFile(any(), any());
+        verify(material, never()).uploadFileFromUri(any(), any(), any());
+    }
+
+    @Test
+    void shouldDefaultIsUnbundledDocumentToFalseWhenFileUploadFromUriOmitsIt() throws EventStreamException {
+
+        final UUID materialId = UUID.randomUUID();
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/payload/2789.json";
+
+        final JsonEnvelope command = envelope()
+                .with(metadataWithRandomUUID("material.command.upload-file"))
+                .withPayloadOf(materialId.toString(), "materialId")
+                .withPayloadOf(fileUri, "fileUri")
+                .build();
+
+        final FileUploadedFromUri fileUploadedFromUri = new FileUploadedFromUri(materialId, fileUri, false);
+        when(eventSource.getStreamById(materialId)).thenReturn(eventStream);
+        when(aggregateService.get(eventStream, Material.class)).thenReturn(material);
+        when(material.uploadFileFromUri(materialId, fileUri, false)).thenReturn(Stream.of(fileUploadedFromUri));
+
+        materialCommandHandler.uploadFile(command);
+
+        verify(material).uploadFileFromUri(materialId, fileUri, false);
+    }
+
+    @Test
+    void shouldTreatEmptyFileUriAsPresentAndDispatchUpload() throws EventStreamException {
+
+        final UUID materialId = UUID.randomUUID();
+        final String fileUri = "";
+        final boolean isUnbundledDocument = false;
+
+        final JsonEnvelope command = envelope()
+                .with(metadataWithRandomUUID("material.command.upload-file"))
+                .withPayloadOf(materialId.toString(), "materialId")
+                .withPayloadOf(fileUri, "fileUri")
+                .withPayloadOf(isUnbundledDocument, "isUnbundledDocument")
+                .build();
+
+        final FileUploadedFromUri fileUploadedFromUri = new FileUploadedFromUri(materialId, fileUri, isUnbundledDocument);
+        when(eventSource.getStreamById(materialId)).thenReturn(eventStream);
+        when(aggregateService.get(eventStream, Material.class)).thenReturn(material);
+        when(material.uploadFileFromUri(materialId, fileUri, isUnbundledDocument)).thenReturn(Stream.of(fileUploadedFromUri));
+
+        materialCommandHandler.uploadFile(command);
+
+        verify(material).uploadFileFromUri(materialId, fileUri, isUnbundledDocument);
+        verify(eventStream).append(any());
+    }
+
+    @Test
+    void shouldNotAppendAnyEventsWhenUploadFileCommandHasNoFileReference() throws EventStreamException {
+
+        final UUID materialId = UUID.randomUUID();
+
+        final JsonEnvelope command = envelope()
+                .with(metadataWithRandomUUID("material.command.upload-file"))
+                .withPayloadOf(materialId.toString(), "materialId")
+                .build();
+
+        when(eventSource.getStreamById(materialId)).thenReturn(eventStream);
+        when(aggregateService.get(eventStream, Material.class)).thenReturn(material);
+
+        materialCommandHandler.uploadFile(command);
+
+        verify(eventStream, never()).append(any());
+        verify(material, never()).uploadFile(any(), any(), any());
+        verify(material, never()).uploadCloudBlobFile(any(), any());
+        verify(material, never()).uploadFileFromUri(any(), any(), any());
     }
 
 }
