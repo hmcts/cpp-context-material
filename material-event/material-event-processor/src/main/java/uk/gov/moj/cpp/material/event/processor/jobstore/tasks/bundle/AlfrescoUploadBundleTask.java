@@ -135,7 +135,7 @@ public class AlfrescoUploadBundleTask implements ExecutableTask {
                 uploadBundleToAlfrescoJobData.getBundledMaterialId(),
                 uploadBundleToAlfrescoJobData.getFileServiceId(),
                 false,
-                uploadBundleToAlfrescoJobData.getEventMetadata(),""
+                uploadBundleToAlfrescoJobData.getEventMetadata(),"", null
         );
     }
 }

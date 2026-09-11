@@ -19,6 +19,7 @@ import uk.gov.justice.services.messaging.JsonEnvelope;
 import uk.gov.moj.cpp.material.domain.FileDetails;
 import uk.gov.moj.cpp.material.domain.event.FailedToAddMaterial;
 import uk.gov.moj.cpp.material.domain.event.FileUploaded;
+import uk.gov.moj.cpp.material.domain.event.FileUploadedFromUri;
 import uk.gov.moj.cpp.material.domain.event.MaterialAdded;
 import uk.gov.moj.cpp.material.domain.event.MaterialBundleDetailsRecorded;
 import uk.gov.moj.cpp.material.domain.event.MaterialDeleted;
@@ -56,6 +57,7 @@ public class MaterialEventListenerTest {
     private static final ZonedDateTime TIME_NOW = new UtcClock().now();
     private static final ZonedDateTime FAILED_TIME = TIME_NOW.minusSeconds(2);
     private static final String EXTERNAL_LINK = "http://something.com";
+    private static final String FILE_URI = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/generated/28DI1303134.pdf";
 
     @Spy
     private MaterialAddedToMaterialConverter materialAddedToMaterialConverter = new MaterialAddedToMaterialConverter();
@@ -70,6 +72,9 @@ public class MaterialEventListenerTest {
     private JsonEnvelope fileUploadedEnvelope;
 
     @Mock
+    private JsonEnvelope fileUploadedFromUriEnvelope;
+
+    @Mock
     private JsonEnvelope failedToUploadMaterialEnvelope;
 
     @Mock
@@ -77,6 +82,9 @@ public class MaterialEventListenerTest {
 
     @Mock
     private JsonObject fileUploadedAsJsonObject;
+
+    @Mock
+    private JsonObject fileUploadedFromUriAsJsonObject;
 
     @Mock
     private JsonObject failedToUploadMaterialAsJsonObject;
@@ -195,6 +203,42 @@ public class MaterialEventListenerTest {
         assertThat(savedEntity.getLastModified(), is(TIME_NOW));
         assertThat(savedEntity.getErrorMessage(), is(nullValue()));
         assertThat(savedEntity.getFailedTime(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldSetMaterialUpdateStatusAsQueuedWhenFileUploadFromUriRequestReceived() {
+        FileUploadedFromUri fileUploadedFromUri = new FileUploadedFromUri(MATERIAL_ID, FILE_URI, false);
+        when(fileUploadedFromUriEnvelope.payloadAsJsonObject()).thenReturn(fileUploadedFromUriAsJsonObject);
+        when(jsonObjectConverter.convert(fileUploadedFromUriAsJsonObject, FileUploadedFromUri.class)).thenReturn(fileUploadedFromUri);
+        when(materialUploadStatusRepository.findBy(MATERIAL_ID)).thenReturn(null);
+        when(clock.now()).thenReturn(TIME_NOW);
+
+        materialEventListener.fileUploadedFromUri(this.fileUploadedFromUriEnvelope);
+
+        verify(materialUploadStatusRepository).save(materialUploadStatusArgumentCaptor.capture());
+
+        final MaterialUploadStatus savedEntity = materialUploadStatusArgumentCaptor.getValue();
+        assertThat(savedEntity.getMaterialId(), is(MATERIAL_ID));
+        assertThat(savedEntity.getFileServiceId(), is(UUID.nameUUIDFromBytes(FILE_URI.getBytes())));
+        assertThat(savedEntity.getStatus(), is("QUEUED"));
+        assertThat(savedEntity.getLastModified(), is(TIME_NOW));
+        assertThat(savedEntity.getErrorMessage(), is(nullValue()));
+        assertThat(savedEntity.getFailedTime(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldSetLogWarningForMaterialUpdateStatusWhenFileUploadedFromUriAndExistingRecordFound() {
+        FileUploadedFromUri fileUploadedFromUri = new FileUploadedFromUri(MATERIAL_ID, FILE_URI, false);
+        when(fileUploadedFromUriEnvelope.payloadAsJsonObject()).thenReturn(fileUploadedFromUriAsJsonObject);
+        when(jsonObjectConverter.convert(fileUploadedFromUriAsJsonObject, FileUploadedFromUri.class)).thenReturn(fileUploadedFromUri);
+        when(materialUploadStatusRepository.findBy(MATERIAL_ID)).thenReturn(materialUploadStatus);
+
+        materialEventListener.fileUploadedFromUri(this.fileUploadedFromUriEnvelope);
+
+        verifyNoMoreInteractions(materialUploadStatus);
+        verify(materialUploadStatusRepository, never()).save(any());
+
+        verify(logger).warn("Failed to add new upload status for materialId {} as it already exists.", MATERIAL_ID);
     }
 
     @Test

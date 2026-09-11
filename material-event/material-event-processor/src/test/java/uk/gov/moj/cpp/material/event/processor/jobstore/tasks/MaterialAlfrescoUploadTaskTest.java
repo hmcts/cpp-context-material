@@ -141,6 +141,58 @@ import org.slf4j.Logger;
     }
 
     @Test
+    void shouldUploadFileFromUriToAlfrescoThenScheduleNextTask() throws Exception {
+
+        final ZonedDateTime now = new UtcClock().now();
+
+        final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = mock(UploadMaterialToAlfrescoJobData.class);
+        final ExecutionInfo inputExecutionInfo = mock(ExecutionInfo.class);
+        final JsonObject inputJobData = mock(JsonObject.class);
+        final JsonObject outputJobData = mock(JsonObject.class);
+        final SuccessfulMaterialUploadJobData successfulMaterialUploadJobData = mock(SuccessfulMaterialUploadJobData.class);
+
+        when(inputExecutionInfo.getJobData()).thenReturn(inputJobData);
+        when(uploadMaterialToAlfrescoJobData.getFileServiceId()).thenReturn(null);
+        when(uploadMaterialToAlfrescoJobData.getFileUri()).thenReturn("https://sastagingdvlafilestore.blob.core.windows.net/producer-container/generated/28DI3233185.pdf");
+
+        when(jsonObjectConverter.convert(
+                inputJobData,
+                UploadMaterialToAlfrescoJobData.class)).thenReturn(uploadMaterialToAlfrescoJobData);
+        when(alfrescoFileUploader.uploadFileFromUriToAlfresco(
+                uploadMaterialToAlfrescoJobData)).thenReturn(successfulMaterialUploadJobData);
+        when(objectToJsonObjectConverter.convert(successfulMaterialUploadJobData)).thenReturn(outputJobData);
+        when(clock.now()).thenReturn(now);
+
+        final ExecutionInfo outputExecutionInfo = materialAlfrescoUploadTask.execute(inputExecutionInfo);
+
+        assertThat(outputExecutionInfo.getNextTask(), is(SUCCESSFUL_MATERIAL_UPLOAD_COMMAND_TASK));
+        assertThat(outputExecutionInfo.getExecutionStatus(), is(INPROGRESS));
+        assertThat(outputExecutionInfo.getJobData(), is(outputJobData));
+        assertThat(outputExecutionInfo.getNextTaskStartTime(), is(now));
+    }
+
+    @Test
+    void shouldCreateRetryTaskWithExhaustTaskConfigurationForFileUploadFromUri() throws Exception {
+
+        final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = mock(UploadMaterialToAlfrescoJobData.class);
+        final ExecutionInfo inputExecutionInfo = mock(ExecutionInfo.class);
+        final JsonObject inputJobData = mock(JsonObject.class);
+
+        when(inputExecutionInfo.getJobData()).thenReturn(inputJobData);
+        when(uploadMaterialToAlfrescoJobData.getFileServiceId()).thenReturn(null);
+        when(uploadMaterialToAlfrescoJobData.getFileUri()).thenReturn("https://sastagingdvlafilestore.blob.core.windows.net/producer-container/generated/28DI3233185.pdf");
+        when(jsonObjectConverter.convert(inputJobData, UploadMaterialToAlfrescoJobData.class)).thenReturn(uploadMaterialToAlfrescoJobData);
+        when(alfrescoFileUploader.uploadFileFromUriToAlfresco(
+                uploadMaterialToAlfrescoJobData)).thenThrow(new RuntimeException());
+
+        materialAlfrescoUploadTask.execute(inputExecutionInfo);
+
+        verify(hardFailureTaskFactory).createRetryWithHardFailureTaskOnExhaust(
+                eq(uploadMaterialToAlfrescoJobData),
+                startsWith("Unexpected error occurred when attempting to upload file to Alfresco for fileUri: "));
+    }
+
+    @Test
     void shouldCreateHardFailureTaskIfNoFileFoundInFileService() throws Exception {
 
         final UUID fileServiceId = fromString("dae2f001-96cc-49ac-938b-b569f4adfb3a");

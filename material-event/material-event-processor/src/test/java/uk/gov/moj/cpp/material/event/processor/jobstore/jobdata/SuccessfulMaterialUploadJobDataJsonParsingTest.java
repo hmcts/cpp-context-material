@@ -33,6 +33,7 @@ public class SuccessfulMaterialUploadJobDataJsonParsingTest {
         final boolean unbundledDocument = true;
         final String fileName = "file name";
         final String mediaType = "application/pdf";
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/generated/28DI1303134.pdf";
 
         final SuccessfulMaterialUploadJobData sendMaterialToAlfrescoJobState = new SuccessfulMaterialUploadJobData(
                 materialId,
@@ -41,7 +42,8 @@ public class SuccessfulMaterialUploadJobDataJsonParsingTest {
                 unbundledDocument,
                 fileName,
                 mediaType,
-                fileUploadedEventMetadata);
+                fileUploadedEventMetadata,
+                fileUri);
 
         final String json = objectMapper.writeValueAsString(sendMaterialToAlfrescoJobState);
 
@@ -53,6 +55,7 @@ public class SuccessfulMaterialUploadJobDataJsonParsingTest {
         assertThat(newSendMaterialToAlfrescoJobState.getFileServiceId(), is(fileServiceId));
         assertThat(newSendMaterialToAlfrescoJobState.getAlfrescoFileId(), is(alfrescoFileId));
         assertThat(newSendMaterialToAlfrescoJobState.isUnbundledDocument(), is(unbundledDocument));
+        assertThat(newSendMaterialToAlfrescoJobState.getFileUri(), is(fileUri));
 
         final String fileUploadedEventMetadataJson = newSendMaterialToAlfrescoJobState.getFileUploadedEventMetadata().toString();
 

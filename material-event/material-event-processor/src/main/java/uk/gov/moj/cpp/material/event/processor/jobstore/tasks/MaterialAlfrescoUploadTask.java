@@ -74,6 +74,8 @@ public class MaterialAlfrescoUploadTask implements ExecutableTask {
 
         if (fileServiceId != null) {
             return handleFileServiceUpload(fileServiceId, jobData);
+        } else if (jobData.getFileUri() != null) {
+            return handleFileUploadFromUri(jobData);
         } else {
             return handleAzureUpload(jobData);
         }
@@ -102,6 +104,16 @@ public class MaterialAlfrescoUploadTask implements ExecutableTask {
         }
     }
 
+    private ExecutionInfo handleFileUploadFromUri(UploadMaterialToAlfrescoJobData jobData) {
+        try {
+            return uploadFileFromUriToAlfresco(jobData);
+        } catch (final Exception e) {
+            String errorMessage = String.format("Unexpected error occurred when attempting to upload file to Alfresco for fileUri: '%s'. %s: %s",
+                    jobData.getFileUri(), e.getClass().getSimpleName(), e.getMessage());
+            return createRetryTask(jobData, errorMessage);
+        }
+    }
+
     private ExecutionInfo createRetryTask(UploadMaterialToAlfrescoJobData jobData, String errorMessage) {
         return hardFailureTaskFactory.createRetryWithHardFailureTaskOnExhaust(jobData, errorMessage);
     }
@@ -110,6 +122,19 @@ public class MaterialAlfrescoUploadTask implements ExecutableTask {
     private ExecutionInfo uploadAzureFileToAlfresco(UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData) throws FileServiceException {
 
         final SuccessfulMaterialUploadJobData successfulMaterialUploadJobData = alfrescoFileUploader.uploadFileFromAzureToAlfresco(
+                uploadMaterialToAlfrescoJobData);
+        return executionInfo()
+                .withExecutionStatus(INPROGRESS)
+                .withNextTask(SUCCESSFUL_MATERIAL_UPLOAD_COMMAND_TASK)
+                .withNextTaskStartTime(clock.now())
+                .withJobData(objectToJsonObjectConverter.convert(successfulMaterialUploadJobData))
+                .build();
+
+    }
+
+    private ExecutionInfo uploadFileFromUriToAlfresco(UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData) throws FileServiceException {
+
+        final SuccessfulMaterialUploadJobData successfulMaterialUploadJobData = alfrescoFileUploader.uploadFileFromUriToAlfresco(
                 uploadMaterialToAlfrescoJobData);
         return executionInfo()
                 .withExecutionStatus(INPROGRESS)

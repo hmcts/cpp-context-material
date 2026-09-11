@@ -11,6 +11,7 @@ import uk.gov.justice.services.messaging.JsonEnvelope;
 import uk.gov.moj.cpp.material.domain.event.CloudBlobFileUploaded;
 import uk.gov.moj.cpp.material.domain.event.FailedToAddMaterial;
 import uk.gov.moj.cpp.material.domain.event.FileUploaded;
+import uk.gov.moj.cpp.material.domain.event.FileUploadedFromUri;
 import uk.gov.moj.cpp.material.domain.event.MaterialAdded;
 import uk.gov.moj.cpp.material.domain.event.MaterialBundleDetailsRecorded;
 import uk.gov.moj.cpp.material.domain.event.MaterialDeleted;
@@ -115,6 +116,21 @@ public class MaterialEventListener {
             materialUploadStatusRepository.save(new MaterialUploadStatus(fileUploaded.getMaterialId(), UUID.nameUUIDFromBytes(fileUploaded.getFileCloudLocation().getBytes()), UPLOAD_STATUS_QUEUED, null, null, clock.now()));
         } else {
             logger.warn("Failed to add new upload status for materialId {} as it already exists.", fileUploaded.getMaterialId());
+        }
+    }
+
+    @Handles("material.events.file-uploaded-from-uri")
+    public void fileUploadedFromUri(final JsonEnvelope event) {
+        final FileUploadedFromUri fileUploadedFromUri = jsonObjectConverter.convert(
+                event.payloadAsJsonObject(),
+                FileUploadedFromUri.class);
+
+        final MaterialUploadStatus materialUploadStatus = materialUploadStatusRepository.findBy(fileUploadedFromUri.getMaterialId());
+
+        if (materialUploadStatus == null) {
+            materialUploadStatusRepository.save(new MaterialUploadStatus(fileUploadedFromUri.getMaterialId(), UUID.nameUUIDFromBytes(fileUploadedFromUri.getFileUri().getBytes()), UPLOAD_STATUS_QUEUED, null, null, clock.now()));
+        } else {
+            logger.warn("Failed to add new upload status for materialId {} as it already exists.", fileUploadedFromUri.getMaterialId());
         }
     }
 

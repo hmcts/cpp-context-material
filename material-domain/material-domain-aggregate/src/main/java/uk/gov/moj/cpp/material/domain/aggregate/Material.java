@@ -12,6 +12,7 @@ import uk.gov.moj.cpp.material.domain.FileDetails;
 import uk.gov.moj.cpp.material.domain.UploadedMaterial;
 import uk.gov.moj.cpp.material.domain.event.CloudBlobFileUploaded;
 import uk.gov.moj.cpp.material.domain.event.DuplicateCloudBlobFileUploadedRequestReceived;
+import uk.gov.moj.cpp.material.domain.event.DuplicateFileUploadFromUriRequestReceived;
 import uk.gov.moj.cpp.material.domain.event.DuplicateFileUploadRequestReceived;
 import uk.gov.moj.cpp.material.domain.event.DuplicateMaterialBundleNotCreated;
 import uk.gov.moj.cpp.material.domain.event.DuplicateMaterialNotCreated;
@@ -19,6 +20,7 @@ import uk.gov.moj.cpp.material.domain.event.DuplicateRecordBundleDetailsRequeste
 import uk.gov.moj.cpp.material.domain.event.FailedToAddMaterial;
 import uk.gov.moj.cpp.material.domain.event.FileUploaded;
 import uk.gov.moj.cpp.material.domain.event.FileUploadedAsPdf;
+import uk.gov.moj.cpp.material.domain.event.FileUploadedFromUri;
 import uk.gov.moj.cpp.material.domain.event.MaterialAdded;
 import uk.gov.moj.cpp.material.domain.event.MaterialBundleDetailsRecorded;
 import uk.gov.moj.cpp.material.domain.event.MaterialBundleRequested;
@@ -27,10 +29,8 @@ import uk.gov.moj.cpp.material.domain.event.MaterialDeleted;
 import uk.gov.moj.cpp.material.domain.event.MaterialNotFound;
 
 import java.time.ZonedDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -47,6 +47,7 @@ public class Material implements Aggregate {
     private String filename;
     private UUID fileServiceId;
     private String fileCloudLocation;
+    private String fileUri;
 
     public boolean isHasBeenCreated() {
         return hasBeenCreated;
@@ -78,7 +79,9 @@ public class Material implements Aggregate {
                 when(MaterialNotFound.class).apply(e -> doNothing()),
                 when(DuplicateFileUploadRequestReceived.class).apply(e -> doNothing()),
                 when(CloudBlobFileUploaded.class).apply(e -> onCloudBlobFileUpload(e.getFileCloudLocation())),
-                when(DuplicateCloudBlobFileUploadedRequestReceived.class).apply(e -> doNothing())
+                when(DuplicateCloudBlobFileUploadedRequestReceived.class).apply(e -> doNothing()),
+                when(FileUploadedFromUri.class).apply(e -> onFileUploadFromUri(e.getFileUri())),
+                when(DuplicateFileUploadFromUriRequestReceived.class).apply(e -> doNothing())
         );
     }
 
@@ -180,6 +183,16 @@ public class Material implements Aggregate {
 
     }
 
+    // correlationId is not carried on this command - FR-8 reads it from the source blob's
+    // user-defined metadata during the stream-through Alfresco upload, not from the command payload.
+    public Stream<Object> uploadFileFromUri(final UUID materialId, final String fileUri, final Boolean isUnbundledDocument) {
+        if (!fileUri.equals(this.fileUri)) {
+            return apply(of(new FileUploadedFromUri(materialId, fileUri, isUnbundledDocument)));
+        } else {
+            return apply(of(new DuplicateFileUploadFromUriRequestReceived(materialId, fileUri)));
+        }
+    }
+
     public Stream<Object> uploadFileAsPdf(final UUID materialId, final UUID fileServiceId, final Boolean isUnbundledDocument) {
         final FileUploadedAsPdf fileUploaded = new FileUploadedAsPdf(materialId, fileServiceId, isUnbundledDocument);
         return apply(of(fileUploaded));
@@ -240,6 +253,10 @@ public class Material implements Aggregate {
 
     private void onCloudBlobFileUpload(final String  fileCloudLocation) {
         this.fileCloudLocation = fileCloudLocation;
+    }
+
+    private void onFileUploadFromUri(final String fileUri) {
+        this.fileUri = fileUri;
     }
 
     private void onMaterialDeleted() {

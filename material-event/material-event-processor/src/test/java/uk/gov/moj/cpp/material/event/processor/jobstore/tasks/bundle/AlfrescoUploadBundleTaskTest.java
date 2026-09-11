@@ -225,7 +225,7 @@ public class AlfrescoUploadBundleTaskTest {
                                                                                UUID alfrescoFileId, String fileName,
                                                                                String mediaType, JsonObject fileUploadedEventMetadata) {
         return new SuccessfulMaterialUploadJobData(materialId, fileServiceId,"" , alfrescoFileId,
-                false, fileName, mediaType, fileUploadedEventMetadata);
+                false, fileName, mediaType, fileUploadedEventMetadata, null);
     }
 
 }

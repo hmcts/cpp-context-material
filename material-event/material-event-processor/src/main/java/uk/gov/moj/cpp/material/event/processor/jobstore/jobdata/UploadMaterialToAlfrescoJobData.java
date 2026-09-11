@@ -12,6 +12,7 @@ public class UploadMaterialToAlfrescoJobData {
     private final UUID materialId;
     private final UUID fileServiceId;
     private final String cloudLocation;
+    private final String fileUri;
 
 
 
@@ -22,12 +23,15 @@ public class UploadMaterialToAlfrescoJobData {
             final UUID materialId,
             final UUID fileServiceId,
             final boolean unbundledDocument,
-            final JsonObject fileUploadedEventMetadata, String cloudLocation) {
+            final JsonObject fileUploadedEventMetadata,
+            final String cloudLocation,
+            final String fileUri) {
         this.materialId = materialId;
         this.fileServiceId = fileServiceId;
         this.unbundledDocument = unbundledDocument;
         this.fileUploadedEventMetadata = fileUploadedEventMetadata;
         this.cloudLocation = cloudLocation;
+        this.fileUri = fileUri;
     }
 
     public UUID getMaterialId() {
@@ -40,6 +44,10 @@ public class UploadMaterialToAlfrescoJobData {
 
     public String getCloudLocation() {
         return cloudLocation;
+    }
+
+    public String getFileUri() {
+        return fileUri;
     }
 
     public boolean isUnbundledDocument() {
@@ -67,7 +75,7 @@ public class UploadMaterialToAlfrescoJobData {
 
     @Override
     public int hashCode() {
-        return Objects.hash(materialId, fileServiceId, unbundledDocument, fileUploadedEventMetadata);
+        return Objects.hash(materialId, fileServiceId, unbundledDocument, fileUploadedEventMetadata, cloudLocation, fileUri);
     }
 
     public static class UploadMaterialToAlfrescoJobDataBuilder {
@@ -75,6 +83,7 @@ public class UploadMaterialToAlfrescoJobData {
         private UUID materialId;
         private UUID fileServiceId;
         private  String cloudLocation;
+        private String fileUri;
         private boolean unbundledDocument;
         private JsonObject fileUploadedEventMetadata;
 
@@ -88,7 +97,8 @@ public class UploadMaterialToAlfrescoJobData {
             fileServiceId = uploadMaterialToAlfrescoJobData.getFileServiceId();
             unbundledDocument = uploadMaterialToAlfrescoJobData.isUnbundledDocument();
             fileUploadedEventMetadata = uploadMaterialToAlfrescoJobData.getFileUploadedEventMetadata();
-            cloudLocation = uploadMaterialToAlfrescoJobData().build().getCloudLocation();
+            cloudLocation = uploadMaterialToAlfrescoJobData.getCloudLocation();
+            fileUri = uploadMaterialToAlfrescoJobData.getFileUri();
 
             return this;
         }
@@ -99,7 +109,8 @@ public class UploadMaterialToAlfrescoJobData {
                     fileServiceId,
                     unbundledDocument,
                     fileUploadedEventMetadata,
-                    cloudLocation
+                    cloudLocation,
+                    fileUri
             );
         }
     }
