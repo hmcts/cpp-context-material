@@ -15,7 +15,7 @@ public class SuccessfulBundleUploadJobData extends SuccessfulMaterialUploadJobDa
                                          boolean unbundledDocument, String fileName, String mediaType,
                                          Long fileSize, int pageCount,
                                          JsonObject fileUploadedEventMetadata) {
-        super(materialId, fileServiceId, "", alfrescoFileId, unbundledDocument, fileName, mediaType, fileUploadedEventMetadata);
+        super(materialId, fileServiceId, "", alfrescoFileId, unbundledDocument, fileName, mediaType, fileUploadedEventMetadata, null);
         this.fileSize = fileSize;
         this.pageCount = pageCount;
     }

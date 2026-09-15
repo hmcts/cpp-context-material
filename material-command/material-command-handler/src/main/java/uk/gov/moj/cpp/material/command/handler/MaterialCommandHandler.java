@@ -61,6 +61,7 @@ public class MaterialCommandHandler {
     private static final String ERROR_MESSAGE = "errorMessage";
     private static final String FILE_SERVICE_ID = "fileServiceId";
     private static final String FILE_CLOUD_LOCATION = "fileCloudLocation";
+    private static final String FILE_URI = "fileUri";
 
     @Inject
     private EventSource eventSource;
@@ -124,16 +125,27 @@ public class MaterialCommandHandler {
         final UUID materialId = fromString(payload.getString(MATERIAL_ID));
         final Boolean isUnbundledDocument = payload.getBoolean(IS_UNBUNDLED_DOCUMENT, false);
 
+        final boolean hasFileServiceId = payload.containsKey(FILE_SERVICE_ID) && !payload.isNull(FILE_SERVICE_ID);
+        final boolean hasFileCloudLocation = payload.containsKey(FILE_CLOUD_LOCATION) && !payload.isNull(FILE_CLOUD_LOCATION);
+        final boolean hasFileUri = payload.containsKey(FILE_URI) && !payload.isNull(FILE_URI);
+
+        if (Stream.of(hasFileServiceId, hasFileCloudLocation, hasFileUri).filter(Boolean::booleanValue).count() > 1) {
+            LOGGER.warn("Rejecting upload-file command for materialId={}: more than one of fileServiceId, fileCloudLocation, fileUri was present", materialId);
+            throw new IllegalArgumentException(
+                    "upload-file command for materialId=" + materialId
+                            + " must carry exactly one of fileServiceId, fileCloudLocation, fileUri");
+        }
+
         final EventStream eventStream = eventSource.getStreamById(materialId);
         final Material material = aggregateService.get(eventStream, Material.class);
 
         Stream<Object> events = null;
-        if (payload.containsKey(FILE_CLOUD_LOCATION) && !payload.isNull(FILE_CLOUD_LOCATION)) {
-            events= material.uploadCloudBlobFile(materialId, payload.getString(FILE_CLOUD_LOCATION));
-        }
-
-        if (payload.containsKey(FILE_SERVICE_ID) && !payload.isNull(FILE_SERVICE_ID)) {
-            events= material.uploadFile(materialId, fromString(payload.getString(FILE_SERVICE_ID)), isUnbundledDocument);
+        if (hasFileCloudLocation) {
+            events = material.uploadCloudBlobFile(materialId, payload.getString(FILE_CLOUD_LOCATION));
+        } else if (hasFileServiceId) {
+            events = material.uploadFile(materialId, fromString(payload.getString(FILE_SERVICE_ID)), isUnbundledDocument);
+        } else if (hasFileUri) {
+            events = material.uploadFileFromUri(materialId, payload.getString(FILE_URI), isUnbundledDocument);
         }
 
         if(null != events){

@@ -170,6 +170,64 @@ public class MaterialEventProcessorFileUploadTest {
     }
 
     @Test
+    public void shouldHandleFileUploadedFromUriEvent() {
+
+        final UUID materialId = fromString("d1319ff0-bf27-4814-ba55-831f65894190");
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/generated/28DI1303134.pdf";
+
+        final String eventName = "material.events.file-uploaded-from-uri";
+        final UUID causation = fromString("f5d3c9e0-82f6-4611-8ea4-d243c0059861");
+        final String userId = "69f8bd3b-cfe7-4c73-aa05-f8773bdaf16c";
+        final String clientId = "c9146fdb-edd8-4b96-95aa-5be9cd62608f";
+        final String eventId = "ce15d242-0d4e-4ad8-bce7-d7a5f3ab77ef";
+
+        final ZonedDateTime now = new UtcClock().now();
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Object> argCaptor = ArgumentCaptor.forClass(Object.class);
+
+        when(clock.now()).thenReturn(now);
+
+        final JsonEnvelope event = envelope()
+                .with(metadataOf(eventId, eventName)
+                        .withUserId(userId)
+                        .withClientCorrelationId(clientId)
+                        .withCausation(causation))
+                .withPayloadOf(materialId.toString(), MATERIAL_ID)
+                .withPayloadOf(fileUri, "fileUri")
+                .withPayloadOf(true, "isUnbundledDocument")
+                .build();
+
+        materialEventProcessor.handleFileUploadedFromUri(event);
+
+        verify(executionService).executeWith(executionInfoCaptor.capture());
+
+        final ExecutionInfo executionInfo = executionInfoCaptor.getValue();
+
+        assertThat(executionInfo.getNextTaskStartTime(), is(now));
+        assertThat(executionInfo.getExecutionStatus(), is(STARTED));
+        assertThat(executionInfo.getNextTask(), is(UPLOAD_FILE_TO_ALFRESCO_TASK));
+
+        final String jobDataJson = executionInfo.getJobData().toString();
+
+        with(jobDataJson)
+                .assertThat("$.materialId", is(materialId.toString()))
+                .assertThat("$.fileUri", is(fileUri))
+                .assertThat("$.unbundledDocument", is(true))
+                .assertThat("$.fileUploadedEventMetadata.name", is(eventName))
+                .assertThat("$.fileUploadedEventMetadata.correlation.client", is(clientId))
+                .assertThat("$.fileUploadedEventMetadata.causation[0]", is(causation.toString()))
+                .assertThat("$.fileUploadedEventMetadata.context.user", is(userId))
+                .assertThat("$.fileUploadedEventMetadata.id", is(eventId))
+        ;
+
+        verify(logger).info(messageCaptor.capture(), argCaptor.capture(), argCaptor.capture());
+        String expectedMessage = "Added Alfresco file upload to the jobstore: task '{}', materialId '{}'";
+        assertEquals(expectedMessage, messageCaptor.getValue());
+        assertEquals("material.upload-file-to-alfresco", argCaptor.getAllValues().get(0));
+        assertEquals("d1319ff0-bf27-4814-ba55-831f65894190", argCaptor.getAllValues().get(1).toString());
+    }
+
+    @Test
     public void shouldHandleFileUploadedAsPdfEvent() throws Exception {
         final UUID materialId = randomUUID();
         final UUID fileServiceId = randomUUID();

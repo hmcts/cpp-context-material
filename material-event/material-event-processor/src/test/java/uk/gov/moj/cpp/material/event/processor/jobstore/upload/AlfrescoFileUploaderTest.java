@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import uk.gov.justice.services.file.api.sender.FileData;
 import uk.gov.justice.services.file.api.sender.FileSender;
 import uk.gov.justice.services.fileservice.domain.FileReference;
+import uk.gov.moj.cpp.material.event.processor.azure.service.AzureBlobUriClientService;
 import uk.gov.moj.cpp.material.event.processor.azure.service.StorageCloudClientService;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.SuccessfulMaterialUploadJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.UploadMaterialToAlfrescoJobData;
@@ -63,6 +64,9 @@ public class AlfrescoFileUploaderTest {
     private StorageCloudClientService storageCloudClientService;
 
     @Mock
+    private AzureBlobUriClientService azureBlobUriClientService;
+
+    @Mock
     private BlobInputStream blobInputStream;
 
     @Mock
@@ -95,7 +99,7 @@ public class AlfrescoFileUploaderTest {
                 materialId,
                 fileServiceId,
                 unbundledDocument,
-                uploadedEventMetadata, "");
+                uploadedEventMetadata, "", null);
 
         when(fileReference.getMetadata()).thenReturn(fileReferenceMetadata);
         when(fileReference.getContentStream()).thenReturn(contentStream);
@@ -129,7 +133,7 @@ public class AlfrescoFileUploaderTest {
                 materialId,
                 fileServiceId,
                 unbundledDocument,
-                uploadedEventMetadata, "");
+                uploadedEventMetadata, "", null);
 
         when(fileReference.getContentStream()).thenReturn(contentStream);
         when(fileSender.send(anyString(), eq(contentStream))).thenReturn(fileData);
@@ -172,7 +176,7 @@ public class AlfrescoFileUploaderTest {
                 materialId,
                 fileServiceId,
                 unbundledDocument,
-                uploadedEventMetadata, "");
+                uploadedEventMetadata, "", null);
 
         when(fileReference.getMetadata()).thenReturn(fileReferenceMetadata);
         when(fileReference.getContentStream()).thenReturn(contentStream);
@@ -204,7 +208,7 @@ public class AlfrescoFileUploaderTest {
         when(storageCloudClientService.downloadBlobContents(blobName)).thenReturn(blobInputStream);
         when(blobInputStream.getProperties()).thenReturn(blobProperties);
         UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(materialId, fileServiceId,
-                false, uploadedEventMetadata, blobName);
+                false, uploadedEventMetadata, blobName, null);
         when(alfrescoFileService.generateAlfrescoCompliantFileName("test.pdf", materialId, "application/pdf")).thenReturn("test.pdf");
         when(fileSender.send("test.pdf", blobInputStream)).thenReturn(fileData);
         when(fileData.fileId()).thenReturn(alfrescoFileId.toString());
@@ -224,7 +228,8 @@ public class AlfrescoFileUploaderTest {
                 fileServiceId,
                 false,
                 uploadedEventMetadata,
-                cloudLocation);
+                cloudLocation,
+                null);
         when(alfrescoFileService.generateAlfrescoCompliantFileName(fileName, materialId, "application/pdf"))
                 .thenReturn(fileName);
         when(fileSender.send(fileName, blobInputStream)).thenReturn(fileData);
@@ -237,5 +242,47 @@ public class AlfrescoFileUploaderTest {
         assertThat(result.getAlfrescoFileId(), is(alfrescoFileId));
         assertThat(result.getFileName(), is(fileName));
         assertThat(result.getFileCloudLocation(), is(cloudLocation));
+    }
+
+    @Test
+    void shouldUploadFileFromUriToAlfresco() {
+        String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/generated/28DI3233185.pdf";
+        when(azureBlobUriClientService.downloadBlobContents(fileUri)).thenReturn(blobInputStream);
+        when(blobInputStream.getProperties()).thenReturn(blobProperties);
+        UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(materialId, null,
+                false, uploadedEventMetadata, null, fileUri);
+        when(alfrescoFileService.generateAlfrescoCompliantFileName("28DI3233185.pdf", materialId, "application/pdf")).thenReturn("28DI3233185.pdf");
+        when(fileSender.send("28DI3233185.pdf", blobInputStream)).thenReturn(fileData);
+        when(fileData.fileId()).thenReturn(alfrescoFileId.toString());
+
+        final SuccessfulMaterialUploadJobData result = alfrescoFileUploader.uploadFileFromUriToAlfresco(uploadMaterialToAlfrescoJobData);
+        assertThat(result.getMediaType(), is("application/pdf"));
+    }
+
+    @Test
+    void shouldUploadFileFromUriToAlfrescoAndUpdateSuccessfulMaterialUploadJobData() {
+        String fileName = "WitnessStatementDocument_2.pdf";
+        String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/generated/" + fileName;
+        when(azureBlobUriClientService.downloadBlobContents(fileUri)).thenReturn(blobInputStream);
+        when(blobInputStream.getProperties()).thenReturn(blobProperties);
+        UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(
+                materialId,
+                null,
+                false,
+                uploadedEventMetadata,
+                null,
+                fileUri);
+        when(alfrescoFileService.generateAlfrescoCompliantFileName(fileName, materialId, "application/pdf"))
+                .thenReturn(fileName);
+        when(fileSender.send(fileName, blobInputStream)).thenReturn(fileData);
+        when(fileData.fileId()).thenReturn(alfrescoFileId.toString());
+
+        final SuccessfulMaterialUploadJobData result = alfrescoFileUploader.uploadFileFromUriToAlfresco(uploadMaterialToAlfrescoJobData);
+        assertThat(result.getMaterialId(), is(materialId));
+        assertThat(result.getFileUploadedEventMetadata(), is(uploadedEventMetadata));
+        assertFalse(result.isUnbundledDocument());
+        assertThat(result.getAlfrescoFileId(), is(alfrescoFileId));
+        assertThat(result.getFileName(), is(fileName));
+        assertThat(result.getFileUri(), is(fileUri));
     }
 }

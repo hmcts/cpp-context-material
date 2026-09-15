@@ -9,6 +9,7 @@ import com.azure.storage.blob.specialized.BlobInputStream;
 import uk.gov.justice.services.file.api.sender.FileData;
 import uk.gov.justice.services.file.api.sender.FileSender;
 import uk.gov.justice.services.fileservice.domain.FileReference;
+import uk.gov.moj.cpp.material.event.processor.azure.service.AzureBlobUriClientService;
 import uk.gov.moj.cpp.material.event.processor.azure.service.StorageCloudClientService;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.SuccessfulMaterialUploadJobData;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.SuccessfulMaterialUploadJobData.SuccessfulMaterialUploadJobDataBuilder;
@@ -35,6 +36,9 @@ public class AlfrescoFileUploader {
 
     @Inject
     private StorageCloudClientService storageCloudClientService;
+
+    @Inject
+    private AzureBlobUriClientService azureBlobUriClientService;
 
     @SuppressWarnings({"squid:S1312"})
     @Inject
@@ -98,6 +102,29 @@ public class AlfrescoFileUploader {
                 .withFileName(originalFileName)
                 .withMediaType(mediaType)
                 .withFileCloudLocation(cloudLocation);
+
+        return successfulMaterialUploadJobData.build();
+    }
+
+    public SuccessfulMaterialUploadJobData uploadFileFromUriToAlfresco(final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData) {
+        final String fileUri = uploadMaterialToAlfrescoJobData.getFileUri();
+        final BlobInputStream blobInputStream = azureBlobUriClientService.downloadBlobContents(fileUri);
+        final BlobProperties blobProperties = blobInputStream.getProperties();
+        final String originalFileName = Objects.requireNonNullElse(blobProperties.getMetadata().get("name"), fileUri.substring(fileUri.lastIndexOf("/") + 1));
+        final String fileExtension = fileUri.substring(fileUri.lastIndexOf('.') + 1);
+        final String mediaType = FileExtensionResolver.getMimeType(fileExtension);
+        final String uniqueAlfrescoFileName = alfrescoFileNameGenerator.generateAlfrescoCompliantFileName(originalFileName, uploadMaterialToAlfrescoJobData.getMaterialId(), mediaType);
+        final FileData fileData = fileSender.send(uniqueAlfrescoFileName, blobInputStream);
+        final UUID alfrescoFileId = fromString(fileData.fileId());
+
+        final SuccessfulMaterialUploadJobDataBuilder successfulMaterialUploadJobData = successfulMaterialUploadJobData()
+                .withMaterialId(uploadMaterialToAlfrescoJobData.getMaterialId())
+                .withUnbundledDocument(uploadMaterialToAlfrescoJobData.isUnbundledDocument())
+                .withFileUploadedEventMetadata(uploadMaterialToAlfrescoJobData.getFileUploadedEventMetadata())
+                .withAlfrescoFileId(alfrescoFileId)
+                .withFileName(originalFileName)
+                .withMediaType(mediaType)
+                .withFileUri(fileUri);
 
         return successfulMaterialUploadJobData.build();
     }

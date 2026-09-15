@@ -92,7 +92,7 @@ public class HardFailureTaskFactoryTest {
         final ZonedDateTime failedTime = new UtcClock().now();
         final JsonObject uploadMaterialJobDataJson = metadataWithRandomUUIDAndName().build().asJsonObject();
         final JsonObject failedMaterialUploadJobDataJson = metadataWithRandomUUIDAndName().build().asJsonObject();
-        final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(materialId, fileServiceId, false, uploadMaterialJobDataJson, "");
+        final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(materialId, fileServiceId, false, uploadMaterialJobDataJson, "", null);
         when(objectToJsonObjectConverter.convert(any(FailedMaterialUploadJobData.class))).thenReturn(failedMaterialUploadJobDataJson);
         when(clock.now()).thenReturn(failedTime);
 

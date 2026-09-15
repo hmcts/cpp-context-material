@@ -14,12 +14,14 @@ import uk.gov.moj.cpp.material.domain.FileDetails;
 import uk.gov.moj.cpp.material.domain.UploadedMaterial;
 import uk.gov.moj.cpp.material.domain.event.CloudBlobFileUploaded;
 import uk.gov.moj.cpp.material.domain.event.DuplicateCloudBlobFileUploadedRequestReceived;
+import uk.gov.moj.cpp.material.domain.event.DuplicateFileUploadFromUriRequestReceived;
 import uk.gov.moj.cpp.material.domain.event.DuplicateFileUploadRequestReceived;
 import uk.gov.moj.cpp.material.domain.event.DuplicateMaterialBundleNotCreated;
 import uk.gov.moj.cpp.material.domain.event.DuplicateMaterialNotCreated;
 import uk.gov.moj.cpp.material.domain.event.DuplicateRecordBundleDetailsRequested;
 import uk.gov.moj.cpp.material.domain.event.FailedToAddMaterial;
 import uk.gov.moj.cpp.material.domain.event.FileUploaded;
+import uk.gov.moj.cpp.material.domain.event.FileUploadedFromUri;
 import uk.gov.moj.cpp.material.domain.event.MaterialAdded;
 import uk.gov.moj.cpp.material.domain.event.MaterialBundleDetailsRecorded;
 import uk.gov.moj.cpp.material.domain.event.MaterialBundleRequested;
@@ -410,6 +412,41 @@ public class MaterialTest {
         assertThat(cloudBlobFileUploaded.getMaterialId(), is(equalTo(materialId)));
         assertThat(cloudBlobFileUploaded.getFileCloudLocation(), is(equalTo(fileCloudLocation)));
 
+    }
+
+    @Test
+    void shouldCreateFileUploadedFromUriEvent() {
+        final UUID materialId = randomUUID();
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/payload/2789.json";
+        final boolean isUnbundledDocument = true;
+
+        final Stream<Object> events = material.uploadFileFromUri(materialId, fileUri, isUnbundledDocument);
+
+        final Optional<Object> event = events.findFirst();
+        assertThat(event.isPresent(), is(true));
+
+        final FileUploadedFromUri fileUploadedFromUri = (FileUploadedFromUri) event.get();
+        assertThat(fileUploadedFromUri.getMaterialId(), is(equalTo(materialId)));
+        assertThat(fileUploadedFromUri.getFileUri(), is(equalTo(fileUri)));
+        assertThat(fileUploadedFromUri.getIsUnbundledDocument(), is(equalTo(isUnbundledDocument)));
+    }
+
+    @Test
+    void shouldNotCreateFileUploadedFromUriEventForDuplicateSubmit() {
+        final UUID materialId = randomUUID();
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/payload/2789.json";
+        final boolean isUnbundledDocument = true;
+
+        material.uploadFileFromUri(materialId, fileUri, isUnbundledDocument);
+        final Stream<Object> events = material.uploadFileFromUri(materialId, fileUri, isUnbundledDocument);
+
+        final Optional<Object> event = events.findFirst();
+        assertThat(event.isPresent(), is(true));
+
+        final DuplicateFileUploadFromUriRequestReceived duplicateFileUploadFromUriRequestReceived =
+                (DuplicateFileUploadFromUriRequestReceived) event.get();
+        assertThat(duplicateFileUploadFromUriRequestReceived.getMaterialId(), is(equalTo(materialId)));
+        assertThat(duplicateFileUploadFromUriRequestReceived.getFileUri(), is(equalTo(fileUri)));
     }
 
     private void thenMaterialNotFoundEventIssued(final Stream<Object> events, final UUID materialId) {
