@@ -19,7 +19,6 @@
   "additionalProperties": false,
   "required": [
     "materialId",
-    "fileServiceId",
     "failedTime",
     "errorMessage"
   ],
