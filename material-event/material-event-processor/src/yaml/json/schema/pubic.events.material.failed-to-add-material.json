@@ -19,7 +19,6 @@
   },
   "required": [
     "materialId",
-    "fileServiceId",
     "failedTime",
     "errorMessage"
   ]
