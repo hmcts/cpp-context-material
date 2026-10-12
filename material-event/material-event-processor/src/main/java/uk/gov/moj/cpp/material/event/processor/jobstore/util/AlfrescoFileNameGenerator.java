@@ -6,7 +6,7 @@ import static uk.gov.moj.cpp.material.event.processor.jobstore.util.FileExtensio
 
 import java.util.UUID;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class AlfrescoFileNameGenerator {

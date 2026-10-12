@@ -1,6 +1,5 @@
 name: CPP Context Verify & Validation
 
-# Need to update this for actual migration
 trigger:
   branches:
     include:
@@ -21,12 +20,12 @@ resources:
       type: github
       name: hmcts/cpp-azure-devops-templates
       endpoint: 'hmcts'
-      ref: 'main'
+      ref: 'wildfly40'
 
 pool:
   name: "MDV-ADO-AGENT-AKS-01"
   demands:
-    - identifier -equals centos8-j17
+    - identifier -equals ubuntu-j25
 
 variables:
   sonarqubeProject: "uk.gov.moj.cpp.material:material-parent"
@@ -47,3 +46,4 @@ stages:
           sonarQubeType: 'sonarQubeAKS'
           serviceName: ${{ variables['service_Name'] }}
           itTestFolder: ${{ variables['itTest_Folder'] }}
+          aksDeployBranch: 'wildfly40'

@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.UUID;
 import java.util.function.Function;
 
-import javax.json.JsonObject;
-import javax.ws.rs.core.MediaType;
+import jakarta.json.JsonObject;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

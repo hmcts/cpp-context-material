@@ -4,7 +4,7 @@ import uk.gov.justice.services.common.configuration.Value;
 
 import java.time.Duration;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;

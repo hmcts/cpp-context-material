@@ -16,7 +16,8 @@ import uk.gov.moj.cpp.material.command.services.DownloadableMaterialsService;
 import java.util.HashMap;
 import java.util.UUID;
 
-import javax.json.JsonObject;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
