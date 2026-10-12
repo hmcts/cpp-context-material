@@ -18,9 +18,9 @@ import uk.gov.moj.cpp.material.query.view.response.UpdatedBy;
 import java.util.List;
 import java.util.UUID;
 
-import javax.inject.Inject;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
+import jakarta.inject.Inject;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
 
 public class StructuredFormChangeHistoryQueryView {
     public static final String STRUCTURED_FORM_ID = "structuredFormId";
