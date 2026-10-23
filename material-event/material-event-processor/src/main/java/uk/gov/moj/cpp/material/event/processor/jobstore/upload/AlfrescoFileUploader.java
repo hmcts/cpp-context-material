@@ -111,7 +111,7 @@ public class AlfrescoFileUploader {
         try(final BlobInputStream blobInputStream = azureBlobUriClientService.downloadBlobContents(fileUri);) {
             final BlobProperties blobProperties = blobInputStream.getProperties();
             final String originalFileName = blobProperties.getMetadata().get("filename");
-            final String fileExtension = fileUri.substring(fileUri.lastIndexOf('.') + 1);
+            final String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
             final String mediaType = FileExtensionResolver.getMimeType(fileExtension);
             final String uniqueAlfrescoFileName = alfrescoFileNameGenerator.generateAlfrescoCompliantFileName(originalFileName, uploadMaterialToAlfrescoJobData.getMaterialId(), mediaType);
             final FileData fileData = fileSender.send(uniqueAlfrescoFileName, blobInputStream);
