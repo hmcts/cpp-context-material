@@ -6,6 +6,7 @@ import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -23,6 +24,7 @@ import uk.gov.moj.cpp.material.event.processor.jobstore.util.AlfrescoFileNameGen
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.json.JsonObject;
@@ -249,6 +251,7 @@ public class AlfrescoFileUploaderTest {
         String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/generated/28DI3233185.pdf";
         when(azureBlobUriClientService.downloadBlobContents(fileUri)).thenReturn(blobInputStream);
         when(blobInputStream.getProperties()).thenReturn(blobProperties);
+        when(blobProperties.getMetadata()).thenReturn(Map.of("filename", fileUri.substring(fileUri.lastIndexOf('/') + 1)));
         UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(materialId, null,
                 false, uploadedEventMetadata, null, fileUri);
         when(alfrescoFileService.generateAlfrescoCompliantFileName("28DI3233185.pdf", materialId, "application/pdf")).thenReturn("28DI3233185.pdf");
@@ -265,6 +268,7 @@ public class AlfrescoFileUploaderTest {
         String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/generated/" + fileName;
         when(azureBlobUriClientService.downloadBlobContents(fileUri)).thenReturn(blobInputStream);
         when(blobInputStream.getProperties()).thenReturn(blobProperties);
+        when(blobProperties.getMetadata()).thenReturn(Map.of("filename", fileName));
         UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(
                 materialId,
                 null,
@@ -284,5 +288,46 @@ public class AlfrescoFileUploaderTest {
         assertThat(result.getAlfrescoFileId(), is(alfrescoFileId));
         assertThat(result.getFileName(), is(fileName));
         assertThat(result.getFileUri(), is(fileUri));
+    }
+
+    @Test
+    void shouldTakeFileNameFromBlobMetadataRatherThanEncodedUriWhenUploadingFromUri() throws Exception {
+        final String fileName = "DVLADocumentOrder_20261021180625.pdf";
+        final String mediaType = "application/pdf";
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/stagingdvla-files/sdg%2Fdocuments%2FDVLADocumentOrder_" + materialId + ".pdf";
+        when(azureBlobUriClientService.downloadBlobContents(fileUri)).thenReturn(blobInputStream);
+        when(blobInputStream.getProperties()).thenReturn(blobProperties);
+        when(blobProperties.getMetadata()).thenReturn(Map.of("filename", fileName, "name", "ignored.pdf"));
+        final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(
+                materialId, null, false, uploadedEventMetadata, null, fileUri);
+        when(alfrescoFileService.generateAlfrescoCompliantFileName(fileName, materialId, mediaType)).thenReturn(fileName);
+        when(fileSender.send(fileName, blobInputStream)).thenReturn(fileData);
+        when(fileData.fileId()).thenReturn(alfrescoFileId.toString());
+
+        final SuccessfulMaterialUploadJobData result = alfrescoFileUploader.uploadFileFromUriToAlfresco(uploadMaterialToAlfrescoJobData);
+
+        assertThat(result.getFileName(), is(fileName));
+        assertThat(result.getMediaType(), is(mediaType));
+        assertThat(result.getFileUri(), is(fileUri));
+        verify(blobInputStream).close();
+    }
+
+    @Test
+    void shouldCloseBlobStreamWhenUploadFromUriFails() throws Exception {
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/producer-container/generated/generated-document.pdf";
+        final RuntimeException alfrescoFailure = new RuntimeException("alfresco down");
+        when(azureBlobUriClientService.downloadBlobContents(fileUri)).thenReturn(blobInputStream);
+        when(blobInputStream.getProperties()).thenReturn(blobProperties);
+        when(blobProperties.getMetadata()).thenReturn(Map.of("filename", "generated-document.pdf"));
+        final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(
+                materialId, null, false, uploadedEventMetadata, null, fileUri);
+        when(alfrescoFileService.generateAlfrescoCompliantFileName("generated-document.pdf", materialId, "application/pdf")).thenReturn("generated-document.pdf");
+        when(fileSender.send("generated-document.pdf", blobInputStream)).thenThrow(alfrescoFailure);
+
+        final RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> alfrescoFileUploader.uploadFileFromUriToAlfresco(uploadMaterialToAlfrescoJobData));
+
+        assertThat(thrown, is(alfrescoFailure));
+        verify(blobInputStream).close();
     }
 }

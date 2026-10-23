@@ -108,25 +108,26 @@ public class AlfrescoFileUploader {
 
     public SuccessfulMaterialUploadJobData uploadFileFromUriToAlfresco(final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData) {
         final String fileUri = uploadMaterialToAlfrescoJobData.getFileUri();
-        final BlobInputStream blobInputStream = azureBlobUriClientService.downloadBlobContents(fileUri);
-        final BlobProperties blobProperties = blobInputStream.getProperties();
-        final String originalFileName = Objects.requireNonNullElse(blobProperties.getMetadata().get("name"), fileUri.substring(fileUri.lastIndexOf("/") + 1));
-        final String fileExtension = fileUri.substring(fileUri.lastIndexOf('.') + 1);
-        final String mediaType = FileExtensionResolver.getMimeType(fileExtension);
-        final String uniqueAlfrescoFileName = alfrescoFileNameGenerator.generateAlfrescoCompliantFileName(originalFileName, uploadMaterialToAlfrescoJobData.getMaterialId(), mediaType);
-        final FileData fileData = fileSender.send(uniqueAlfrescoFileName, blobInputStream);
-        final UUID alfrescoFileId = fromString(fileData.fileId());
+        try(final BlobInputStream blobInputStream = azureBlobUriClientService.downloadBlobContents(fileUri);) {
+            final BlobProperties blobProperties = blobInputStream.getProperties();
+            final String originalFileName = blobProperties.getMetadata().get("filename");
+            final String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
+            final String mediaType = FileExtensionResolver.getMimeType(fileExtension);
+            final String uniqueAlfrescoFileName = alfrescoFileNameGenerator.generateAlfrescoCompliantFileName(originalFileName, uploadMaterialToAlfrescoJobData.getMaterialId(), mediaType);
+            final FileData fileData = fileSender.send(uniqueAlfrescoFileName, blobInputStream);
+            final UUID alfrescoFileId = fromString(fileData.fileId());
 
-        final SuccessfulMaterialUploadJobDataBuilder successfulMaterialUploadJobData = successfulMaterialUploadJobData()
-                .withMaterialId(uploadMaterialToAlfrescoJobData.getMaterialId())
-                .withUnbundledDocument(uploadMaterialToAlfrescoJobData.isUnbundledDocument())
-                .withFileUploadedEventMetadata(uploadMaterialToAlfrescoJobData.getFileUploadedEventMetadata())
-                .withAlfrescoFileId(alfrescoFileId)
-                .withFileName(originalFileName)
-                .withMediaType(mediaType)
-                .withFileUri(fileUri);
+            final SuccessfulMaterialUploadJobDataBuilder successfulMaterialUploadJobData = successfulMaterialUploadJobData()
+                    .withMaterialId(uploadMaterialToAlfrescoJobData.getMaterialId())
+                    .withUnbundledDocument(uploadMaterialToAlfrescoJobData.isUnbundledDocument())
+                    .withFileUploadedEventMetadata(uploadMaterialToAlfrescoJobData.getFileUploadedEventMetadata())
+                    .withAlfrescoFileId(alfrescoFileId)
+                    .withFileName(originalFileName)
+                    .withMediaType(mediaType)
+                    .withFileUri(fileUri);
 
-        return successfulMaterialUploadJobData.build();
+            return successfulMaterialUploadJobData.build();
+        }
     }
 
 }
