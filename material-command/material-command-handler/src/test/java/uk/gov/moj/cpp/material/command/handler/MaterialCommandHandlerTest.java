@@ -4,6 +4,7 @@ import static java.util.UUID.randomUUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.services.messaging.JsonEnvelope.envelopeFrom;
@@ -205,6 +206,23 @@ public class MaterialCommandHandlerTest {
         when(aggregateService.get(eventStream, Material.class)).thenReturn(material);
         when(newEvents.map(any())).thenReturn(mappedNewEvents);
         when(material.recordAddMaterialFailed(eq(MATERIAL_ID), eq(FILE_SERVICE__ID), any(ZonedDateTime.class), eq(ERROR_MESSAGE))).thenReturn(newEvents);
+        materialCommandHandler.recordAddMaterialFailed(recordAddMaterialFailedCommand);
+        checkEventsAppendedAreMappedNewEvents();
+    }
+
+    @Test
+    public void shouldRecordAddMaterialFailedForABlobUploadWithoutFileServiceId() throws Exception {
+        final JsonEnvelope recordAddMaterialFailedCommand = envelopeFrom(
+                metadataOf(randomUUID().toString(), "material.record-add-material-failed"),
+                createObjectBuilder()
+                        .add(MATERIAL_ID_STRING, MATERIAL_ID.toString())
+                        .add("errorMessage", ERROR_MESSAGE)
+                        .add("failedTime", DATE_TIME.toString()));
+
+        when(eventSource.getStreamById(MATERIAL_ID)).thenReturn(eventStream);
+        when(aggregateService.get(eventStream, Material.class)).thenReturn(material);
+        when(newEvents.map(any())).thenReturn(mappedNewEvents);
+        when(material.recordAddMaterialFailed(eq(MATERIAL_ID), isNull(), any(ZonedDateTime.class), eq(ERROR_MESSAGE))).thenReturn(newEvents);
         materialCommandHandler.recordAddMaterialFailed(recordAddMaterialFailedCommand);
         checkEventsAppendedAreMappedNewEvents();
     }

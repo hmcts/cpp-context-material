@@ -69,4 +69,34 @@ public class AddMaterialCommandFailedFactoryTest {
         assertThat(payload.getString("errorMessage"), is(errorMessage));
         assertThat(payload.getString("failedTime"), is(failedTime.truncatedTo(ChronoUnit.MILLIS).toString()));
     }
+
+    @Test
+    public void shouldOmitFileServiceIdForABlobUpload() {
+
+        final UUID materialId = randomUUID();
+        final ZonedDateTime failedTime = new UtcClock().now();
+
+        final JsonObject fileUploadedEventMetadata = metadataBuilder()
+                .withId(randomUUID())
+                .withStreamId(materialId)
+                .withName("someEventName")
+                .withSource(EVENT_SOURCE)
+                .build()
+                .asJsonObject();
+
+        final FailedMaterialUploadJobData jobState = new FailedMaterialUploadJobData(
+                materialId,
+                null,
+                "",
+                fileUploadedEventMetadata,
+                "error",
+                failedTime);
+
+        final JsonObject payload = addMaterialCommandFailedFactory.createCommandEnvelope(jobState).payloadAsJsonObject();
+
+        assertThat(payload.getString("materialId"), is(materialId.toString()));
+        assertThat(payload.containsKey("fileServiceId"), is(false));
+        assertThat(payload.getString("errorMessage"), is("error"));
+        assertThat(payload.getString("failedTime"), is(failedTime.truncatedTo(ChronoUnit.MILLIS).toString()));
+    }
 }

@@ -107,7 +107,8 @@ public class MaterialCommandHandler {
     public void recordAddMaterialFailed(final JsonEnvelope command) throws EventStreamException {
         final JsonObject payload = command.payloadAsJsonObject();
         final UUID materialId = fromString(payload.getString(MATERIAL_ID));
-        final UUID fileServiceId = fromString(payload.getString(FILE_SERVICE_ID));
+        // only file service uploads have a fileServiceId; blob uploads record the failure without one
+        final UUID fileServiceId = payload.containsKey(FILE_SERVICE_ID) && !payload.isNull(FILE_SERVICE_ID) ? fromString(payload.getString(FILE_SERVICE_ID)) : null;
         final ZonedDateTime failedTime = ZonedDateTimes.fromString(payload.getString(FAILED_TIME));
         final String errorMessage = payload.getString(ERROR_MESSAGE);
 
