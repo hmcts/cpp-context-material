@@ -61,7 +61,7 @@ public class AlfrescoFileUploader {
 
                 try {
                     final JsonObject fileReferenceMetadata = fileReference.getMetadata();
-                    final String originalFileName = fileReferenceMetadata.getString("fileName");
+                    final String originalFileName = fileReferenceMetadata.getString(FILE_NAME);
                     final String mediaType = fileReferenceMetadata.getString("mediaType");
                     final String uniqueAlfrescoFileName = alfrescoFileNameGenerator.generateAlfrescoCompliantFileName(originalFileName, uploadMaterialToAlfrescoJobData.getMaterialId(), mediaType);
 
