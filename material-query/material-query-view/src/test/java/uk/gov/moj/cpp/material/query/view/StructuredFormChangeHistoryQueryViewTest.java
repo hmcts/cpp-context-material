@@ -20,6 +20,7 @@ import uk.gov.moj.cpp.material.persistence.constant.StructuredFormStatus;
 import uk.gov.moj.cpp.material.persistence.entity.StructuredFormChangeHistory;
 import uk.gov.moj.cpp.material.persistence.repository.StructuredFormChangeHistoryRepository;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -51,9 +52,9 @@ public class StructuredFormChangeHistoryQueryViewTest {
     @Mock
     private StructuredFormChangeHistoryRepository structuredFormChangeHistoryRepository;
 
-    private ZonedDateTime updateDate1 = now();
-    private ZonedDateTime updateDate2 = now().minusDays(1);
-    private ZonedDateTime updateDate3 = now().minusDays(2);
+    private ZonedDateTime updateDate1 = now(ZoneOffset.UTC);
+    private ZonedDateTime updateDate2 = now(ZoneOffset.UTC).minusDays(1);
+    private ZonedDateTime updateDate3 = now(ZoneOffset.UTC).minusDays(2);
 
     private String updatedBy1 = randomUUID().toString();
     private String updatedByObject1 = "{\"id\":" + "\"" + updatedBy1 + "\"" + ",\"firstName\":\"Bill\",\"lastName\":\"Turner\"}";
@@ -228,6 +229,21 @@ public class StructuredFormChangeHistoryQueryViewTest {
         final JsonEnvelope envelope = JsonEnvelope.envelopeFrom(metadataWithDefaults().withName("material.query.structured-form-change-history"), createObjectBuilder().add("structuredFormId", structuredFormId.toString()).build());
 
         assertThrows(NullPointerException.class , () ->  structuredFormChangeHistoryQueryView.getStructuredFormChangeHistory(envelope));
+    }
+
+    // date is rendered with a literal 'Z', so it must be the UTC time whatever zone the entity is read back in.
+    // J17 read structured_form_change_history.date back in the UTC region; J25 (Hibernate 6) can read it back with another offset.
+    @Test
+    public void shouldReturnStructuredFormChangeHistoryDateInUtcWhenReadBackWithAnotherOffset() {
+        final ZonedDateTime date = ZonedDateTime.of(2024, 6, 1, 10, 0, 0, 0, ZoneOffset.ofHours(1));
+        when(structuredFormChangeHistoryRepository.findByStructuredFormId(structuredFormId)).thenReturn(asList(
+                createStructuredFormChangeHistoryEntity(id1, null, date, updatedByObject1, data1)
+        ));
+
+        final JsonEnvelope envelope = JsonEnvelope.envelopeFrom(metadataWithDefaults().withName("material.query.structured-form-change-history"), createObjectBuilder().add("structuredFormId", structuredFormId.toString()).build());
+        final JsonEnvelope result = structuredFormChangeHistoryQueryView.getStructuredFormChangeHistory(envelope);
+
+        assertThat(result.payloadAsJsonObject().getJsonArray("structuredFormChangeHistory").getJsonObject(0).getString("date"), is("2024-06-01T09:00:00.000Z"));
     }
 
     private StructuredFormChangeHistory createStructuredFormChangeHistoryEntity(final UUID id, final UUID materialId, final ZonedDateTime date, final String updatedBy, final String data) {
