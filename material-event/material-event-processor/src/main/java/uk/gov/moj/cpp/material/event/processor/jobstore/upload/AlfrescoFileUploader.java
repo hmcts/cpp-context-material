@@ -17,6 +17,7 @@ import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.UploadMaterialTo
 import uk.gov.moj.cpp.material.event.processor.jobstore.util.AlfrescoFileNameGenerator;
 import uk.gov.moj.cpp.material.event.processor.jobstore.util.FileExtensionResolver;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 public class AlfrescoFileUploader {
 
     public static final String ALFRESCO_FILE_NAME_CHECKER_REGEX = "(.*[\\\"\\*\\\\\\>\\<\\?\\/\\:\\|]+.*)|(.*[\\.]?.*[\\.]+$)|(.*[ ]+$)";
+    private static final String FILE_NAME = "fileName";
     @Inject
     private FileSender fileSender;
 
@@ -110,7 +112,7 @@ public class AlfrescoFileUploader {
         final String fileUri = uploadMaterialToAlfrescoJobData.getFileUri();
         try(final BlobInputStream blobInputStream = azureBlobUriClientService.downloadBlobContents(fileUri);) {
             final BlobProperties blobProperties = blobInputStream.getProperties();
-            final String originalFileName = blobProperties.getMetadata().get("filename");
+            final String originalFileName = fileNameFrom(blobProperties.getMetadata());
             final String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.') + 1);
             final String mediaType = FileExtensionResolver.getMimeType(fileExtension);
             final String uniqueAlfrescoFileName = alfrescoFileNameGenerator.generateAlfrescoCompliantFileName(originalFileName, uploadMaterialToAlfrescoJobData.getMaterialId(), mediaType);
@@ -128,6 +130,12 @@ public class AlfrescoFileUploader {
 
             return successfulMaterialUploadJobData.build();
         }
+    }
+
+    // the producer writes "fileName"; the JDK http client returns blob metadata keys lower-cased ("filename")
+    // while netty keeps the writer's case, so accept both
+    private static String fileNameFrom(final Map<String, String> blobMetadata) {
+        return Objects.requireNonNullElseGet(blobMetadata.get(FILE_NAME), () -> blobMetadata.get(FILE_NAME.toLowerCase()));
     }
 
 }

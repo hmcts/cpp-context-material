@@ -63,7 +63,9 @@
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-core</artifactId>
-            <version>1.49.0</version>
+            <!-- 1.49.1 (common-bom's version): azure-core-http-jdk-httpclient 1.0.0-beta.14 uses
+                 com.azure.core.implementation.util.HttpUtils, which 1.49.0 lacks (NoClassDefFoundError) -->
+            <version>1.49.1</version>
         </dependency>
 
         <dependency>

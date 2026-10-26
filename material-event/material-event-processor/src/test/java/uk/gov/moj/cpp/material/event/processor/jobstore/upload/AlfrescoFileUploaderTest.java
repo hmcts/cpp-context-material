@@ -330,4 +330,42 @@ public class AlfrescoFileUploaderTest {
         assertThat(thrown, is(alfrescoFailure));
         verify(blobInputStream).close();
     }
+
+    @Test
+    void shouldTakeFileNameFromCamelCaseBlobMetadataKeyWhenUploadingFromUri() {
+        final String fileName = "DVLADocumentOrder_20261021180625.pdf";
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/stagingdvla-files/sdg%2Fdocuments%2FDVLADocumentOrder_" + materialId + ".pdf";
+        when(azureBlobUriClientService.downloadBlobContents(fileUri)).thenReturn(blobInputStream);
+        when(blobInputStream.getProperties()).thenReturn(blobProperties);
+        when(blobProperties.getMetadata()).thenReturn(Map.of("fileName", fileName));
+        final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(
+                materialId, null, false, uploadedEventMetadata, null, fileUri);
+        when(alfrescoFileService.generateAlfrescoCompliantFileName(fileName, materialId, "application/pdf")).thenReturn(fileName);
+        when(fileSender.send(fileName, blobInputStream)).thenReturn(fileData);
+        when(fileData.fileId()).thenReturn(alfrescoFileId.toString());
+
+        final SuccessfulMaterialUploadJobData result = alfrescoFileUploader.uploadFileFromUriToAlfresco(uploadMaterialToAlfrescoJobData);
+
+        assertThat(result.getFileName(), is(fileName));
+        assertThat(result.getMediaType(), is("application/pdf"));
+    }
+
+    @Test
+    void shouldResolveCsvMediaTypeWhenUploadingFromUri() {
+        final String fileName = "DriverAuditReport_2026-10-26_10-00-00.csv";
+        final String fileUri = "https://sastagingdvlafilestore.blob.core.windows.net/stagingdvla-files/sdg%2Fdocuments%2FDriverAuditReport_" + materialId + ".csv";
+        when(azureBlobUriClientService.downloadBlobContents(fileUri)).thenReturn(blobInputStream);
+        when(blobInputStream.getProperties()).thenReturn(blobProperties);
+        when(blobProperties.getMetadata()).thenReturn(Map.of("filename", fileName));
+        final UploadMaterialToAlfrescoJobData uploadMaterialToAlfrescoJobData = new UploadMaterialToAlfrescoJobData(
+                materialId, null, false, uploadedEventMetadata, null, fileUri);
+        when(alfrescoFileService.generateAlfrescoCompliantFileName(fileName, materialId, "text/csv")).thenReturn(fileName);
+        when(fileSender.send(fileName, blobInputStream)).thenReturn(fileData);
+        when(fileData.fileId()).thenReturn(alfrescoFileId.toString());
+
+        final SuccessfulMaterialUploadJobData result = alfrescoFileUploader.uploadFileFromUriToAlfresco(uploadMaterialToAlfrescoJobData);
+
+        assertThat(result.getFileName(), is(fileName));
+        assertThat(result.getMediaType(), is("text/csv"));
+    }
 }

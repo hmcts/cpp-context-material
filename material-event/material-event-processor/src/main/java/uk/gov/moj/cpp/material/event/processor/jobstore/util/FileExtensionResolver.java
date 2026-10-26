@@ -31,6 +31,8 @@ public class FileExtensionResolver {
         mediaTypeMap.put("image/tiff", "tif");
         mediaTypeMap.put("application/vnd.ms-outlook", "msg");
         mediaTypeMap.put("application/rtf", "rtf");
+        // blob (fileUri) uploads derive the type from the extension, e.g. staging-dvla's driver search audit report
+        mediaTypeMap.put("text/csv", "csv");
 
     }
 
