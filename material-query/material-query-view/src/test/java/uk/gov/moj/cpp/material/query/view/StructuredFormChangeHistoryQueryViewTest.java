@@ -1,6 +1,5 @@
 package uk.gov.moj.cpp.material.query.view;
 
-import static java.time.ZonedDateTime.now;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
 import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
@@ -15,6 +14,7 @@ import static uk.gov.moj.cpp.material.query.view.StructuredFormQueryView.ZONE_DA
 import uk.gov.justice.services.common.converter.ObjectToJsonObjectConverter;
 import uk.gov.justice.services.common.converter.StringToJsonObjectConverter;
 import uk.gov.justice.services.common.converter.jackson.ObjectMapperProducer;
+import uk.gov.justice.services.common.util.UtcClock;
 import uk.gov.justice.services.messaging.JsonEnvelope;
 import uk.gov.moj.cpp.material.persistence.constant.StructuredFormStatus;
 import uk.gov.moj.cpp.material.persistence.entity.StructuredFormChangeHistory;
@@ -52,9 +52,9 @@ public class StructuredFormChangeHistoryQueryViewTest {
     @Mock
     private StructuredFormChangeHistoryRepository structuredFormChangeHistoryRepository;
 
-    private ZonedDateTime updateDate1 = now(ZoneOffset.UTC);
-    private ZonedDateTime updateDate2 = now(ZoneOffset.UTC).minusDays(1);
-    private ZonedDateTime updateDate3 = now(ZoneOffset.UTC).minusDays(2);
+    private ZonedDateTime updateDate1 = new UtcClock().now();
+    private ZonedDateTime updateDate2 = new UtcClock().now().minusDays(1);
+    private ZonedDateTime updateDate3 = new UtcClock().now().minusDays(2);
 
     private String updatedBy1 = randomUUID().toString();
     private String updatedByObject1 = "{\"id\":" + "\"" + updatedBy1 + "\"" + ",\"firstName\":\"Bill\",\"lastName\":\"Turner\"}";
