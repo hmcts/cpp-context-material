@@ -5,7 +5,7 @@ import static java.util.UUID.fromString;
 import static uk.gov.justice.services.messaging.JsonObjects.createArrayBuilder;
 import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
 import static uk.gov.justice.services.messaging.JsonEnvelope.envelopeFrom;
-import static uk.gov.moj.cpp.material.query.view.StructuredFormQueryView.ZONE_DATETIME_FORMATTER;
+import static uk.gov.moj.cpp.material.query.view.StructuredFormQueryView.inUtc;
 
 import uk.gov.justice.services.common.converter.ObjectToJsonObjectConverter;
 import uk.gov.justice.services.common.converter.StringToJsonObjectConverter;
@@ -60,7 +60,7 @@ public class StructuredFormChangeHistoryQueryView {
                 .withId(item.getId())
                 .withStructuredFormId(item.getStructuredFormId())
                 .withFormId(item.getFormId())
-                .withDate(item.getDate().format(ZONE_DATETIME_FORMATTER))
+                .withDate(inUtc(item.getDate()))
                 .withData(item.getData())
                 .withStatus(item.getStatus());
 

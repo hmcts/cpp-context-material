@@ -11,6 +11,8 @@ import uk.gov.justice.services.messaging.JsonEnvelope;
 import uk.gov.moj.cpp.material.persistence.entity.StructuredForm;
 import uk.gov.moj.cpp.material.persistence.repository.StructuredFormRepository;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
@@ -49,7 +51,7 @@ public class StructuredFormQueryView {
                 .add(FORM_ID, structuredForm.getFormId().toString())
                 .add(DATA, structuredForm.getData())
                 .add(STATUS, structuredForm.getStatus().toString())
-                .add(LAST_UPDATED, structuredForm.getLastUpdated().format(ZONE_DATETIME_FORMATTER))
+                .add(LAST_UPDATED, inUtc(structuredForm.getLastUpdated()))
                 .build();
         return envelopeFrom(envelope.metadata(), resultJson);
     }
@@ -68,6 +70,13 @@ public class StructuredFormQueryView {
                 .add(DEFENDANT_USER, dataValue)
                 .build();
         return envelopeFrom(envelope.metadata(), resultJson);
+    }
+
+    // The formatter appends a literal 'Z', so convert to UTC first: Hibernate 6 can read the timestamp back with a
+    // non-UTC offset, where J17 (Hibernate 5) read it back in the UTC region. The stored value is only the right instant
+    // when the server runs in UTC (-Duser.timezone=UTC), as on J17.
+    static String inUtc(final ZonedDateTime dateTime) {
+        return dateTime.withZoneSameInstant(ZoneOffset.UTC).format(ZONE_DATETIME_FORMATTER);
     }
 
 }
