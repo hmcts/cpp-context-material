@@ -23,10 +23,11 @@ import uk.gov.moj.cpp.material.persistence.entity.StructuredForm;
 import uk.gov.moj.cpp.material.persistence.repository.StructuredFormRepository;
 import uk.gov.moj.cpp.material.query.view.utils.FileUtil;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import javax.json.JsonObject;
+import jakarta.json.JsonObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -103,13 +104,27 @@ public class StructuredFormQueryViewTest {
         assertThat(result.payloadAsJsonObject().getJsonArray("defendantUser").getJsonObject(0).getString("id"), is(defendantId.toString()));
     }
 
+    // lastUpdated is rendered with a literal 'Z', so it must be the UTC time whatever zone the entity is read back in.
+    // J17 read structured_form.last_updated back in the UTC region; J25 (Hibernate 6) can read it back with another offset.
+    @Test
+    public void shouldReturnStructuredFormLastUpdatedInUtcWhenReadBackWithAnotherOffset() {
+        final UUID structuredFormId = randomUUID();
+        final ZonedDateTime lastUpdated = ZonedDateTime.of(2024, 6, 1, 10, 0, 0, 0, ZoneOffset.ofHours(1));
+        when(structuredFormRepository.findBy(structuredFormId)).thenReturn(new StructuredForm(structuredFormId, randomUUID(), "{}", StructuredFormStatus.CREATED, lastUpdated));
+
+        final JsonEnvelope envelope = JsonEnvelope.envelopeFrom(metadataWithDefaults().withName("material.query.structured-form"), createObjectBuilder().add("structuredFormId", structuredFormId.toString()).build());
+        final JsonEnvelope result = structuredFormQueryView.getStructuredForm(envelope);
+
+        assertThat(result.payloadAsJsonObject().getString("lastUpdated"), is("2024-06-01T09:00:00.000Z"));
+    }
+
     private JsonObject createStructuredFormResponse(final UUID structuredFormId, final UUID formId, final JsonObject data, final ZonedDateTime lastUpdated) {
         return createObjectBuilder()
                 .add("structuredFormId", structuredFormId.toString())
                 .add("formId", formId.toString())
                 .add("data", data.toString())
                 .add("status", StructuredFormStatus.CREATED.toString())
-                .add("lastUpdated", lastUpdated.format(ZONE_DATETIME_FORMATTER))
+                .add("lastUpdated", lastUpdated.withZoneSameInstant(ZoneOffset.UTC).format(ZONE_DATETIME_FORMATTER))
                 .build();
     }
 

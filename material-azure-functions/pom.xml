@@ -3,7 +3,7 @@
     <parent>
         <artifactId>material-parent</artifactId>
         <groupId>uk.gov.moj.cpp.material</groupId>
-        <version>17.0.86-SNAPSHOT</version>
+        <version>25.104.86-CIMD-4077-SNAPSHOT</version>
     </parent>
     <artifactId>material-azure-functions</artifactId>
     <packaging>jar</packaging>
@@ -36,6 +36,16 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
