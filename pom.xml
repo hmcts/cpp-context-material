@@ -38,6 +38,21 @@
         <azure.functions.maven.plugin.version>1.24.0</azure.functions.maven.plugin.version>
         <material-azure.version>1.38.1</material-azure.version>
         <material-azure-storage.version>8.4.0</material-azure-storage.version>
+        <!-- Azure SDK (com.azure) track-2 libs. Versions are aligned with the transitive
+        requirements of azure-storage-blob 12.37.2 (no azure-sdk-bom release contains it yet).
+        They override the older versions managed by service-parent-pom. -->
+        <azure-storage-blob.version>12.37.2</azure-storage-blob.version>
+        <azure-storage-common.version>12.36.2</azure-storage-common.version>
+        <azure-storage-queue.version>12.32.2</azure-storage-queue.version>
+        <!-- transitive via framework audit-client; must match azure-storage-blob (datalake uses blob internals) -->
+        <azure-storage-file-datalake.version>12.30.2</azure-storage-file-datalake.version>
+        <azure-core.version>1.61.0</azure-core.version>
+        <azure-core-http-netty.version>1.17.0</azure-core-http-netty.version>
+        <!-- netty / reactor-netty / reactor-core required by azure-core-http-netty ${azure-core-http-netty.version};
+        service-parent-pom manages netty 4.1.77.Final, which is binary-incompatible with it -->
+        <azure-netty.version>4.2.19.Final</azure-netty.version>
+        <azure-reactor-netty.version>1.3.7</azure-reactor-netty.version>
+        <azure-reactor-core.version>3.8.7</azure-reactor-core.version>
         <jgitflow.maven.developBranchName>main</jgitflow.maven.developBranchName>
     </properties>
 
@@ -93,6 +108,58 @@
                 <groupId>com.microsoft.azure</groupId>
                 <artifactId>azure-storage</artifactId>
                 <version>${material-azure-storage.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-blob</artifactId>
+                <version>${azure-storage-blob.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-common</artifactId>
+                <version>${azure-storage-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-queue</artifactId>
+                <version>${azure-storage-queue.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-file-datalake</artifactId>
+                <version>${azure-storage-file-datalake.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-core</artifactId>
+                <version>${azure-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-core-http-netty</artifactId>
+                <version>${azure-core-http-netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.projectreactor</groupId>
+                <artifactId>reactor-core</artifactId>
+                <version>${azure-reactor-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.projectreactor.netty</groupId>
+                <artifactId>reactor-netty-core</artifactId>
+                <version>${azure-reactor-netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.projectreactor.netty</groupId>
+                <artifactId>reactor-netty-http</artifactId>
+                <version>${azure-reactor-netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${azure-netty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

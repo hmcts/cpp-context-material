@@ -39,19 +39,16 @@
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-storage-blob</artifactId>
-            <version>12.25.3</version>
         </dependency>
 
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-core</artifactId>
-            <version>1.49.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-storage-queue</artifactId>
-            <version>12.20.4</version>
         </dependency>
         <dependency>
             <groupId>uk.gov.moj.cpp.common</groupId>
@@ -144,11 +141,10 @@
             <groupId>uk.gov.moj.cpp.common</groupId>
             <artifactId>system-users-library</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.netty/netty-buffer -->
+        <!-- version managed by the netty-bom import in the root pom (aligned with azure-core-http-netty) -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
-            <version>4.1.77.Final</version>
         </dependency>
 
     </dependencies>
