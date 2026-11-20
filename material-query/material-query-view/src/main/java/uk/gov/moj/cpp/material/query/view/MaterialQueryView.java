@@ -4,7 +4,7 @@ import static com.jayway.jsonpath.Configuration.defaultConfiguration;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
-import static javax.ws.rs.core.MediaType.valueOf;
+import static jakarta.ws.rs.core.MediaType.valueOf;
 import static uk.gov.justice.services.core.enveloper.Enveloper.envelop;
 import static uk.gov.justice.services.file.alfresco.Headers.headersWithUserId;
 import static uk.gov.moj.cpp.material.query.view.MaterialDetailedMetadataView.MaterialDetailedMetadataViewBuilder.materialDetailedMetadataViewBuilder;
@@ -23,9 +23,9 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.inject.Inject;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.ProcessingException;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.ProcessingException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.jsonpath.JsonPath;
