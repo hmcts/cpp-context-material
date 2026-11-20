@@ -14,7 +14,7 @@ import uk.gov.moj.cpp.jobstore.api.task.ExecutableTask;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutionInfo;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.FailedMaterialUploadJobData;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Task(FAILED_MATERIAL_UPLOAD_COMMAND_TASK)
 public class FailedMaterialUploadTask implements ExecutableTask {

@@ -5,7 +5,7 @@ import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import java.util.Objects;
 import java.util.UUID;
 
-import javax.json.JsonObject;
+import jakarta.json.JsonObject;
 
 public class UploadMaterialToAlfrescoJobData {
 

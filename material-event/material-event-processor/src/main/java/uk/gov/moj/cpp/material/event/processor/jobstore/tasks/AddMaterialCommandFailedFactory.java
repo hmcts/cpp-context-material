@@ -8,7 +8,7 @@ import uk.gov.justice.services.common.converter.ZonedDateTimes;
 import uk.gov.justice.services.messaging.JsonEnvelope;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.FailedMaterialUploadJobData;
 
-import javax.json.JsonObject;
+import jakarta.json.JsonObject;
 
 public class AddMaterialCommandFailedFactory {
 

@@ -17,7 +17,7 @@ import uk.gov.moj.cpp.material.query.service.AlfrescoReadService;
 import uk.gov.moj.cpp.material.query.service.AzureBlobClientService;
 import uk.gov.moj.cpp.material.query.view.MaterialView;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
 import java.util.List;
@@ -27,7 +27,7 @@ import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.UUID.randomUUID;
-import static javax.ws.rs.core.Response.Status.*;
+import static jakarta.ws.rs.core.Response.Status.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
