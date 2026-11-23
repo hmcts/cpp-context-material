@@ -4,7 +4,7 @@ import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.SuccessfulMateri
 
 import java.util.UUID;
 
-import javax.json.JsonObject;
+import jakarta.json.JsonObject;
 
 public class SuccessfulBundleUploadJobData extends SuccessfulMaterialUploadJobData {
 

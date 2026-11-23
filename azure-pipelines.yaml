@@ -1,6 +1,5 @@
 name: CPP Context Verify & Validation
 
-# Need to update this for actual migration
 trigger:
   branches:
     include:
@@ -26,7 +25,7 @@ resources:
 pool:
   name: "MDV-ADO-AGENT-AKS-01"
   demands:
-    - identifier -equals centos8-j17
+    - identifier -equals ubuntu-j25
 
 variables:
   sonarqubeProject: "uk.gov.moj.cpp.material:material-parent"

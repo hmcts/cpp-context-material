@@ -2,7 +2,7 @@ package uk.gov.moj.cpp.material.event.processor.jobstore.jobdata;
 
 import java.util.UUID;
 
-import javax.json.JsonObject;
+import jakarta.json.JsonObject;
 
 public class SuccessfulMaterialUploadJobData {
 

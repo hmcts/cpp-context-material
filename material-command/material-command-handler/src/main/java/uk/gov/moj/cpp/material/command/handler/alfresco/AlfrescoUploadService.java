@@ -1,8 +1,8 @@
 package uk.gov.moj.cpp.material.command.handler.alfresco;
 
-import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static jakarta.ws.rs.core.Response.Status.OK;
 
 import uk.gov.justice.services.common.configuration.Value;
 import uk.gov.justice.services.messaging.JsonObjects;
@@ -14,11 +14,11 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Collections;
 
-import javax.inject.Inject;
-import javax.json.JsonObject;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.json.JsonObject;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
