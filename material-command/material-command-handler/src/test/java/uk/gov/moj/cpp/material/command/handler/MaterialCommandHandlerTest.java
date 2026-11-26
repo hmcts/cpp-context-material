@@ -36,8 +36,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
+import javax.json.JsonObject;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.Is;

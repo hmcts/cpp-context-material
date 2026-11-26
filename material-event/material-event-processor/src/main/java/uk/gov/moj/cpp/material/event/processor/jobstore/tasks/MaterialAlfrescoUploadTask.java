@@ -25,7 +25,7 @@ import uk.gov.moj.cpp.material.event.processor.jobstore.upload.AlfrescoFileUploa
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.inject.Inject;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 

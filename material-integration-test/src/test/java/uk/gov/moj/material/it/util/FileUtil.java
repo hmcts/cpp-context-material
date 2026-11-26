@@ -1,6 +1,6 @@
 package uk.gov.moj.material.it.util;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.fail;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;

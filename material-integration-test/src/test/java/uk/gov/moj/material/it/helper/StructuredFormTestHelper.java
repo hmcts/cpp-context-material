@@ -7,7 +7,7 @@ import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static jakarta.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,7 +20,7 @@ import static uk.gov.justice.services.test.utils.core.matchers.ResponseStatusMat
 
 import java.util.UUID;
 
-import jakarta.json.JsonObject;
+import javax.json.JsonObject;
 
 
 public class StructuredFormTestHelper extends BaseMaterialTestHelper {

@@ -6,35 +6,27 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import uk.gov.justice.services.test.utils.persistence.HibernateTestEntityManagerProvider;
 import uk.gov.moj.cpp.material.persistence.constant.StructuredFormStatus;
 import uk.gov.moj.cpp.material.persistence.entity.StructuredForm;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import javax.inject.Inject;
 
-class StructuredFormRepositoryTest {
+import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-    private static final String PERSISTENCE_UNIT = "material-test-persistence-unit";
+@RunWith(CdiTestRunner.class)
+public class StructuredFormRepositoryTest {
 
-    @RegisterExtension
-    static HibernateTestEntityManagerProvider hibernateTestEntityManagerProvider =
-            new HibernateTestEntityManagerProvider(PERSISTENCE_UNIT);
-
+    @Inject
     private StructuredFormRepository repository;
 
-    @BeforeEach
-    void openEntityManagerAndCreateRepository() {
-        repository = new StructuredFormRepository();
-        hibernateTestEntityManagerProvider.injectEntityManagerInto(repository);
-    }
 
     @Test
-    void shouldSaveAndReadStructuredForm() {
+    public void shouldSaveAndReadStructuredForm() {
         final UUID id = randomUUID();
         final ZonedDateTime lastUpdate = now();
         final StructuredForm structuredForm = new StructuredForm(id, randomUUID(), "{}", StructuredFormStatus.CREATED, lastUpdate);
@@ -48,4 +40,5 @@ class StructuredFormRepositoryTest {
         assertThat(persistedStructuredForm.getStatus(), is(StructuredFormStatus.CREATED));
         assertThat(persistedStructuredForm.getLastUpdated(), is(lastUpdate));
     }
+
 }

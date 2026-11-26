@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import uk.gov.justice.services.common.configuration.GlobalValue;
 
-import jakarta.inject.Inject;
+import javax.inject.Inject;
 
 public class FileUploadRetryConfiguration {
 

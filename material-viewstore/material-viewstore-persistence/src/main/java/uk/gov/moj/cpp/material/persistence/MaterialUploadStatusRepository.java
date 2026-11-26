@@ -4,21 +4,12 @@ import uk.gov.moj.cpp.material.persistence.entity.MaterialUploadStatus;
 
 import java.util.UUID;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import org.apache.deltaspike.data.api.EntityRepository;
+import org.apache.deltaspike.data.api.Repository;
 
-@ApplicationScoped
-public class MaterialUploadStatusRepository {
-
-    @PersistenceContext(unitName = "material-persistence-unit")
-    EntityManager entityManager;
-
-    public MaterialUploadStatus findBy(final UUID materialId) {
-        return entityManager.find(MaterialUploadStatus.class, materialId);
-    }
-
-    public MaterialUploadStatus save(final MaterialUploadStatus materialUploadStatus) {
-        return entityManager.merge(materialUploadStatus);
-    }
+/**
+ * Repository for {@link uk.gov.moj.cpp.material.persistence.entity.MaterialUploadStatus}
+ */
+@Repository
+public interface MaterialUploadStatusRepository extends EntityRepository<MaterialUploadStatus, UUID> {
 }

@@ -3,10 +3,11 @@ package uk.gov.moj.cpp.material.client;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
-import static jakarta.ws.rs.client.ClientBuilder.newClient;
+import static uk.gov.justice.services.messaging.JsonObjects.createObjectBuilder;
+import static uk.gov.justice.services.messaging.JsonObjects.createArrayBuilder;
+import static javax.ws.rs.client.ClientBuilder.newClient;
 import static uk.gov.justice.services.common.http.HeaderConstants.USER_ID;
 import static uk.gov.justice.services.messaging.Envelope.metadataFrom;
-import static uk.gov.justice.services.messaging.JsonObjects.getJsonBuilderFactory;
 import static uk.gov.moj.cpp.material.MaterialUrls.BASE_URI;
 import static uk.gov.moj.cpp.material.MaterialUrls.BUNDLE_MATERIAL_REQUEST_PATH;
 import static uk.gov.moj.cpp.material.MaterialUrls.COMMAND_BASE_URI;
@@ -20,14 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.client.Invocation;
-import jakarta.ws.rs.core.Response;
+import javax.enterprise.context.ApplicationScoped;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,9 +113,9 @@ public class MaterialClient {
                 .accept(CREATE_BUNDLE_MATERIAL);
 
 
-        final JsonArrayBuilder jsonArrayBuilder = getJsonBuilderFactory().createArrayBuilder();
+        final JsonArrayBuilder jsonArrayBuilder = createArrayBuilder();
         materialIds.stream().map(materialId -> jsonArrayBuilder.add(materialId.toString())).collect(toList());
-        final JsonObject jsonObject = getJsonBuilderFactory().createObjectBuilder()
+        final JsonObject jsonObject = createObjectBuilder()
                 .add(BUNDLED_MATERIAL_ID, bundleMaterialId.toString())
                 .add(BUNDLED_MATERIAL_NAME, bundleMaterialName)
                 .add(MATERIAL_IDS, jsonArrayBuilder.build())
@@ -161,7 +162,7 @@ public class MaterialClient {
     }
 
     private JsonObjectBuilder createObjectBuilderFrom(final JsonObject source) {
-        final JsonObjectBuilder builder = getJsonBuilderFactory().createObjectBuilder();
+        final JsonObjectBuilder builder = createObjectBuilder();
         source.forEach(builder::add);
         return builder;
     }

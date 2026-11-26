@@ -28,7 +28,7 @@ import uk.gov.moj.cpp.systemusers.ServiceContextSystemUserProvider;
 
 import java.time.ZonedDateTime;
 
-import jakarta.json.JsonObject;
+import javax.json.JsonObject;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
