@@ -21,7 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import jakarta.json.JsonValue;
+import javax.json.JsonValue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;

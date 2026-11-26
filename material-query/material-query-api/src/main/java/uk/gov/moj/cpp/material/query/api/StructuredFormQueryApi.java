@@ -13,8 +13,8 @@ import uk.gov.justice.services.messaging.JsonEnvelope;
 import uk.gov.moj.cpp.material.query.view.StructuredFormChangeHistoryQueryView;
 import uk.gov.moj.cpp.material.query.view.StructuredFormQueryView;
 
-import jakarta.inject.Inject;
-import jakarta.json.JsonObject;
+import javax.inject.Inject;
+import javax.json.JsonObject;
 
 @ServiceComponent(Component.QUERY_API)
 public class StructuredFormQueryApi {

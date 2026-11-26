@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 public class RecordBundleDetailCommandFactory {
 

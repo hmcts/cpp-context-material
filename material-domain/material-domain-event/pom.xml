@@ -3,7 +3,7 @@
     <parent>
         <groupId>uk.gov.moj.cpp.material</groupId>
         <artifactId>material-domain</artifactId>
-        <version>25.0.90-SNAPSHOT</version>
+        <version>17.0.87-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -26,8 +26,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>jakarta.json</groupId>
-            <artifactId>jakarta.json-api</artifactId>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
         </dependency>
         <dependency>
             <groupId>uk.gov.justice.services</groupId>

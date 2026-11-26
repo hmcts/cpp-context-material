@@ -3,7 +3,7 @@
     <parent>
         <artifactId>material-parent</artifactId>
         <groupId>uk.gov.moj.cpp.material</groupId>
-        <version>25.0.90-SNAPSHOT</version>
+        <version>17.0.87-SNAPSHOT</version>
     </parent>
     <artifactId>material-azure-functions</artifactId>
     <packaging>jar</packaging>
@@ -14,7 +14,6 @@
         <maven.compiler.source>${compiler.source}</maven.compiler.source>
         <maven.compiler.target>${compiler.target}</maven.compiler.target>
         <java.version>${java.se.version}</java.version>
-        <azure.functions.java.version>25.0</azure.functions.java.version>
         <maven.clean.version>3.1.0</maven.clean.version>
         <azure.functions.maven.plugin.version>1.12.0</azure.functions.maven.plugin.version>
         <functionAppName>fa-${azureEnv}-LargeFileDownloadCleanup</functionAppName>
@@ -37,16 +36,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -85,7 +74,7 @@
                     <region>${functionAppRegion}</region>
                     <runtime>
                         <os>windows</os>
-                        <javaVersion>${azure.functions.java.version}</javaVersion>
+                        <javaVersion>${java.version}</javaVersion>
                     </runtime>
                     <appSettings>
                         <!-- Run Azure Function from package file by default -->
@@ -103,7 +92,7 @@
                         </property>
                         <property>
                             <name>JAVA_VERSION</name>
-                            <value>${azure.functions.java.version}</value>
+                            <value>${java.version}</value>
                         </property>
                     </appSettings>
                 </configuration>

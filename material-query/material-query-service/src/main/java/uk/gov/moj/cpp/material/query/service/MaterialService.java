@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.inject.Inject;
+import javax.inject.Inject;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 

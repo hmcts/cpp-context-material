@@ -13,7 +13,7 @@ import uk.gov.moj.material.it.util.WiremockAccessControlEndpointStubber;
 
 import java.util.UUID;
 
-import jakarta.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 

@@ -6,7 +6,7 @@ import static uk.gov.moj.cpp.material.MaterialUrls.MATERIAL_STREAM_PDF_PARAMETER
 
 import java.util.UUID;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class MaterialUrlGenerator {

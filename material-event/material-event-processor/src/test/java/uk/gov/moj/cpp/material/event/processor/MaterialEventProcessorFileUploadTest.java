@@ -38,8 +38,7 @@ import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
+import javax.json.JsonObject;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;

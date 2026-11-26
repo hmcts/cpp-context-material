@@ -14,7 +14,7 @@ import uk.gov.moj.cpp.jobstore.api.task.ExecutableTask;
 import uk.gov.moj.cpp.jobstore.api.task.ExecutionInfo;
 import uk.gov.moj.cpp.material.event.processor.jobstore.jobdata.bundle.FailedBundleUploadJobData;
 
-import jakarta.inject.Inject;
+import javax.inject.Inject;
 
 @Task(FAILED_BUNDLE_UPLOAD_COMMAND_TASK)
 public class FailedBundleUploadToAlfrescoTask implements ExecutableTask {

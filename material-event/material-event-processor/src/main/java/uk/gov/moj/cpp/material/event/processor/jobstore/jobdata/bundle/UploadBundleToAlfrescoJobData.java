@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import jakarta.json.JsonObject;
+import javax.json.JsonObject;
 
 @SuppressWarnings("squid:S2384")
 public class UploadBundleToAlfrescoJobData {

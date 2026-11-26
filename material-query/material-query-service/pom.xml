@@ -3,15 +3,15 @@
     <parent>
         <artifactId>material-query</artifactId>
         <groupId>uk.gov.moj.cpp.material</groupId>
-        <version>25.0.90-SNAPSHOT</version>
+        <version>17.0.87-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>material-query-service</artifactId>
     <dependencies>
         <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

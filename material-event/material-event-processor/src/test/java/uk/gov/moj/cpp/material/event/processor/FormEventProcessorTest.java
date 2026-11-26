@@ -19,7 +19,7 @@ import uk.gov.justice.services.core.sender.Sender;
 import uk.gov.justice.services.messaging.JsonEnvelope;
 import java.time.ZonedDateTime;
 
-import jakarta.json.JsonObject;
+import javax.json.JsonObject;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
